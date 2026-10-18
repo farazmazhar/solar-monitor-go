@@ -1,0 +1,20 @@
+solar-moonitor-go  Home Rooftop · S6…  DEMO   7h 2m ago  13…
+ Live  Today  History  Battery  PV  Alarms  Diagnostics  Su…
+PV 5.67 kW ──┐                                              
+GRID 3.22 kW EXPORT ──► HOUSE 656 W ◄── BATTERY 62% 1.80 kW…
+backup 256 W                                                
+────────────────────────────────────────────────────────────
+SOLAR 5.67 kW                  HOUSE 656 W                  
+today 25.9 kWh                 bkp 256 W                    
+GRID 3.22 kW EXP               BATTERY 62%                  
+in 3.5 · out 11.7              1.80 kW charging             
+────────────────────────────────────────────────────────────
+BATTERY ███│█████░░░░░ 62%  1.80 kW charging                
+  SOH 97% · 49.8 V · 36.1 A · reserve 20% · charge to 98%   
+────────────────────────────────────────────────────────────
+TODAY  25.9 kWh generated   peak 5.91 kW at 13:05           
+                                              ⣀⣀⠤⠔⠒⠲⠤⠤⠤⠤⠤⠔⠒⠒
+                                      ⢀⣀⣀⠤⠔⠒⠒⠊              
+                                  ⣀⠤⠔⠊⠉                     
+⠶⠶⠶⠶⠦⠶⠶⠴⠶⠶⠶⠶⠴⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠮⠭⠭⠛⠛⠉⠉⠉⠉⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒⠒
+t today  ·  m motion  ·  r refresh  ·  ? help  ·  q quit ne…

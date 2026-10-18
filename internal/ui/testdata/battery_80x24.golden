@@ -1,0 +1,24 @@
+solar-moonitor-go  Home Rooftop · S6-EH1P6K-L-PRO        DEMO   7h 2m ago  13:20
+ Live  Today  History  Battery  PV  Alarms  Diagnostics               Sun 18 Oct
+BATTERY  S6-EH1P6K-L-PRO                                                        
+62%  1.80 kW charging   SOH 97%                                                 
+██████████████│█████████████████████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░        
+power         1.80 kW                   voltage       49.8 V                    
+current       36.1 A                    temperature   41.1 °C                   
+reserve SOC   20%                       charge limit  98%                       
+today charged 9.9 kWh   discharged  0.0 kWh                                     
+lifetime charged 2.48 MWh   discharged  2.22 MWh                                
+24H SOC                                                                         
+ 100.0%                                                                         
+                                                                                
+                                                                                
+                                                                                
+                                                                           ⢀⣀⠤⠔⠒
+  50.0%                                                               ⣀⡠⠤⠒⠉⠁    
+                                                                 ⣀⠤⠔⠒⠉          
+                                                           ⣀⡠⠔⠒⠉⠉               
+                                                     ⢀⣀⠤⠔⠊⠉                     
+        ⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠤⠔⠒⠒⠉⠁                          
+   0.0%                                                                         
+        00:00                            12:00                             13:20
+→ cursor  ·  t today  ·  r refresh  ·  ? help  ·  q quit              next 7h 2m

@@ -1,0 +1,24 @@
+solar-moonitor-go  Home Rooftop · S6-EH1P6K-L-PRO        DEMO   7h 2m ago  13:20
+ Live  Today  History  Battery  PV  Alarms  Diagnostics               Sun 18 Oct
+ALARMS   filter: last 30 days   (tab cycles)                                    
+LEVEL     START             CODE    MESSAGE                           STATE     
+ ● general 2026-10-16 09:20  1030    Grid voltage high                 restored 
+● tip     2026-10-10 04:20  2011    Battery communication warning     restored  
+● tip     2026-10-01 11:20  1055    Fan speed derating                restored  
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+────────────────────────────────────────────────────────────────────────────────
+advice: The inverter resumed automatically. Check grid voltage if this repeats. 
+code 1030 · began 2026-10-16 09:20 · ended 2026-10-16 09:38                     
+tab filter  ·  j k select  ·  r refresh  ·  ? help  ·  q quit         next 7h 2m

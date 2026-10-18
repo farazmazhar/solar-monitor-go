@@ -1,0 +1,24 @@
+                                                                                
+                                                                                
+                                                                                
+        ╭─ help ───────────────────────────────────────────────────────╮        
+        │ Keys                                                         │        
+        │                                                              │        
+        │   1-7               switch screen                            │        
+        │   tab / shift+tab   next / previous screen, or cycle filter  │        
+        │   ← →               move the chart cursor                    │        
+        │   j k / ↑ ↓         move in tables and scroll raw data       │        
+        │   r                 refresh now                              │        
+        │   m                 toggle motion                            │        
+        │   t                 jump to today / current period           │        
+        │   s l g b           toggle Today series (solar, load, grid,… │        
+        │   h l               previous / next period in History        │        
+        │   e                 export JSON or CSV                       │        
+        │   ?                 close this help                          │        
+        │   q                 quit                                     │        
+        │                                                              │        
+        │ Mouse: click tabs, tiles and chart; wheel scrolls lists.     │        
+        ╰──────────────────────────────────────────────────────────────╯        
+                                                                                
+                                                                                
+                                                                                

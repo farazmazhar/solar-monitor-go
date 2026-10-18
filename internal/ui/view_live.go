@@ -31,6 +31,7 @@ func (m *Model) renderLive(w, h, y int) string {
 	}
 	tiles := m.renderTiles(w, y+len(lines), tileRows)
 	lines = append(lines, tiles...)
+	lines = append(lines, "")
 	lines = append(lines, m.renderGaugeCompact(w))
 	lines = append(lines, m.liveLegend(w))
 

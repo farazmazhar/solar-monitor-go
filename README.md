@@ -78,6 +78,7 @@ history = "15m"
 theme = "solar-dark"
 motion = true
 chart_style = "braille"  # braille | graph | solid | area | box | quadrant | ascii
+chart_smoothing = 3     # moving-average window for line charts; 1 = off
 currency = "PKR"
 currency_symbol = "₨"
 co2_kg_per_kwh = 0.4
@@ -126,7 +127,8 @@ Mouse clicks switch tabs and tiles, move the chart cursor, and scroll lists.
 
 - **Live** — energy-flow diagram, live tiles with sparklines, a battery gauge
   and a day chart with time and power axes. The chart plots solar, total
-  consumption, grid and battery with an area fill under solar; `x` switches
+  consumption, grid and battery with an area fill under solar in `solid`/`graph`
+  modes; `x` switches
   between a fixed 00:00–23:59 window and a fit-to-samples window. `v` switches
   to a stacked source-mix chart (solar / battery / grid feeding consumption).
 - **Today** — the same day chart with a summary panel, a cursor and per-series

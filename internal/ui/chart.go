@@ -11,6 +11,8 @@ import (
 	ngraph "github.com/NimbleMarkets/ntcharts/v2/canvas/graph"
 	nrunes "github.com/NimbleMarkets/ntcharts/v2/canvas/runes"
 	"github.com/charmbracelet/x/ansi"
+
+	"github.com/farazmazhar/solar-monitor-go/internal/provider"
 )
 
 // Braille dot bits indexed by [row][column] within one character cell. The
@@ -78,6 +80,7 @@ type LineOptions struct {
 	Fg          color.Color
 	ShowYAxis   bool
 	ShowXAxis   bool
+	ShowGrid    bool
 	XLabels     []string // distributed evenly across the plot width
 	ZeroLine    bool
 	MinY, MaxY  *float64 // optional fixed range
@@ -209,20 +212,40 @@ func RenderLine(o LineOptions) ([]string, Rect) {
 		yLabel = axisPower
 	}
 
+	tickStep := plotH - 1
+	if plotH >= 12 {
+		tickStep = (plotH - 1) / 4
+	} else if plotH >= 6 {
+		tickStep = (plotH - 1) / 2
+	}
+	if tickStep < 1 {
+		tickStep = 1
+	}
+	tickRows := make(map[int]bool, 5)
+	for row := 0; row < plotH; row += tickStep {
+		tickRows[row] = true
+	}
+	tickRows[plotH-1] = true
+	showGrid := o.ShowGrid && plotH >= 8
+	gridCols := make(map[int]bool)
+	if showGrid && len(o.XLabels) > 2 && plotW >= 40 {
+		for i := 1; i < len(o.XLabels)-1; i++ {
+			col := int(math.Round(float64(i) / float64(len(o.XLabels)-1) * float64(plotW-1)))
+			gridCols[col] = true
+		}
+	}
+
 	var content []string
 	for row := 0; row < plotH; row++ {
 		var b strings.Builder
 		if axisW > 0 {
 			label := ""
-			switch row {
-			case 0:
-				label = yLabel(maxY)
-			case plotH / 2:
-				if plotH > 4 {
-					label = yLabel((maxY + minY) / 2)
+			if tickRows[row] {
+				v := maxY
+				if plotH > 1 {
+					v = maxY - (maxY-minY)*float64(row)/float64(plotH-1)
 				}
-			case plotH - 1:
-				label = yLabel(minY)
+				label = yLabel(v)
 			}
 			b.WriteString(padLeft(label, axisW-1))
 			b.WriteString(" ")
@@ -231,13 +254,26 @@ func RenderLine(o LineOptions) ([]string, Rect) {
 			cell, ok := cells[[2]int{col, row}]
 			hasLine := cell.bits != 0 || cell.r != 0 || cell.halves != 0
 			if !ok || (!hasLine && !cell.fill) {
-				if row == zeroRow {
+				switch {
+				case row == zeroRow:
 					if o.Dim != nil {
 						b.WriteString(lipgloss.NewStyle().Foreground(o.Dim).Render("╌"))
 					} else {
 						b.WriteString("╌")
 					}
-				} else {
+				case showGrid && gridCols[col] && row%2 == 0:
+					if o.Dim != nil {
+						b.WriteString(lipgloss.NewStyle().Foreground(o.Dim).Render("·"))
+					} else {
+						b.WriteString("·")
+					}
+				case showGrid && tickRows[row] && row > 0 && row < plotH-1 && col%3 == 0:
+					if o.Dim != nil {
+						b.WriteString(lipgloss.NewStyle().Foreground(o.Dim).Render("·"))
+					} else {
+						b.WriteString("·")
+					}
+				default:
 					b.WriteString(" ")
 				}
 				continue
@@ -1253,4 +1289,29 @@ func absInt(v int) int {
 		return -v
 	}
 	return v
+}
+
+// smoothValues applies a centred moving average. A window of one (or less)
+// leaves the values untouched. Missing points do not drag the average down.
+func smoothValues(vals []*float64, window int) []*float64 {
+	if window <= 1 || len(vals) == 0 {
+		return vals
+	}
+	half := window / 2
+	out := make([]*float64, len(vals))
+	for i := range vals {
+		sum := 0.0
+		count := 0
+		for j := i - half; j <= i+half; j++ {
+			if j < 0 || j >= len(vals) || vals[j] == nil {
+				continue
+			}
+			sum += *vals[j]
+			count++
+		}
+		if count > 0 {
+			out[i] = provider.Float(sum / float64(count))
+		}
+	}
+	return out
 }

@@ -65,6 +65,9 @@ All charts are custom renderers in `internal/ui/chart.go`.
   - `ascii` — `- | / \ + *`, for minimal fonts; also the `NO_COLOR` fallback.
   All styles draw a y axis, an x axis, a dashed zero line when the range crosses
   zero, and accept a cursor and any number of evenly distributed x labels.
+  Tall charts get five y ticks and a subtle dot grid at the tick rows and
+  x-label columns. `display.chart_smoothing` (default 3) applies a
+  centred moving average; 1 turns it off, 5 softens cloud spikes further.
 - **Day charts** share labels of `00:00`, `06:00`, `12:00`, `18:00` and `23:55`.
 - **Bar charts** use eighth-block columns with a y axis and a labelled x axis,
   and are used for month and year history.
@@ -83,9 +86,9 @@ Today, History's day view and the Battery SOC chart are always fixed-day.
 
 ### Area fill and source mix
 
-Under `solid` and `area`, the solar line is filled down to the zero baseline in
-a light shade, so the shape of the generation curve is visible even when the
-chart is shallow. Press `v` on Live, Today or History's day view to switch the
+Under `solid`, `area` and `graph`, the solar line is filled down to the zero
+baseline in a light shade, so the shape of the generation curve is visible even when the
+chart is shallow. Braille leaves the area clear so the thin dots stay readable. Press `v` on Live, Today or History's day view to switch the
 same chart between:
 
 - **Power** — solar, consumption, grid and battery lines.

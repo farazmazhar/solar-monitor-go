@@ -24,8 +24,9 @@ make discover        # needs credentials in ~/.config/solar-monitor/config.toml
   implemented and unit tested.
 - Charts draw with y and x axes and a titled border everywhere. Seven styles
   are selectable; braille is the default (braille, graph, solid, area, box,
-  quadrant, ascii). Solar has
-  an area fill, `v` switches to a source-mix stacked area, History year is a
+  quadrant, ascii). Solid/area/graph fill the solar area; braille keeps clear
+  dots. Tall charts get five y ticks and a dot grid, and smoothing defaults to
+  3 samples. `v` switches to a source-mix stacked area, History year is a
   calendar heatmap, and Battery has a SOC arc. The Live chart
   plots solar, total consumption, grid and battery over a fixed 00:00-23:59
   window by default; `x` (or `display.day_window = "auto"`) switches to

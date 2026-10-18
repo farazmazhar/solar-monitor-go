@@ -67,8 +67,10 @@ type Display struct {
 	// DayWindow is "day" for a fixed 00:00-23:59 chart axis, or "auto" for a
 	// rolling window that fits the samples to the width.
 	DayWindow string `toml:"day_window"`
-	// ChartStyle is solid, area, box, quadrant, braille, ascii or graph.
+	// ChartStyle is braille, graph, solid, area, box, quadrant or ascii.
 	ChartStyle string `toml:"chart_style"`
+	// ChartSmoothing is a moving-average window for line charts. 1 means off; 3 is the default.
+	ChartSmoothing int `toml:"chart_smoothing"`
 }
 
 type Tariff struct {
@@ -109,6 +111,7 @@ func Defaults() Config {
 			CO2KgPerKWh:    0.4,
 			DayWindow:      "day",
 			ChartStyle:     "braille",
+			ChartSmoothing: 3,
 		},
 		Storage: Storage{
 			RawSnapshotDays: 30,
@@ -363,6 +366,9 @@ func applyDefaults(c *Config) {
 	}
 	if c.Display.ChartStyle == "" {
 		c.Display.ChartStyle = d.Display.ChartStyle
+	}
+	if c.Display.ChartSmoothing == 0 {
+		c.Display.ChartSmoothing = d.Display.ChartSmoothing
 	}
 	if c.Storage.RawSnapshotDays == 0 {
 		c.Storage.RawSnapshotDays = d.Storage.RawSnapshotDays

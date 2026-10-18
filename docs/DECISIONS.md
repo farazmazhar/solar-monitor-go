@@ -171,8 +171,8 @@ a year at a glance and the battery level without reading numbers.
 
 **Decision.** Keep `solid` as the default and expose `area`, `box`, `quadrant`,
 `braille`, `ascii` and `graph` through `display.chart_style` and
-`--chart-style`, defaulting to `braille`. `solid`, `area`, `graph` and `braille` fill
-the solar area down to the zero baseline.
+`--chart-style`, defaulting to `braille`. `solid`, `area` and `graph` fill the solar area down
+to the zero baseline; braille leaves it clear for readability.
 `v` switches the day chart to a stacked source-mix area. History's year view is
 a calendar heatmap; month keeps bars. The Battery screen uses a semicircular
 SOC arc above the detailed values.
@@ -182,3 +182,18 @@ fill, and the UI has one view switch. The year heatmap needs daily data, so year
 mode makes one `inverterMonth` call per month (paced), whereas month mode keeps
 its single call. Image-free rendering stays portable and dependency-light;
 `graph` adds `NimbleMarkets/ntcharts` for its line renderer.
+
+## ADR-0014 — Readability pass for tall braille charts
+
+**Context.** On a wide, tall terminal the braille chart had only three y labels
+and the solar area fill sat over the thin dots, turning the plot into a solid
+brown mass.
+
+**Decision.** Braille no longer draws the area fill. Tall charts (eight or more
+plot rows) get five y ticks and a subtle dot grid at the tick rows and x-label
+columns. `display.chart_smoothing` defaults to a three-sample centred moving
+average; 1 disables it.
+
+**Consequences.** The dots stay distinct, values are easier to align with the
+axes, and cloud spikes are softened without hiding the overall shape. Raw data
+is still available by setting `chart_smoothing = 1`.

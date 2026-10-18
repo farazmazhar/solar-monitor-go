@@ -67,7 +67,7 @@ func (m *Model) renderBattery(w, h, y int) string {
 			Style:  m.chartStyle(),
 			Series: []LineSeries{{Name: "soc", Color: m.th.Battery, Values: soc}},
 			Cursor: m.cursorSlot(m.day), CursorColor: m.th.Fg, Dim: m.th.Faint,
-			ShowYAxis: true, ShowXAxis: true, MinY: provider.Float(0), MaxY: provider.Float(100),
+			ShowYAxis: true, ShowXAxis: true, ShowGrid: true, MinY: provider.Float(0), MaxY: provider.Float(100),
 			XLabels: dayTimeLabels(m.day), YLabel: fmtPct1,
 		})
 		lines = append(lines, chart...)

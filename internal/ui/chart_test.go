@@ -144,3 +144,18 @@ func TestCursorSlotAndSampleIndex(t *testing.T) {
 		t.Errorf("cursorSampleIndex = %d, want 1", got)
 	}
 }
+
+func TestSmoothValues(t *testing.T) {
+	vals := []*float64{provider.Float(0), provider.Float(0), provider.Float(9), provider.Float(0), provider.Float(0)}
+	out := smoothValues(vals, 3)
+	if out[2] == nil || *out[2] != 3 {
+		t.Errorf("centre = %v, want 3", out[2])
+	}
+	if out[0] == nil || *out[0] != 0 {
+		t.Errorf("edge = %v, want 0", out[0])
+	}
+	// A window of 1 is a no-op.
+	if got := smoothValues(vals, 1); got[2] != vals[2] {
+		t.Error("window 1 should not change values")
+	}
+}

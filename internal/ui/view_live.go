@@ -93,7 +93,7 @@ func (m *Model) chartFill() (bool, rune) {
 	switch style {
 	case "area":
 		return true, '▒'
-	case "", "solid", "graph", "braille":
+	case "", "solid", "graph":
 		return true, '░'
 	default:
 		return false, ' '
@@ -131,6 +131,7 @@ func (m *Model) renderDayChart(w, h int, title string, samples []provider.Sample
 		Fg:          m.th.Fg,
 		ShowYAxis:   true,
 		ShowXAxis:   true,
+		ShowGrid:    true,
 		XLabels:     xLabels,
 		ZeroLine:    zero,
 		Fill:        fill,
@@ -141,10 +142,13 @@ func (m *Model) renderDayChart(w, h int, title string, samples []provider.Sample
 
 func (m *Model) seriesFor(samples []provider.Sample, enabled [4]bool, fixed bool) []LineSeries {
 	values := func(pick func(provider.Sample) *float64) []*float64 {
+		var out []*float64
 		if fixed {
-			return daySlotValues(samples, pick)
+			out = daySlotValues(samples, pick)
+		} else {
+			out = rollingValues(samples, pick)
 		}
-		return rollingValues(samples, pick)
+		return smoothValues(out, m.cfg.Display.ChartSmoothing)
 	}
 	var out []LineSeries
 	if enabled[0] {

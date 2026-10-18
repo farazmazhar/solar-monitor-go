@@ -239,3 +239,27 @@ func TestNormalizeAlarms(t *testing.T) {
 		t.Error("restored alarm must not be active")
 	}
 }
+
+func TestDayWattsDespiteKWUnit(t *testing.T) {
+	// Some inverterDay rows carry watts while the unit says kW; a 2400 value
+	// must stay 2400 W, not become 2.4 MW.
+	raw := json.RawMessage(`[
+	  {"timeStr":"2026-10-18 12:00:00","pac":2400,"pacStr":"kW","familyLoadPower":656,"familyLoadPowerStr":"kW","psum":666,"psumStr":"kW","batteryPower":0,"batteryPowerStr":"kW"}
+	]`)
+	rows, err := NormalizeDay(raw, time.Local)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(rows) != 1 {
+		t.Fatalf("rows = %d", len(rows))
+	}
+	if rows[0].SolarW == nil || *rows[0].SolarW != 2400 {
+		t.Errorf("solar = %v, want 2400", rows[0].SolarW)
+	}
+	if rows[0].LoadW == nil || *rows[0].LoadW != 656 {
+		t.Errorf("load = %v, want 656", rows[0].LoadW)
+	}
+	if rows[0].GridW == nil || *rows[0].GridW != 666 {
+		t.Errorf("grid = %v, want 666", rows[0].GridW)
+	}
+}

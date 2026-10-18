@@ -66,7 +66,8 @@ All charts are custom renderers in `internal/ui/chart.go`.
   All styles draw a y axis, an x axis, a dashed zero line when the range crosses
   zero, and accept a cursor and any number of evenly distributed x labels.
   Tall charts get five y ticks and a subtle dot grid at the tick rows and
-  x-label columns. `display.chart_smoothing` (default 3) applies a
+  x-label columns. Where two braille series share a cell, their colours blend
+  so an overlap is not mistaken for a colour change in one line. `display.chart_smoothing` (default 3) applies a
   centred moving average; 1 turns it off, 5 softens cloud spikes further.
 - **Day charts** share labels of `00:00`, `06:00`, `12:00`, `18:00` and `23:55`.
 - **Bar charts** use eighth-block columns with a y axis and a labelled x axis,

@@ -197,3 +197,21 @@ average; 1 disables it.
 **Consequences.** The dots stay distinct, values are easier to align with the
 axes, and cloud spikes are softened without hiding the overall shape. Raw data
 is still available by setting `chart_smoothing = 1`.
+
+## ADR-0015 — Overlap colour blending and day-row unit sanity
+
+**Context.** In a small braille chart two series can occupy the same cell. The
+renderer used the first series' colour, so one line appeared to change colour
+where another crossed or nearly crossed it. Separately, some `inverterDay` rows
+carry watts while the unit field (or our default) says kW, producing MW-scale
+spikes while the live detail endpoint looked normal.
+
+**Decision.** When two series share a braille or quadrant cell, blend their
+colours at draw time so the overlap reads as an overlap. In power normalisation,
+treat a kW-labelled value of 100 or more as watts; a residential inverter never
+reaches 100 kW.
+
+**Consequences.** Overlaps become a neutral blend instead of stealing a series
+colour. Day curves now agree with the live snapshot on residential hardware.
+The threshold is deliberately conservative; a commercial site above 100 kW
+would need an explicit unit or a larger threshold.

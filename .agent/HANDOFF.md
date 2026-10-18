@@ -31,6 +31,9 @@ make discover        # needs credentials in ~/.config/solar-monitor/config.toml
   plots solar, total consumption, grid and battery over a fixed 00:00-23:59
   window by default; `x` (or `display.day_window = "auto"`) switches to
   fit-to-samples. History gained a day mode.
+- Day chart rows are sanity-checked: a kW-labelled power value of 100 or more
+  is treated as watts, which keeps the day curve aligned with the detail
+  endpoint on residential hardware.
 - No credentials are available on this machine, so live field names, units and
   signs are still unverified.
 

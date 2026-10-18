@@ -31,6 +31,7 @@ type chartCell struct {
 	fill      bool   // area fill behind the line
 	fillColor color.Color
 	color     color.Color
+	color2    color.Color // second series sharing this cell, blended at draw time
 	priority  int
 }
 
@@ -280,6 +281,9 @@ func RenderLine(o LineOptions) ([]string, Rect) {
 			}
 			r := cell.r
 			cellColor := cell.color
+			if cell.color2 != nil {
+				cellColor = blendColors(cell.color, cell.color2)
+			}
 			if !hasLine && cell.fill {
 				r = o.FillGlyph
 				if r == 0 {
@@ -617,8 +621,11 @@ func plotQuadrant(cells map[[2]int]chartCell, o LineOptions, minY, maxY float64,
 			return
 		}
 		if priority < existing.priority {
-			cells[key] = chartCell{bits: existing.bits | bit, fill: existing.fill, fillColor: existing.fillColor, color: c, priority: priority}
+			cells[key] = chartCell{bits: existing.bits | bit, fill: existing.fill, fillColor: existing.fillColor, color: c, color2: existing.color, priority: priority}
 			return
+		}
+		if priority != existing.priority {
+			existing.color2 = c
 		}
 		existing.bits |= bit
 		cells[key] = existing
@@ -828,8 +835,11 @@ func plotBraille(cells map[[2]int]chartCell, o LineOptions, minY, maxY float64, 
 		bit := uint16(brailleBits[py%4][px%2])
 		if existing, ok := cells[key]; ok {
 			if priority < existing.priority {
-				cells[key] = chartCell{bits: existing.bits | bit, color: c, priority: priority}
+				cells[key] = chartCell{bits: existing.bits | bit, color: c, color2: existing.color, priority: priority}
 			} else {
+				if priority != existing.priority {
+					existing.color2 = c
+				}
 				existing.bits |= bit
 				cells[key] = existing
 			}
@@ -1314,4 +1324,23 @@ func smoothValues(vals []*float64, window int) []*float64 {
 		}
 	}
 	return out
+}
+
+// blendColors mixes two series colours for a cell shared by both, so an
+// overlap reads as an overlap instead of taking one line's colour.
+func blendColors(a, b color.Color) color.Color {
+	if a == nil {
+		return b
+	}
+	if b == nil {
+		return a
+	}
+	r1, g1, b1, _ := a.RGBA()
+	r2, g2, b2, _ := b.RGBA()
+	return color.RGBA{
+		R: uint8(((uint32(r1) + uint32(r2)) / 2) >> 8),
+		G: uint8(((uint32(g1) + uint32(g2)) / 2) >> 8),
+		B: uint8(((uint32(b1) + uint32(b2)) / 2) >> 8),
+		A: 0xff,
+	}
 }

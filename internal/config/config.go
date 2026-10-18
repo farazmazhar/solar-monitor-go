@@ -108,7 +108,7 @@ func Defaults() Config {
 			CurrencySymbol: "₨",
 			CO2KgPerKWh:    0.4,
 			DayWindow:      "day",
-			ChartStyle:     "solid",
+			ChartStyle:     "graph",
 		},
 		Storage: Storage{
 			RawSnapshotDays: 30,

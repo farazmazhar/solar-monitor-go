@@ -62,7 +62,7 @@ func (m *Model) windowTitle() string {
 // chartStyle resolves the configured line style.
 func (m *Model) chartStyle() ChartStyle {
 	style := strings.ToLower(strings.TrimSpace(m.cfg.Display.ChartStyle))
-	if os.Getenv("NO_COLOR") != "" && (style == "" || style == "solid" || style == "area") {
+	if os.Getenv("NO_COLOR") != "" && (style == "" || style == "solid" || style == "area" || style == "graph") {
 		return ChartASCII
 	}
 	switch style {
@@ -79,7 +79,7 @@ func (m *Model) chartStyle() ChartStyle {
 	case "graph":
 		return ChartGraph
 	default:
-		return ChartSolid
+		return ChartGraph
 	}
 }
 
@@ -93,7 +93,7 @@ func (m *Model) chartFill() (bool, rune) {
 	switch style {
 	case "area":
 		return true, '▒'
-	case "", "solid":
+	case "", "solid", "graph":
 		return true, '░'
 	default:
 		return false, ' '

@@ -23,7 +23,8 @@ make discover        # needs credentials in ~/.config/solar-monitor/config.toml
 - The SolisCloud client, config import, SQLite store and monitor service are
   implemented and unit tested.
 - Charts draw with y and x axes and a titled border everywhere. Seven styles
-  are selectable (solid, area, box, quadrant, braille, ascii, graph). Solar has
+  are selectable; graph is the default (graph, solid, area, box, quadrant,
+  braille, ascii). Solar has
   an area fill, `v` switches to a source-mix stacked area, History year is a
   calendar heatmap, and Battery has a SOC arc. The Live chart
   plots solar, total consumption, grid and battery over a fixed 00:00-23:59

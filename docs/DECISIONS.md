@@ -171,7 +171,8 @@ a year at a glance and the battery level without reading numbers.
 
 **Decision.** Keep `solid` as the default and expose `area`, `box`, `quadrant`,
 `braille`, `ascii` and `graph` through `display.chart_style` and
-`--chart-style`. Solid/area fill the solar area down to the zero baseline.
+`--chart-style`, defaulting to `graph`. `solid`, `area` and `graph` fill the
+solar area down to the zero baseline.
 `v` switches the day chart to a stacked source-mix area. History's year view is
 a calendar heatmap; month keeps bars. The Battery screen uses a semicircular
 SOC arc above the detailed values.

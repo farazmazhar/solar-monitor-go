@@ -36,7 +36,7 @@ with local SQLite history. Tests pass. Live field verification is the main gap.
 - [x] Chart pass: y and x axes everywhere, bordered/framed charts and panels,
       fixed-day 00:00-23:59 window with `x`/`day_window` toggle, History day
       mode, Today restructured with a summary panel and series legend
-- [x] Seven chart styles (solid, area, box, quadrant, braille, ascii, graph)
+- [x] Seven chart styles (graph default, solid, area, box, quadrant, braille, ascii)
 - [x] Solar area fill; `v` source-mix stacked area; year calendar heatmap;
       battery SOC arc
 - [x] Mouse navigation, help overlay, motion toggle, JSON/CSV export

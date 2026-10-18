@@ -77,7 +77,7 @@ history = "15m"
 [display]
 theme = "solar-dark"
 motion = true
-chart_style = "solid"  # solid | area | box | quadrant | braille | ascii | graph
+chart_style = "graph"  # graph | solid | area | box | quadrant | braille | ascii
 currency = "PKR"
 currency_symbol = "₨"
 co2_kg_per_kwh = 0.4

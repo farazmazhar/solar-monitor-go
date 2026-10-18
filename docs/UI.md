@@ -55,14 +55,14 @@ All charts are custom renderers in `internal/ui/chart.go`.
 
 - **Line charts** can be drawn in one of seven styles, set with
   `display.chart_style`:
-  - `solid` (default) — half-block glyphs (`▀ ▄ █`), two vertical sub-rows per
+  - `graph` (default) — ntcharts' canvas line renderer, thin lines with rounded corners.
+  - `solid` — half-block glyphs (`▀ ▄ █`), two vertical sub-rows per
     cell, thick continuous strokes, with an area fill under solar.
   - `area` — as `solid` but with a denser (`▒`) generation fill.
   - `box` — box-drawing glyphs (`─ │ ╱ ╲ ┼`), thin lines with real junctions.
   - `quadrant` — quadrant blocks (`▖ ▗ ▘ ▝ ▚ ▞ █`) at 2×2 sub-cell resolution.
   - `braille` — the original 2×4 dot matrix, smooth but sparse.
   - `ascii` — `- | / \ + *`, for minimal fonts; also the `NO_COLOR` fallback.
-  - `graph` — ntcharts' canvas line renderer, thin lines with rounded corners.
   All styles draw a y axis, an x axis, a dashed zero line when the range crosses
   zero, and accept a cursor and any number of evenly distributed x labels.
 - **Day charts** share labels of `00:00`, `06:00`, `12:00`, `18:00` and `23:55`.

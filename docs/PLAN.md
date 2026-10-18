@@ -135,7 +135,7 @@ and runs a balance check, surfacing a diagnostics warning on mismatch.
 - [x] JSON and CSV export
 - [x] Transparent theme option
 - [x] `NO_COLOR` monochrome fallback; colour profile degrades through Lip Gloss
-- [x] Seven chart styles (solid, area, box, quadrant, braille, ascii, graph)
+- [x] Seven chart styles (graph default, solid, area, box, quadrant, braille, ascii)
 - [x] Solar area fill, source-mix stacked area, year heatmap and SOC arc
 - [ ] Empty, loading and error states on every screen (partial)
 

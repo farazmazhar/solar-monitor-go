@@ -109,6 +109,7 @@ func TestGoldenFrames(t *testing.T) {
 		view    ChartView
 	}{
 		{"live_80x24", 80, 24, TabLive, false, HistoryDay, "day", "solid", ViewPower},
+		{"live_default_80x24", 80, 24, TabLive, false, HistoryDay, "day", "", ViewPower},
 		{"today_80x24", 80, 24, TabToday, false, HistoryDay, "day", "solid", ViewPower},
 		{"history_day_80x24", 80, 24, TabHistory, false, HistoryDay, "day", "solid", ViewPower},
 		{"history_month_80x24", 80, 24, TabHistory, false, HistoryMonth, "day", "solid", ViewPower},

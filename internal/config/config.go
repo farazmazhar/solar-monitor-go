@@ -67,7 +67,7 @@ type Display struct {
 	// DayWindow is "day" for a fixed 00:00-23:59 chart axis, or "auto" for a
 	// rolling window that fits the samples to the width.
 	DayWindow string `toml:"day_window"`
-	// ChartStyle is "box", "solid" or "braille".
+	// ChartStyle is solid, area, box, quadrant, braille, ascii or graph.
 	ChartStyle string `toml:"chart_style"`
 }
 

@@ -40,6 +40,7 @@ func main() {
 		dumpTab    = flag.Int("dump-tab", 0, "tab index to render with --dump (0-6)")
 		dumpHist   = flag.String("dump-history", "day", "history mode for --dump: day, month or year")
 		dumpWindow = flag.String("dump-window", "day", "live chart window for --dump: day or auto")
+		dumpView   = flag.String("dump-view", "power", "live chart view for --dump: power or mix")
 		dumpSize   = flag.String("dump-size", "80x24", "terminal size for --dump, e.g. 100x30")
 		themeFlag  = flag.String("theme", "", "override the theme (solar-dark or transparent)")
 		styleFlag  = flag.String("chart-style", "", "override the chart style (box, solid or braille)")
@@ -133,7 +134,7 @@ func main() {
 			cfg.Display.DayWindow = "auto"
 		}
 		w, h := parseSize(*dumpSize)
-		frame, err := ui.DumpFrame(src, cfg, paths, version, isDemo, ui.Tab(clampInt(*dumpTab, 0, 6)), parseHistory(*dumpHist), w, h)
+		frame, err := ui.DumpFrame(src, cfg, paths, version, isDemo, ui.Tab(clampInt(*dumpTab, 0, 6)), parseHistory(*dumpHist), parseView(*dumpView), w, h)
 		if err != nil {
 			fatal(err)
 		}
@@ -307,4 +308,11 @@ func parseHistory(s string) ui.HistoryMode {
 	default:
 		return ui.HistoryDay
 	}
+}
+
+func parseView(s string) ui.ChartView {
+	if strings.EqualFold(strings.TrimSpace(s), "mix") {
+		return ui.ViewMix
+	}
+	return ui.ViewPower
 }

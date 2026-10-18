@@ -7,6 +7,9 @@ import (
 	"strings"
 
 	"charm.land/lipgloss/v2"
+	ncanvas "github.com/NimbleMarkets/ntcharts/v2/canvas"
+	ngraph "github.com/NimbleMarkets/ntcharts/v2/canvas/graph"
+	nrunes "github.com/NimbleMarkets/ntcharts/v2/canvas/runes"
 	"github.com/charmbracelet/x/ansi"
 )
 
@@ -20,11 +23,13 @@ var brailleBits = [4][2]rune{
 }
 
 type chartCell struct {
-	bits     uint16 // braille dots or box-drawing direction bits
-	r        rune   // explicit glyph, e.g. the cursor
-	halves   uint8  // solid style: bit 1 = top half, bit 2 = bottom half
-	color    color.Color
-	priority int
+	bits      uint16 // braille dots, quadrant bits or box-drawing directions
+	r         rune   // explicit glyph, e.g. the cursor
+	halves    uint8  // half-block style: bit 1 = top half, bit 2 = bottom half
+	fill      bool   // area fill behind the line
+	fillColor color.Color
+	color     color.Color
+	priority  int
 }
 
 // LineSeries is one plotted series. Values are indexed positions; nil values
@@ -43,8 +48,14 @@ const (
 	ChartSolid ChartStyle = iota
 	// ChartBox connects points with box-drawing lines and junctions.
 	ChartBox
-	// ChartBraille draws the denser braille pixel graph.
+	// ChartBraille draws the dense braille pixel graph.
 	ChartBraille
+	// ChartQuadrant draws at 2x2 sub-cell resolution with quadrant blocks.
+	ChartQuadrant
+	// ChartASCII uses only ASCII glyphs for minimal fonts.
+	ChartASCII
+	// ChartGraph uses the ntcharts canvas graph line renderer.
+	ChartGraph
 )
 
 // LineOptions configures a line chart.
@@ -71,6 +82,11 @@ type LineOptions struct {
 	ZeroLine    bool
 	MinY, MaxY  *float64 // optional fixed range
 	YLabel      func(float64) string
+
+	// Fill draws a shaded area below one series (0 is the first series).
+	Fill       bool
+	FillSeries int
+	FillGlyph  rune
 }
 
 // RenderLine renders a line chart as exactly Height lines. The second return
@@ -150,11 +166,18 @@ func RenderLine(o LineOptions) ([]string, Rect) {
 	}
 
 	cells := make(map[[2]int]chartCell, plotW*plotH)
+	if o.Fill {
+		plotAreaFill(cells, o, minY, maxY, plotW, plotH, n)
+	}
 	switch o.Style {
 	case ChartBraille:
 		plotBraille(cells, o, minY, maxY, plotW, plotH, n)
-	case ChartBox:
+	case ChartBox, ChartASCII:
 		plotBox(cells, o, minY, maxY, plotW, plotH, n)
+	case ChartQuadrant:
+		plotQuadrant(cells, o, minY, maxY, plotW, plotH, n)
+	case ChartGraph:
+		plotGraph(cells, o, minY, maxY, plotW, plotH, n)
 	default:
 		plotSolid(cells, o, minY, maxY, plotW, plotH, n)
 	}
@@ -206,7 +229,8 @@ func RenderLine(o LineOptions) ([]string, Rect) {
 		}
 		for col := 0; col < plotW; col++ {
 			cell, ok := cells[[2]int{col, row}]
-			if !ok || (cell.bits == 0 && cell.r == 0 && cell.halves == 0) {
+			hasLine := cell.bits != 0 || cell.r != 0 || cell.halves != 0
+			if !ok || (!hasLine && !cell.fill) {
 				if row == zeroRow {
 					if o.Dim != nil {
 						b.WriteString(lipgloss.NewStyle().Foreground(o.Dim).Render("╌"))
@@ -219,16 +243,33 @@ func RenderLine(o LineOptions) ([]string, Rect) {
 				continue
 			}
 			r := cell.r
-			switch {
-			case o.Style == ChartBraille:
-				r = rune(0x2800) + rune(cell.bits)
-			case o.Style == ChartBox:
-				r = boxGlyph(cell.bits)
-			case r == 0:
-				r = halfBlock(cell.halves)
+			cellColor := cell.color
+			if !hasLine && cell.fill {
+				r = o.FillGlyph
+				if r == 0 {
+					r = '░'
+				}
+				cellColor = cell.fillColor
+			} else {
+				switch o.Style {
+				case ChartBraille:
+					r = rune(0x2800) + rune(cell.bits)
+				case ChartBox:
+					r = boxGlyph(cell.bits)
+				case ChartASCII:
+					r = asciiGlyph(cell.bits)
+				case ChartQuadrant:
+					r = quadrantGlyph(cell.bits)
+				case ChartGraph:
+					// r already holds the ntcharts glyph
+				default:
+					if r == 0 {
+						r = halfBlock(cell.halves)
+					}
+				}
 			}
-			if cell.color != nil {
-				b.WriteString(lipgloss.NewStyle().Foreground(cell.color).Render(string(r)))
+			if cellColor != nil {
+				b.WriteString(lipgloss.NewStyle().Foreground(cellColor).Render(string(r)))
 			} else {
 				b.WriteRune(r)
 			}
@@ -478,6 +519,207 @@ func cellYFor(v, minY, maxY float64, plotH int) int {
 		return 0
 	}
 	return int(math.Round((maxY - v) / (maxY - minY) * float64(plotH-1)))
+}
+
+// plotAreaFill shades the cells below one series so the generation shape is
+// readable even before the line is dense.
+func plotAreaFill(cells map[[2]int]chartCell, o LineOptions, minY, maxY float64, plotW, plotH, n int) {
+	idx := o.FillSeries
+	if idx < 0 || idx >= len(o.Series) {
+		return
+	}
+	s := o.Series[idx]
+	sums := make([]float64, plotW)
+	counts := make([]int, plotW)
+	for i, v := range s.Values {
+		if v == nil {
+			continue
+		}
+		col := solidXFor(i, n, plotW)
+		sums[col] += *v
+		counts[col]++
+	}
+	for col := 0; col < plotW; col++ {
+		if counts[col] == 0 {
+			continue
+		}
+		row := cellYFor(sums[col]/float64(counts[col]), minY, maxY, plotH)
+		baseline := cellYFor(0, minY, maxY, plotH)
+		if baseline >= plotH {
+			baseline = plotH - 1
+		}
+		if baseline < 0 {
+			baseline = 0
+		}
+		for r := row + 1; r <= baseline; r++ {
+			if r < 0 || r >= plotH {
+				continue
+			}
+			key := [2]int{col, r}
+			cell := cells[key]
+			cell.fill = true
+			cell.fillColor = s.Color
+			cells[key] = cell
+		}
+	}
+}
+
+// plotQuadrant draws at 2x2 sub-cell resolution with quadrant blocks.
+func plotQuadrant(cells map[[2]int]chartCell, o LineOptions, minY, maxY float64, plotW, plotH, n int) {
+	pw := plotW * 2
+	ph := plotH * 2
+	set := func(px, py int, c color.Color, priority int) {
+		if px < 0 || py < 0 || px >= pw || py >= ph {
+			return
+		}
+		cx, cy := px/2, py/2
+		key := [2]int{cx, cy}
+		bit := uint16(1) << uint((py%2)*2+(px%2))
+		existing, ok := cells[key]
+		if !ok {
+			cells[key] = chartCell{bits: bit, color: c, priority: priority}
+			return
+		}
+		if priority < existing.priority {
+			cells[key] = chartCell{bits: existing.bits | bit, fill: existing.fill, fillColor: existing.fillColor, color: c, priority: priority}
+			return
+		}
+		existing.bits |= bit
+		cells[key] = existing
+	}
+	for si, s := range o.Series {
+		prevX, prevY := -1, -1
+		for i, v := range s.Values {
+			if v == nil {
+				prevX, prevY = -1, -1
+				continue
+			}
+			px := brailleXFor(i, n, pw)
+			py := brailleYFor(*v, minY, maxY, ph)
+			if prevX >= 0 {
+				drawLine(set, prevX, prevY, px, py, s.Color, si)
+			}
+			set(px, py, s.Color, si)
+			prevX, prevY = px, py
+		}
+	}
+}
+
+// quadrantGlyph maps four quadrant bits to a block rune.
+func quadrantGlyph(bits uint16) rune {
+	switch bits & 0x0F {
+	case 1:
+		return '▘'
+	case 2:
+		return '▝'
+	case 3:
+		return '▀'
+	case 4:
+		return '▖'
+	case 5:
+		return '▌'
+	case 6:
+		return '▞'
+	case 7:
+		return '▛'
+	case 8:
+		return '▗'
+	case 9:
+		return '▚'
+	case 10:
+		return '▐'
+	case 11:
+		return '▜'
+	case 12:
+		return '▄'
+	case 13:
+		return '▙'
+	case 14:
+		return '▟'
+	case 15:
+		return '█'
+	default:
+		return ' '
+	}
+}
+
+// asciiGlyph maps box-drawing directions to their ASCII equivalents.
+func asciiGlyph(bits uint16) rune {
+	n := bits&boxN != 0
+	s := bits&boxS != 0
+	e := bits&boxE != 0
+	w := bits&boxW != 0
+	if !n && !s && !e && !w {
+		if bits&boxDot != 0 {
+			return '*'
+		}
+		return '/'
+	}
+	switch {
+	case n && s && e && w:
+		return '+'
+	case n && e:
+		return '+'
+	case n && w:
+		return '+'
+	case s && e:
+		return '+'
+	case s && w:
+		return '+'
+	case (n || s) && (e || w):
+		return '+'
+	case n || s:
+		return '|'
+	default:
+		return '-'
+	}
+}
+
+// plotGraph uses ntcharts' canvas graph renderer for thin lines with corners.
+func plotGraph(cells map[[2]int]chartCell, o LineOptions, minY, maxY float64, plotW, plotH, n int) {
+	cv := ncanvas.New(plotW, plotH)
+	for _, s := range o.Series {
+		style := lipgloss.NewStyle().Foreground(s.Color)
+		sums := make([]float64, plotW)
+		counts := make([]int, plotW)
+		for i, v := range s.Values {
+			if v == nil {
+				continue
+			}
+			col := solidXFor(i, n, plotW)
+			sums[col] += *v
+			counts[col]++
+		}
+		var pts []ncanvas.Point
+		flush := func() {
+			switch len(pts) {
+			case 0:
+			case 1:
+				cv.SetRuneWithStyle(pts[0], '•', style)
+			default:
+				ngraph.DrawLinePoints(&cv, pts, nrunes.ArcLineStyle, style)
+			}
+			pts = pts[:0]
+		}
+		for col := 0; col < plotW; col++ {
+			if counts[col] == 0 {
+				flush()
+				continue
+			}
+			row := cellYFor(sums[col]/float64(counts[col]), minY, maxY, plotH)
+			pts = append(pts, ncanvas.Point{X: col, Y: row})
+		}
+		flush()
+	}
+	for y := 0; y < plotH; y++ {
+		for x := 0; x < plotW; x++ {
+			c := cv.Cell(ncanvas.Point{X: x, Y: y})
+			if c.Rune == 0 || c.Rune == ' ' {
+				continue
+			}
+			cells[[2]int{x, y}] = chartCell{r: c.Rune, color: c.Style.GetForeground()}
+		}
+	}
 }
 
 // plotSolid draws solid half-block lines. Each column collects the vertical

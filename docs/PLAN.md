@@ -35,15 +35,17 @@ Seven tabs: Live, Today, History, Battery, PV, Alarms, Diagnostics.
 
 - **Live** — boxed energy-flow diagram, live tiles with sparklines, a segmented
   SOC gauge, a colour legend, and a bordered day chart with time and power axes
-  plotting solar, total consumption, grid and battery. `x` switches the chart
-  between a fixed 00:00–23:59 window and a fit-to-samples window.
+  plotting solar, total consumption, grid and battery, with an area fill under
+  solar. `x` switches the chart between a fixed 00:00–23:59 window and a
+  fit-to-samples window; `v` switches to a stacked source-mix area.
 - **Today** — summary panel, series legend with `s l g b` toggles, cursor line,
   and a bordered fixed-day chart with axes.
 - **History** — day, month and year modes. Day shows the power chart for the
-  selected date; month and year show bordered bar charts with axes, plus income
-  and CO₂ summaries.
-- **Battery** — SOC gauge, SOH, charge/discharge power, voltage and current,
-  today and lifetime throughput, reserve limits, and a fixed-day SOC chart.
+  selected date; month shows a bordered bar chart; year shows a calendar
+  heatmap of daily generation. Summaries include income and CO₂.
+- **Battery** — semicircular SOC arc, SOH, charge/discharge power, voltage and
+  current, today and lifetime throughput, reserve limits, and a fixed-day SOC
+  chart.
 - **PV** — bordered strings table with V/A/W and share bars; MPPT totals; DC
   input count; inverter temperature; DC/AC efficiency where available.
 - **Alarms** — active / recent 30 days / all filters, table with level, time,
@@ -133,6 +135,8 @@ and runs a balance check, surfacing a diagnostics warning on mismatch.
 - [x] JSON and CSV export
 - [x] Transparent theme option
 - [x] `NO_COLOR` monochrome fallback; colour profile degrades through Lip Gloss
+- [x] Seven chart styles (solid, area, box, quadrant, braille, ascii, graph)
+- [x] Solar area fill, source-mix stacked area, year heatmap and SOC arc
 - [ ] Empty, loading and error states on every screen (partial)
 
 ### M4 — verification and release

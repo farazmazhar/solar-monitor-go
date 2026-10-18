@@ -47,12 +47,12 @@ go build -o solar-monitor ./cmd/solar-monitor
 ```
 
 Useful flags: `--config PATH`, `--state-dir PATH`, `--theme solar-dark|transparent`,
-`--chart-style solid|box|braille`, `--no-motion`, `--init`, `--discover`,
+`--chart-style solid|area|box|quadrant|braille|ascii|graph`, `--no-motion`, `--init`, `--discover`,
 `--version`.
 
 `--dump` renders one frame with demo data and exits; `--dump-tab 0..6`,
-`--dump-history day|month|year`, `--dump-window day|auto` and
-`--dump-size 100x30` choose what to render. It is meant for screenshots,
+`--dump-history day|month|year`, `--dump-window day|auto`,
+`--dump-view power|mix` and `--dump-size 100x30` choose what to render. It is meant for screenshots,
 debugging and CI smoke checks.
 
 ## Configuration
@@ -77,7 +77,7 @@ history = "15m"
 [display]
 theme = "solar-dark"
 motion = true
-chart_style = "solid"  # solid | box | braille
+chart_style = "solid"  # solid | area | box | quadrant | braille | ascii | graph
 currency = "PKR"
 currency_symbol = "₨"
 co2_kg_per_kwh = 0.4
@@ -112,6 +112,7 @@ prunes raw JSON snapshots after 30 days by default.
 | `r` | refresh now |
 | `m` | toggle motion |
 | `x` | toggle the chart window between fixed day and fit samples |
+| `v` | toggle the day chart between power lines and the source-mix stack |
 | `t` | jump to today or the current period |
 | `s` `l` `g` `b` | toggle the Today chart series |
 | `h` `l` | previous / next period in History |
@@ -125,13 +126,14 @@ Mouse clicks switch tabs and tiles, move the chart cursor, and scroll lists.
 
 - **Live** — energy-flow diagram, live tiles with sparklines, a battery gauge
   and a day chart with time and power axes. The chart plots solar, total
-  consumption, grid and battery; `x` switches between a fixed 00:00–23:59
-  window and a fit-to-samples window.
+  consumption, grid and battery with an area fill under solar; `x` switches
+  between a fixed 00:00–23:59 window and a fit-to-samples window. `v` switches
+  to a stacked source-mix chart (solar / battery / grid feeding consumption).
 - **Today** — the same day chart with a summary panel, a cursor and per-series
   toggles.
 - **History** — day, month and year views. Day shows the same power chart for
-  the selected date; month and year show bordered bar charts with axes and
-  income/CO₂ summaries. `tab` cycles the mode and `h`/`l` step periods.
+  the selected date; month shows a bar chart; year shows a calendar heatmap of
+  daily generation. `tab` cycles the mode and `h`/`l` step periods.
 - **Battery** — SOC gauge, SOH, power, voltage, current, throughput and a 24 h
   SOC chart.
 - **PV** — per-string voltage, current, power and share.

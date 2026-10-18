@@ -53,14 +53,17 @@ is: one idea per panel, one blank line between panels.
 
 All charts are custom renderers in `internal/ui/chart.go`.
 
-- **Line charts** can be drawn in one of three styles, set with
+- **Line charts** can be drawn in one of seven styles, set with
   `display.chart_style`:
   - `solid` (default) — half-block glyphs (`▀ ▄ █`), two vertical sub-rows per
-    cell, thick continuous strokes.
-  - `box` — box-drawing glyphs (`─ │ ╱ ╲ ┼`), thin lines with real junctions;
-    reads as a clean step chart at low heights.
+    cell, thick continuous strokes, with an area fill under solar.
+  - `area` — as `solid` but with a denser (`▒`) generation fill.
+  - `box` — box-drawing glyphs (`─ │ ╱ ╲ ┼`), thin lines with real junctions.
+  - `quadrant` — quadrant blocks (`▖ ▗ ▘ ▝ ▚ ▞ █`) at 2×2 sub-cell resolution.
   - `braille` — the original 2×4 dot matrix, smooth but sparse.
-  All three draw a y axis, an x axis, a dashed zero line when the range crosses
+  - `ascii` — `- | / \ + *`, for minimal fonts; also the `NO_COLOR` fallback.
+  - `graph` — ntcharts' canvas line renderer, thin lines with rounded corners.
+  All styles draw a y axis, an x axis, a dashed zero line when the range crosses
   zero, and accept a cursor and any number of evenly distributed x labels.
 - **Day charts** share labels of `00:00`, `06:00`, `12:00`, `18:00` and `23:55`.
 - **Bar charts** use eighth-block columns with a y axis and a labelled x axis,
@@ -77,6 +80,31 @@ All charts are custom renderers in `internal/ui/chart.go`.
   the data.
 
 Today, History's day view and the Battery SOC chart are always fixed-day.
+
+### Area fill and source mix
+
+Under `solid` and `area`, the solar line is filled down to the zero baseline in
+a light shade, so the shape of the generation curve is visible even when the
+chart is shallow. Press `v` on Live, Today or History's day view to switch the
+same chart between:
+
+- **Power** — solar, consumption, grid and battery lines.
+- **Source mix** — a stacked area of solar, battery discharge and grid import,
+  bottom to top, with the stack totalling household consumption. This is the
+  clearest view of where the house power came from.
+
+### History year heatmap
+
+The History year view is a calendar heatmap: one row per month, one column pair
+per day, shaded from `░` to `█` by that day's generation. It fetches daily data
+for the twelve months of the selected year (paced at roughly two requests per
+second on the real API).
+
+### Battery arc
+
+The Battery screen draws SOC as a semicircular arc with the percentage in the
+middle, filled from left to right and coloured green/amber/red by level. The
+24-hour SOC chart below stays fixed-day.
 
 ## Live screen
 
@@ -144,6 +172,7 @@ chart more room.
 | `r` | refresh now |
 | `m` | toggle motion |
 | `x` | toggle the fixed-day / fit-samples chart window |
+| `v` | toggle the power lines / source-mix stacked area |
 | `t` | jump to today / current period |
 | `s l g b` | toggle Today series |
 | `e` | export JSON or CSV on History and Diagnostics |

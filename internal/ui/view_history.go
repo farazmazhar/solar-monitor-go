@@ -94,6 +94,9 @@ func (m *Model) renderHistoryDay(w, h, y int) []string {
 }
 
 func (m *Model) renderHistoryPeriod(w, h int) []string {
+	if m.historyMode == HistoryYear {
+		return m.renderYearHeatmap(w, h)
+	}
 	gen, cons, imp, exp, income, charged, discharged := m.historyTotals()
 	summary := []string{
 		"  " + m.th.Muted.Render("generated ") + m.th.Style(m.th.Solar).Render(fmtEnergy(gen)) +
@@ -147,6 +150,128 @@ func (m *Model) periodLabel() string {
 		return strconv.Itoa(m.yearAt.Year())
 	}
 	return m.monthAt.Format("January 2006")
+}
+
+// renderYearHeatmap draws one row per month, one column pair per day, shaded
+// by that day's generation. It is the year view.
+func (m *Model) renderYearHeatmap(w, h int) []string {
+	year := m.yearAt.Year()
+	gen, cons, imp, exp, income, _, _ := m.historyTotals()
+
+	var lines []string
+	if h >= 19 {
+		line1 := "  " + m.th.Muted.Render("generated ") + m.th.Style(m.th.Solar).Render(fmtEnergy(gen)) +
+			m.th.Muted.Render("     consumed ") + m.th.Value.Render(fmtEnergy(cons)) +
+			m.th.Muted.Render("     imported ") + m.th.Style(m.th.Import).Render(fmtEnergy(imp))
+		line2 := "  " + m.th.Muted.Render("exported ") + m.th.Style(m.th.Export).Render(fmtEnergy(exp)) +
+			m.th.Muted.Render("     income ") + m.th.Good.Render(fmtMoney(m.currencySymbol(), income)) +
+			m.th.Muted.Render("     CO₂ ") + m.th.Good.Render(fmtCO2(kwhToCO2(gen, m.cfg.Display.CO2KgPerKWh)))
+		lines = append(lines, clampText(line1, w), clampText(line2, w), "")
+	}
+
+	values := make(map[string]float64, len(m.yearDays))
+	for _, r := range m.yearDays {
+		if r.GeneratedKWh != nil {
+			values[r.Date.Format("2006-01-02")] = *r.GeneratedKWh
+		}
+	}
+	if len(values) == 0 {
+		msg := "loading daily data…"
+		if m.yearDaysErr != nil {
+			msg = m.yearDaysErr.Error()
+		}
+		lines = append(lines, wrapPanel("GENERATED · "+strconv.Itoa(year), []string{"  " + m.th.Muted.Render(msg)}, w, m.th.Faint, m.th.Accent, m.th.Faint)...)
+		return lines
+	}
+
+	maxValue := 0.0
+	for _, v := range values {
+		if v > maxValue {
+			maxValue = v
+		}
+	}
+	if maxValue <= 0 {
+		maxValue = 1
+	}
+
+	cellW := 2
+	if w < 72 {
+		cellW = 1
+	}
+	labelW := 5
+	avail := h - len(lines)
+	includeHeader := avail >= 16
+	includeLegend := avail >= 17
+
+	var content []string
+	if includeHeader {
+		row := make([]rune, labelW+31*cellW)
+		for i := range row {
+			row[i] = ' '
+		}
+		for d := 1; d <= 31; d += 5 {
+			pos := labelW + (d-1)*cellW
+			label := strconv.Itoa(d)
+			for i, r := range label {
+				if pos+i < len(row) {
+					row[pos+i] = r
+				}
+			}
+		}
+		content = append(content, m.th.Muted.Render(string(row)))
+	}
+
+	now := m.now()
+	for mo := time.January; mo <= time.December; mo++ {
+		var b strings.Builder
+		b.WriteString(m.th.Muted.Render((mo.String() + "   ")[:3] + "  "))
+		days := time.Date(year, mo+1, 0, 0, 0, 0, 0, now.Location()).Day()
+		for d := 1; d <= 31; d++ {
+			t := time.Date(year, mo, d, 0, 0, 0, 0, now.Location())
+			if d > days || t.After(now) {
+				b.WriteString(strings.Repeat(" ", cellW))
+				continue
+			}
+			shade := byteShade(values[t.Format("2006-01-02")], maxValue)
+			if shade == ' ' {
+				b.WriteString(strings.Repeat(" ", cellW))
+				continue
+			}
+			b.WriteString(m.th.Style(m.th.Solar).Render(strings.Repeat(string(shade), cellW)))
+		}
+		content = append(content, b.String())
+	}
+
+	if includeLegend {
+		legend := m.th.Muted.Render("     less ") +
+			m.th.Style(m.th.Solar).Render("░▒▓█") +
+			m.th.Muted.Render(" more")
+		content = append(content, legend)
+	}
+
+	panel := wrapPanel("GENERATED · "+strconv.Itoa(year), content, w, m.th.Faint, m.th.Accent, m.th.Faint)
+	if len(panel) > avail {
+		lines = append(lines, content...)
+	} else {
+		lines = append(lines, panel...)
+	}
+	return lines
+}
+
+func byteShade(v, max float64) rune {
+	if v <= 0 {
+		return ' '
+	}
+	switch {
+	case v >= max*0.75:
+		return '█'
+	case v >= max*0.5:
+		return '▓'
+	case v >= max*0.25:
+		return '▒'
+	default:
+		return '░'
+	}
 }
 
 func (m *Model) historyTotals() (gen, cons, imp, exp, income, charged, discharged *float64) {

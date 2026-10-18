@@ -162,3 +162,22 @@ junction merging, and `ChartBraille` keeps the original dot renderer.
 several series overlap take the first series' colour, so crossings can briefly
 hide a later series; the legend and cursor values carry that information. The
 golden frames encode the style, so a future style change is a deliberate update.
+
+## ADR-0013 — Chart style set, area fill, source mix, heatmap and SOC arc
+
+**Context.** Braille, solid, box and ntcharts graph lines all have different
+readability tradeoffs. Users also need to see generation shape, the source mix,
+a year at a glance and the battery level without reading numbers.
+
+**Decision.** Keep `solid` as the default and expose `area`, `box`, `quadrant`,
+`braille`, `ascii` and `graph` through `display.chart_style` and
+`--chart-style`. Solid/area fill the solar area down to the zero baseline.
+`v` switches the day chart to a stacked source-mix area. History's year view is
+a calendar heatmap; month keeps bars. The Battery screen uses a semicircular
+SOC arc above the detailed values.
+
+**Consequences.** The chart component now has one style switch plus optional
+fill, and the UI has one view switch. The year heatmap needs daily data, so year
+mode makes one `inverterMonth` call per month (paced), whereas month mode keeps
+its single call. Image-free rendering stays portable and dependency-light;
+`graph` adds `NimbleMarkets/ntcharts` for its line renderer.

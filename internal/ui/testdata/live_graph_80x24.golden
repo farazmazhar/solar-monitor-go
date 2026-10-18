@@ -1,0 +1,24 @@
+solar-monitor-go  Home Rooftop · S6-EH1P6K-L-PRO         DEMO   simulated  13:20
+ Live  Today  History  Battery  PV  Alarms  Diagnostics               Sun 18 Oct
+                            ╭─ PV ─────────────────╮                            
+                            │ 5.67 kW    2 strings │                            
+                            ╰──────────────────────╯                            
+                                        ▼                                       
+    ╭─ GRID ─────────────╮   ╭─ HOUSE ────────────╮   ╭─ BATTERY ──────────╮    
+    │ 3.22 kW     EXPORT │◄──│ 656 W    bkp 256 W │──►│ 62%    1.80 kW CHG │    
+    ╰────────────────────╯   ╰────────────────────╯   ╰────────────────────╯    
+                         backup 256 W   ·   smart 401 W                         
+SOLAR  5.67 kW      HOUSE  656 W        GRID  3.22 kW EXP   BATTERY  62%        
+today 25.9 kWh      bkp 256 W           in 3.5 · out 11.7   1.80 kW charging    
+                                                                                
+BATTERY ███████│█████████████░░░░░░░░░░░░░ 62%  1.80 kW charging                
+● solar 5.67 kW   ● consumption 656 W   ● grid 3.22 kW   ● battery 1.80 kW      
+╭─ POWER · FIXED DAY 00:00-23:59 ──────────────────────────────────────────────╮
+│  6.3kW                                 ╭─╮╭╮╭╴                               │
+│                                   ╭────╯ ╰╯╰╯                                │
+│  2.5kW                        ╭┬──┴┬─────────╴                               │
+│        ╶───────────────────┬──┴┴───┴─────────╴                               │
+│ -1.3kW ╶───────────────────╯                                                 │
+│        00:00          06:00             12:00            18:00          23:55│
+╰──────────────────────────────────────────────────────────────────────────────╯
+t today  ·  v mix  ·  x window  ·  m motion  ·  r refresh  ·  ? help  ·  q quit 

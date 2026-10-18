@@ -2,6 +2,7 @@ package ui
 
 import (
 	"image/color"
+	"os"
 	"strings"
 	"time"
 
@@ -19,7 +20,9 @@ func (m *Model) renderLive(w, h, y int) string {
 	var lines []string
 	lines = append(lines, renderFlow(w, flowH, m.snap, m.th)...)
 	lines = fitLines(lines, w, flowH)[:flowH]
-	lines = append(lines, "")
+	if h >= 24 {
+		lines = append(lines, "")
+	}
 
 	// At 24 rows the chart needs the space more than the tile sparklines do.
 	tileRows := 4
@@ -33,7 +36,7 @@ func (m *Model) renderLive(w, h, y int) string {
 	lines = append(lines, tiles...)
 	lines = append(lines, "")
 	lines = append(lines, m.renderGaugeCompact(w))
-	lines = append(lines, m.liveLegend(w))
+	lines = append(lines, m.chartLegend(w))
 
 	chartH := h - len(lines)
 	if chartH < 5 {
@@ -58,13 +61,42 @@ func (m *Model) windowTitle() string {
 
 // chartStyle resolves the configured line style.
 func (m *Model) chartStyle() ChartStyle {
-	switch strings.ToLower(strings.TrimSpace(m.cfg.Display.ChartStyle)) {
-	case "solid":
+	style := strings.ToLower(strings.TrimSpace(m.cfg.Display.ChartStyle))
+	if os.Getenv("NO_COLOR") != "" && (style == "" || style == "solid" || style == "area") {
+		return ChartASCII
+	}
+	switch style {
+	case "area":
 		return ChartSolid
+	case "box":
+		return ChartBox
 	case "braille":
 		return ChartBraille
+	case "quadrant":
+		return ChartQuadrant
+	case "ascii":
+		return ChartASCII
+	case "graph":
+		return ChartGraph
 	default:
-		return ChartBox
+		return ChartSolid
+	}
+}
+
+// chartFill reports whether the generation area should be shaded, and which
+// glyph to use for the fill.
+func (m *Model) chartFill() (bool, rune) {
+	if os.Getenv("NO_COLOR") != "" {
+		return false, ' '
+	}
+	style := strings.ToLower(strings.TrimSpace(m.cfg.Display.ChartStyle))
+	switch style {
+	case "area":
+		return true, '▒'
+	case "", "solid":
+		return true, '░'
+	default:
+		return false, ' '
 	}
 }
 
@@ -72,7 +104,11 @@ func (m *Model) chartStyle() ChartStyle {
 // and a cursor. It returns the rendered lines and the plot hit rectangle
 // relative to the block origin.
 func (m *Model) renderDayChart(w, h int, title string, samples []provider.Sample, day time.Time, enabled [4]bool, fixed, zero bool) ([]string, Rect) {
+	if m.chartView == ViewMix {
+		return m.renderMixChart(w, h, samples, day, fixed)
+	}
 	series := m.seriesFor(samples, enabled, fixed)
+	fill, fillGlyph := m.chartFill()
 	cursor := -1
 	xLabels := dayTimeLabels(day)
 	if fixed {
@@ -97,6 +133,9 @@ func (m *Model) renderDayChart(w, h int, title string, samples []provider.Sample
 		ShowXAxis:   true,
 		XLabels:     xLabels,
 		ZeroLine:    zero,
+		Fill:        fill,
+		FillSeries:  0,
+		FillGlyph:   fillGlyph,
 	})
 }
 
@@ -204,6 +243,14 @@ func (m *Model) renderTilesNarrow(tiles []tile, w, y int) []string {
 		out = append(out, padRight(l1.String(), w), padRight(l2.String(), w))
 	}
 	return out
+}
+
+// chartLegend dispatches to the power or source-mix key.
+func (m *Model) chartLegend(w int) string {
+	if m.chartView == ViewMix {
+		return m.mixLegend(w)
+	}
+	return m.liveLegend(w)
 }
 
 // liveLegend is the colour key above the Live chart.

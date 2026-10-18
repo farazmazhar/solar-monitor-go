@@ -38,6 +38,14 @@ const (
 	HistoryYear
 )
 
+// ChartView selects the main day chart.
+type ChartView int
+
+const (
+	ViewPower ChartView = iota
+	ViewMix
+)
+
 // AlarmFilter selects which alarms are listed.
 type AlarmFilter int
 
@@ -67,6 +75,7 @@ type Options struct {
 	DemoFactory    func() provider.Source
 	InitialTab     Tab
 	InitialHistory HistoryMode
+	InitialView    ChartView
 	SeedSnapshot   *provider.Snapshot
 	SeedSamples    []provider.Sample
 	Stats          func() (StoreStats, bool)
@@ -116,6 +125,10 @@ type Model struct {
 	yearAt      time.Time
 	yearErr     error
 
+	yearDays    []provider.DayEnergy
+	yearDaysAt  int
+	yearDaysErr error
+
 	alarms      []provider.Alarm
 	alarmsAt    time.Time
 	alarmsErr   error
@@ -124,6 +137,7 @@ type Model struct {
 
 	staticDay bool
 	cursor    time.Time
+	chartView ChartView
 	series    [4]bool
 	pvScroll  int
 	rawScroll int
@@ -167,6 +181,11 @@ type (
 		rows []provider.MonthEnergy
 		err  error
 	}
+	yearDaysMsg struct {
+		year int
+		rows []provider.DayEnergy
+		err  error
+	}
 	alarmsMsg struct {
 		at     time.Time
 		alarms []provider.Alarm
@@ -203,6 +222,7 @@ func New(opts Options) *Model {
 		motion:      opts.Config.Display.Motion,
 		staticDay:   opts.Config.Display.DayWindow != "auto",
 		historyMode: opts.InitialHistory,
+		chartView:   opts.InitialView,
 		alarmFilter: AlarmRecent,
 		clock:       time.Now,
 		stats:       opts.Stats,
@@ -307,6 +327,14 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.year = msg.rows
 		m.yearAt = time.Date(msg.year, 1, 1, 0, 0, 0, 0, time.Local)
 		m.yearErr = msg.err
+		return m, nil
+
+	case yearDaysMsg:
+		if msg.year == m.yearAt.Year() {
+			m.yearDays = msg.rows
+			m.yearDaysAt = msg.year
+			m.yearDaysErr = msg.err
+		}
 		return m, nil
 
 	case alarmsMsg:
@@ -463,6 +491,15 @@ func (m *Model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 			m.notice = "graph window: fit samples"
 		}
 		return m, nil
+	case "v":
+		if m.chartView == ViewPower {
+			m.chartView = ViewMix
+			m.notice = "chart: source mix"
+		} else {
+			m.chartView = ViewPower
+			m.notice = "chart: power"
+		}
+		return m, nil
 	case "t":
 		m.day = m.now()
 		m.cursor = time.Time{}
@@ -473,7 +510,11 @@ func (m *Model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 			if m.historyMode == HistoryDay {
 				return m, m.fetchDayCmd(m.historyDay)
 			}
-			return m, tea.Batch(m.fetchMonthCmd(m.monthAt), m.fetchYearCmd(m.yearAt.Year()))
+			cmds := []tea.Cmd{m.fetchMonthCmd(m.monthAt), m.fetchYearCmd(m.yearAt.Year())}
+			if m.historyMode == HistoryYear {
+				cmds = append(cmds, m.fetchYearDaysCmd(m.yearAt.Year()))
+			}
+			return m, tea.Batch(cmds...)
 		}
 		return m, m.fetchTodayCmd()
 	case "tab":
@@ -481,8 +522,13 @@ func (m *Model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		case TabHistory:
 			m.historyMode = (m.historyMode + 1) % 3
 			m.cursor = time.Time{}
-			if m.historyMode == HistoryDay {
+			switch m.historyMode {
+			case HistoryDay:
 				return m, m.fetchDayCmd(m.historyDay)
+			case HistoryMonth:
+				return m, m.fetchMonthCmd(m.monthAt)
+			case HistoryYear:
+				return m, tea.Batch(m.fetchYearCmd(m.yearAt.Year()), m.fetchYearDaysCmd(m.yearAt.Year()))
 			}
 		case TabAlarms:
 			m.alarmFilter = (m.alarmFilter + 1) % 3
@@ -523,7 +569,7 @@ func (m *Model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 				return m, m.fetchMonthCmd(m.monthAt)
 			default:
 				m.yearAt = m.yearAt.AddDate(-1, 0, 0)
-				return m, m.fetchYearCmd(m.yearAt.Year())
+				return m, tea.Batch(m.fetchYearCmd(m.yearAt.Year()), m.fetchYearDaysCmd(m.yearAt.Year()))
 			}
 		case "right", "l":
 			switch m.historyMode {
@@ -535,7 +581,7 @@ func (m *Model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 				return m, m.fetchMonthCmd(m.monthAt)
 			default:
 				m.yearAt = m.yearAt.AddDate(1, 0, 0)
-				return m, m.fetchYearCmd(m.yearAt.Year())
+				return m, tea.Batch(m.fetchYearCmd(m.yearAt.Year()), m.fetchYearDaysCmd(m.yearAt.Year()))
 			}
 		case "e":
 			return m, m.exportHistoryCmd()
@@ -654,9 +700,14 @@ func (m *Model) switchTab(t Tab) tea.Cmd {
 				return m.fetchMonthCmd(m.monthAt)
 			}
 		case HistoryYear:
+			var cmds []tea.Cmd
 			if len(m.year) == 0 && m.yearErr == nil {
-				return m.fetchYearCmd(m.yearAt.Year())
+				cmds = append(cmds, m.fetchYearCmd(m.yearAt.Year()))
 			}
+			if m.yearDaysAt != m.yearAt.Year() {
+				cmds = append(cmds, m.fetchYearDaysCmd(m.yearAt.Year()))
+			}
+			return tea.Batch(cmds...)
 		}
 	case TabAlarms:
 		if time.Since(m.alarmsAt) > m.cfg.AlarmsInterval() {
@@ -862,6 +913,40 @@ func (m *Model) fetchYearCmd(year int) tea.Cmd {
 		defer cancel()
 		rows, err := src.Year(ctx, year)
 		return yearMsg{year: year, rows: rows, err: err}
+	}
+}
+
+// fetchYearDaysCmd fills the calendar heatmap by asking for each month of the
+// year. The real API allows two requests per second, so calls are paced.
+func (m *Model) fetchYearDaysCmd(year int) tea.Cmd {
+	src := m.src
+	if src == nil {
+		return nil
+	}
+	demo := m.demo
+	return func() tea.Msg {
+		ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
+		defer cancel()
+		var rows []provider.DayEnergy
+		var lastErr error
+		for mo := time.January; mo <= time.December; mo++ {
+			if !demo && mo > time.January {
+				time.Sleep(550 * time.Millisecond)
+			}
+			if ctx.Err() != nil {
+				break
+			}
+			r, err := src.Month(ctx, year, mo)
+			if err != nil {
+				lastErr = err
+				continue
+			}
+			rows = append(rows, r...)
+		}
+		if len(rows) == 0 && lastErr != nil {
+			return yearDaysMsg{year: year, err: lastErr}
+		}
+		return yearDaysMsg{year: year, rows: rows}
 	}
 }
 

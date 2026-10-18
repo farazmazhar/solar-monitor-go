@@ -1,5 +1,4 @@
                                                                                 
-                                                                                
         ╭─ help ───────────────────────────────────────────────────────╮        
         │ Keys                                                         │        
         │                                                              │        
@@ -10,6 +9,7 @@
         │   r                 refresh now                              │        
         │   m                 toggle motion                            │        
         │   x                 toggle fixed-day / fit-samples chart wi… │        
+        │   v                 toggle power lines / source-mix stacked… │        
         │   t                 jump to today / current period           │        
         │   s l g b           toggle Today series (solar, load, grid,… │        
         │   h l               previous / next period in History        │        

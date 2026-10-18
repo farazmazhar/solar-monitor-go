@@ -65,6 +65,9 @@ func (m *Model) cursorLine(w int) string {
 
 // dayLegend is the series key and toggle hint above the Today chart.
 func (m *Model) dayLegend(w int) string {
+	if m.chartView == ViewMix {
+		return m.mixLegend(w)
+	}
 	entries := []struct {
 		key   string
 		name  string

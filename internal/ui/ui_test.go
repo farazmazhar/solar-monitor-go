@@ -66,6 +66,14 @@ func testModel(t *testing.T, w, h int, tab Tab, help bool, history HistoryMode, 
 		m.year = year
 		m.yearAt = time.Date(2026, 1, 1, 0, 0, 0, 0, time.Local)
 	}
+	var yearDays []provider.DayEnergy
+	for mo := time.January; mo <= time.December; mo++ {
+		if rows, err := src.Month(ctx, 2026, mo); err == nil {
+			yearDays = append(yearDays, rows...)
+		}
+	}
+	m.yearDays = yearDays
+	m.yearDaysAt = 2026
 	if alarms, err := src.Alarms(ctx, testClock.AddDate(0, 0, -30), testClock); err == nil {
 		m.alarms = alarms
 		m.alarmsAt = testClock
@@ -98,21 +106,25 @@ func TestGoldenFrames(t *testing.T) {
 		history HistoryMode
 		window  string
 		style   string
+		view    ChartView
 	}{
-		{"live_80x24", 80, 24, TabLive, false, HistoryDay, "day", "solid"},
-		{"today_80x24", 80, 24, TabToday, false, HistoryDay, "day", "solid"},
-		{"history_day_80x24", 80, 24, TabHistory, false, HistoryDay, "day", "solid"},
-		{"history_month_80x24", 80, 24, TabHistory, false, HistoryMonth, "day", "solid"},
-		{"history_year_80x24", 80, 24, TabHistory, false, HistoryYear, "day", "solid"},
-		{"battery_80x24", 80, 24, TabBattery, false, HistoryDay, "day", "solid"},
-		{"pv_80x24", 80, 24, TabPV, false, HistoryDay, "day", "solid"},
-		{"alarms_80x24", 80, 24, TabAlarms, false, HistoryDay, "day", "solid"},
-		{"diagnostics_80x24", 80, 24, TabDiagnostics, false, HistoryDay, "day", "solid"},
-		{"live_60x20", 60, 20, TabLive, false, HistoryDay, "day", "solid"},
-		{"live_100x30", 100, 30, TabLive, false, HistoryDay, "day", "solid"},
-		{"live_auto_80x24", 80, 24, TabLive, false, HistoryDay, "auto", "solid"},
-		{"live_box_80x24", 80, 24, TabLive, false, HistoryDay, "day", "box"},
-		{"help_80x24", 80, 24, TabLive, true, HistoryDay, "day", "solid"},
+		{"live_80x24", 80, 24, TabLive, false, HistoryDay, "day", "solid", ViewPower},
+		{"today_80x24", 80, 24, TabToday, false, HistoryDay, "day", "solid", ViewPower},
+		{"history_day_80x24", 80, 24, TabHistory, false, HistoryDay, "day", "solid", ViewPower},
+		{"history_month_80x24", 80, 24, TabHistory, false, HistoryMonth, "day", "solid", ViewPower},
+		{"history_year_80x24", 80, 24, TabHistory, false, HistoryYear, "day", "solid", ViewPower},
+		{"battery_80x24", 80, 24, TabBattery, false, HistoryDay, "day", "solid", ViewPower},
+		{"pv_80x24", 80, 24, TabPV, false, HistoryDay, "day", "solid", ViewPower},
+		{"alarms_80x24", 80, 24, TabAlarms, false, HistoryDay, "day", "solid", ViewPower},
+		{"diagnostics_80x24", 80, 24, TabDiagnostics, false, HistoryDay, "day", "solid", ViewPower},
+		{"live_60x20", 60, 20, TabLive, false, HistoryDay, "day", "solid", ViewPower},
+		{"live_100x30", 100, 30, TabLive, false, HistoryDay, "day", "solid", ViewPower},
+		{"live_auto_80x24", 80, 24, TabLive, false, HistoryDay, "auto", "solid", ViewPower},
+		{"live_box_80x24", 80, 24, TabLive, false, HistoryDay, "day", "box", ViewPower},
+		{"live_graph_80x24", 80, 24, TabLive, false, HistoryDay, "day", "graph", ViewPower},
+		{"live_mix_80x24", 80, 24, TabLive, false, HistoryDay, "day", "solid", ViewMix},
+		{"today_mix_80x24", 80, 24, TabToday, false, HistoryDay, "day", "solid", ViewMix},
+		{"help_80x24", 80, 24, TabLive, true, HistoryDay, "day", "solid", ViewPower},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -120,6 +132,7 @@ func TestGoldenFrames(t *testing.T) {
 			if tc.style != "" {
 				m.cfg.Display.ChartStyle = tc.style
 			}
+			m.chartView = tc.view
 			got := renderFrame(t, m)
 			path := filepath.Join("testdata", tc.name+".golden")
 			if *update {

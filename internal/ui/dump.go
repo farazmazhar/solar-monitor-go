@@ -10,11 +10,11 @@ import (
 
 // DumpFrame renders one frame of the UI with live data fetched synchronously.
 // It backs the --dump debugging flag and does not start Bubble Tea.
-func DumpFrame(src provider.Source, cfg config.Config, paths config.Paths, version string, demo bool, tab Tab, history HistoryMode, w, h int) (string, error) {
+func DumpFrame(src provider.Source, cfg config.Config, paths config.Paths, version string, demo bool, tab Tab, history HistoryMode, view ChartView, w, h int) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	m := New(Options{Config: cfg, Paths: paths, Source: src, Demo: demo, Version: version, InitialTab: tab, InitialHistory: history})
+	m := New(Options{Config: cfg, Paths: paths, Source: src, Demo: demo, Version: version, InitialTab: tab, InitialHistory: history, InitialView: view})
 	m.width, m.height = w, h
 	m.th = NewTheme(cfg.Display.Theme)
 
@@ -38,6 +38,17 @@ func DumpFrame(src provider.Source, cfg config.Config, paths config.Paths, versi
 		m.year = rows
 		m.yearAt = time.Date(now.Year(), 1, 1, 0, 0, 0, 0, now.Location())
 	}
+	var yearDays []provider.DayEnergy
+	for mo := time.January; mo <= time.December; mo++ {
+		if !demo && mo > time.January {
+			time.Sleep(550 * time.Millisecond)
+		}
+		if rows, err := src.Month(ctx, now.Year(), mo); err == nil {
+			yearDays = append(yearDays, rows...)
+		}
+	}
+	m.yearDays = yearDays
+	m.yearDaysAt = now.Year()
 	if alarms, err := src.Alarms(ctx, now.AddDate(0, 0, -30), now); err == nil {
 		m.alarms = alarms
 		m.alarmsAt = now

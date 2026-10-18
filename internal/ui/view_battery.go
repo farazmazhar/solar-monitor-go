@@ -1,8 +1,11 @@
 package ui
 
 import (
+	"image/color"
 	"math"
 	"strings"
+
+	"charm.land/lipgloss/v2"
 
 	"github.com/farazmazhar/solar-monitor-go/internal/provider"
 )
@@ -12,11 +15,7 @@ func (m *Model) renderBattery(w, h, y int) string {
 	title := m.th.Bold(m.th.Accent).Render("BATTERY") + "  " + m.th.Muted.Render(m.snap.Model)
 	lines = append(lines, title)
 
-	soc := "—"
 	direction := m.th.Muted.Render("no battery data")
-	if m.snap.SOC != nil {
-		soc = fmtPct(m.snap.SOC)
-	}
 	switch {
 	case m.snap.BatteryW == nil:
 	case *m.snap.BatteryW > 1:
@@ -26,10 +25,8 @@ func (m *Model) renderBattery(w, h, y int) string {
 	default:
 		direction = m.th.Muted.Render("idle")
 	}
-	lines = append(lines, m.th.Bold(m.th.Battery).Render(soc)+"  "+direction+"   "+m.th.Muted.Render("SOH "+fmtPct(m.snap.SOH)))
-
-	gauge := m.bigGauge(w)
-	lines = append(lines, gauge...)
+	lines = append(lines, m.renderSOCArc(w)...)
+	lines = append(lines, "  "+direction+"   "+m.th.Muted.Render("SOH "+fmtPct(m.snap.SOH)))
 
 	rows := [][2]string{
 		{"power", fmtPower(m.snap.BatteryW)},
@@ -84,39 +81,95 @@ func (m *Model) renderBattery(w, h, y int) string {
 	return strings.Join(fitLines(lines, w, h), "\n")
 }
 
-func (m *Model) bigGauge(w int) []string {
-	cells := clamp(w-8, 20, 72)
-	filled := 0
-	if m.snap.SOC != nil {
-		filled = clamp(int(math.Round(*m.snap.SOC/100*float64(cells))), 0, cells)
+// renderSOCArc draws the state of charge as a half-donut with the percentage
+// in the middle.
+func (m *Model) renderSOCArc(w int) []string {
+	rows := 5
+	cols := min(w, 41)
+	if cols < 20 {
+		cols = 20
 	}
-	color := m.th.Battery
+	soc := 0.0
+	have := false
 	if m.snap.SOC != nil {
+		soc = *m.snap.SOC
+		have = true
+	}
+	gaugeColor := m.th.Battery
+	if have {
 		switch {
-		case *m.snap.SOC < 20:
-			color = m.th.Danger
-		case *m.snap.SOC < 50:
-			color = m.th.Warning
+		case soc < 20:
+			gaugeColor = m.th.Danger
+		case soc < 50:
+			gaugeColor = m.th.Warning
 		default:
-			color = m.th.Green
+			gaugeColor = m.th.Green
 		}
 	}
-	reserve := -1
-	if m.snap.ReserveSOC != nil {
-		reserve = clamp(int(math.Round(*m.snap.ReserveSOC/100*float64(cells))), 0, cells-1)
+
+	type cell struct {
+		r rune
+		c color.Color
 	}
-	var bar strings.Builder
-	for i := 0; i < cells; i++ {
-		switch {
-		case i == reserve:
-			bar.WriteString(m.th.Muted.Render("│"))
-		case i < filled:
-			bar.WriteString(m.th.Style(color).Render("█"))
-		default:
-			bar.WriteString(m.th.Style(color).Render("░"))
+	grid := make([][]cell, rows)
+	for y := range grid {
+		grid[y] = make([]cell, cols)
+	}
+	cx := float64(cols-1) / 2
+	cy := float64(rows - 1)
+	rx := float64(cols-1) / 2
+	ry := float64(rows - 1)
+	for y := 0; y < rows; y++ {
+		for x := 0; x < cols; x++ {
+			nx := (float64(x) - cx) / rx
+			ny := (cy - float64(y)) / ry
+			if ny < -0.1 {
+				continue
+			}
+			if math.Abs(math.Hypot(nx, ny)-1) > 0.20 {
+				continue
+			}
+			angle := math.Atan2(ny, nx)
+			p := (math.Pi - angle) / math.Pi
+			if p < 0 {
+				p = 0
+			}
+			if p > 1 {
+				p = 1
+			}
+			if have && p <= soc/100 {
+				grid[y][x] = cell{r: '█', c: gaugeColor}
+			} else {
+				grid[y][x] = cell{r: '░', c: m.th.Faint}
+			}
 		}
 	}
-	return []string{bar.String()}
+
+	pct := fmtPct(m.snap.SOC)
+	textRow := rows / 2
+	start := (cols - len(pct)) / 2
+	for i, r := range pct {
+		if start+i >= 0 && start+i < cols {
+			grid[textRow][start+i] = cell{r: r, c: m.th.Fg}
+		}
+	}
+
+	lines := make([]string, rows)
+	for y := 0; y < rows; y++ {
+		var b strings.Builder
+		for x := 0; x < cols; x++ {
+			cl := grid[y][x]
+			if cl.r == 0 {
+				b.WriteString(" ")
+			} else if cl.c != nil {
+				b.WriteString(lipgloss.NewStyle().Foreground(cl.c).Render(string(cl.r)))
+			} else {
+				b.WriteRune(cl.r)
+			}
+		}
+		lines[y] = centerText(b.String(), w)
+	}
+	return lines
 }
 
 func (m *Model) socSeries() []LineSeries {

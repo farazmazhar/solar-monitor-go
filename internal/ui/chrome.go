@@ -130,11 +130,14 @@ func (m *Model) footerKeys() string {
 	pairs := [][2]string{{"1-7", "views"}, {"r", "refresh"}, {"?", "help"}, {"q", "quit"}}
 	switch m.tab {
 	case TabLive:
-		pairs = [][2]string{{"t", "today"}, {"x", "window"}, {"m", "motion"}, {"r", "refresh"}, {"?", "help"}, {"q", "quit"}}
+		pairs = [][2]string{{"t", "today"}, {"v", "mix"}, {"x", "window"}, {"m", "motion"}, {"r", "refresh"}, {"?", "help"}, {"q", "quit"}}
 	case TabToday:
-		pairs = [][2]string{{"→", "cursor"}, {"s l g b", "series"}, {"t", "today"}, {"r", "refresh"}, {"?", "help"}, {"q", "quit"}}
+		pairs = [][2]string{{"→", "cursor"}, {"s l g b", "series"}, {"v", "mix"}, {"t", "today"}, {"r", "refresh"}, {"?", "help"}, {"q", "quit"}}
 	case TabHistory:
 		pairs = [][2]string{{"tab", "day/month/year"}, {"h l", "period"}, {"t", "now"}, {"e", "export"}, {"?", "help"}, {"q", "quit"}}
+		if m.historyMode == HistoryDay {
+			pairs = append([][2]string{{"tab", "day/month/year"}, {"h l", "period"}, {"v", "mix"}}, pairs[2:]...)
+		}
 	case TabBattery:
 		pairs = [][2]string{{"→", "cursor"}, {"t", "today"}, {"r", "refresh"}, {"?", "help"}, {"q", "quit"}}
 	case TabPV:
@@ -210,6 +213,7 @@ func (m *Model) renderHelp(w, h int) string {
 		{"r", "refresh now"},
 		{"m", "toggle motion"},
 		{"x", "toggle fixed-day / fit-samples chart window"},
+		{"v", "toggle power lines / source-mix stacked area"},
 		{"t", "jump to today / current period"},
 		{"s l g b", "toggle Today series (solar, load, grid, battery)"},
 		{"h l", "previous / next period in History"},

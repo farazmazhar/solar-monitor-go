@@ -1,0 +1,24 @@
+solar-monitor-go  Home Rooftop · S6-EH1P6K-L-PRO         DEMO   simulated  13:20
+ Live  Today  History  Battery  PV  Alarms  Diagnostics               Sun 18 Oct
+TODAY  Sun 18 Oct 2026                                     peak 5.91 kW at 13:05
+                                                                                
+╭─ SUMMARY ────────────────────────────────────────────────────────────────────╮
+│  generated 25.9 kWh     consumed 7.9 kWh                                     │
+│  imported 3.5 kWh     exported 11.7 kWh     battery +9.9 kWh / -0.0 kWh      │
+│  income ₨ 700.20     CO₂ 10.4 kg     temperature 41°C                        │
+╰──────────────────────────────────────────────────────────────────────────────╯
+                                                                                
+● solar 656 W   ● battery 0 W   ● grid 0 W   → consumption 656 W                
+13:20   solar 5.67 kW   consumption 656 W   grid 3.22 kW   battery 1.80 kW      
+╭─ SOURCE MIX · FIXED DAY 00:00-23:59 ─────────────────────────────────────────╮
+│  1.1kW                                                                       │
+│                          ▒ ██                                                │
+│                          ▒█████                                              │
+│                       ▒▒▒▒██████ █       █ ██                                │
+│   542W   ▒  ▒ ▒  ▒  ▒ ▒▒▒▒▒███████ ██ ████████                               │
+│        ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒██████████████████                               │
+│        ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒██████████████████                               │
+│      0 ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒██████████████████                               │
+│        00:00          06:00             12:00            18:00          23:55│
+╰──────────────────────────────────────────────────────────────────────────────╯
+→ cursor  ·  s l g b series  ·  v mix  ·  t today  ·  r refresh  ·  ? help  ·  …

@@ -643,12 +643,6 @@ func powerField(m map[string]any, candidates ...candidate) *float64 {
 		if unit == "" {
 			unit = c.defaultUnit
 		}
-		// The day chart rows sometimes carry watts while the unit field (or
-		// our default) says kW. A home inverter never reaches 100 kW, so a
-		// value that large is safer read as watts.
-		if strings.EqualFold(unit, "kW") && math.Abs(f) >= 100 {
-			unit = "W"
-		}
 		return provider.Float(scalePower(f, unit))
 	}
 	return nil

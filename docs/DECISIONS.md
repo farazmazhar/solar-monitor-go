@@ -155,7 +155,8 @@ the dots read as broken dashes and were hard to follow at a glance.
 **Decision.** `LineOptions.Style` defaults to `ChartSolid`, which fills each
 column with the half-block range its samples cover (`▀`, `▄`, `█`). This gives
 two vertical sub-rows per cell, keeps steep changes connected, and still lets
-each series keep its colour. `ChartBraille` remains implemented as an option.
+each series keep its colour. `ChartBox` offers thin box-drawing lines with
+junction merging, and `ChartBraille` keeps the original dot renderer.
 
 **Consequences.** Lines look solid and readable in shallow charts. Cells where
 several series overlap take the first series' colour, so crossings can briefly

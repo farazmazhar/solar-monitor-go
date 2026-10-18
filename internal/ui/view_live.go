@@ -56,6 +56,18 @@ func (m *Model) windowTitle() string {
 	return "FIT SAMPLES"
 }
 
+// chartStyle resolves the configured line style.
+func (m *Model) chartStyle() ChartStyle {
+	switch strings.ToLower(strings.TrimSpace(m.cfg.Display.ChartStyle)) {
+	case "solid":
+		return ChartSolid
+	case "braille":
+		return ChartBraille
+	default:
+		return ChartBox
+	}
+}
+
 // renderDayChart draws the shared day chart: four power series, axes, border
 // and a cursor. It returns the rendered lines and the plot hit rectangle
 // relative to the block origin.
@@ -75,6 +87,7 @@ func (m *Model) renderDayChart(w, h int, title string, samples []provider.Sample
 		Border:      true,
 		BorderColor: m.th.Faint,
 		TitleColor:  m.th.Accent,
+		Style:       m.chartStyle(),
 		Series:      series,
 		Cursor:      cursor,
 		CursorColor: m.th.Fg,

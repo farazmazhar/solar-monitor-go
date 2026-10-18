@@ -47,7 +47,8 @@ go build -o solar-monitor ./cmd/solar-monitor
 ```
 
 Useful flags: `--config PATH`, `--state-dir PATH`, `--theme solar-dark|transparent`,
-`--no-motion`, `--init`, `--discover`, `--version`.
+`--chart-style solid|box|braille`, `--no-motion`, `--init`, `--discover`,
+`--version`.
 
 `--dump` renders one frame with demo data and exits; `--dump-tab 0..6`,
 `--dump-history day|month|year`, `--dump-window day|auto` and
@@ -76,6 +77,7 @@ history = "15m"
 [display]
 theme = "solar-dark"
 motion = true
+chart_style = "solid"  # solid | box | braille
 currency = "PKR"
 currency_symbol = "₨"
 co2_kg_per_kwh = 0.4

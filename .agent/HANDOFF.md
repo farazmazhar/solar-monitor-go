@@ -23,7 +23,8 @@ make discover        # needs credentials in ~/.config/solar-monitor/config.toml
 - The SolisCloud client, config import, SQLite store and monitor service are
   implemented and unit tested.
 - Charts now draw solid half-block lines (readable at shallow heights) with y
-  and x axes and a titled border everywhere. The Live chart
+  and x axes and a titled border everywhere. `display.chart_style` and
+  `--chart-style` choose solid (default), box or braille. The Live chart
   plots solar, total consumption, grid and battery over a fixed 00:00-23:59
   window by default; `x` (or `display.day_window = "auto"`) switches to
   fit-to-samples. History gained a day mode.

@@ -42,6 +42,7 @@ func main() {
 		dumpWindow = flag.String("dump-window", "day", "live chart window for --dump: day or auto")
 		dumpSize   = flag.String("dump-size", "80x24", "terminal size for --dump, e.g. 100x30")
 		themeFlag  = flag.String("theme", "", "override the theme (solar-dark or transparent)")
+		styleFlag  = flag.String("chart-style", "", "override the chart style (box, solid or braille)")
 		noMotion   = flag.Bool("no-motion", false, "disable animation")
 		showVer    = flag.Bool("version", false, "print the version and exit")
 	)
@@ -72,6 +73,9 @@ func main() {
 	cfg := res.Config
 	if *themeFlag != "" {
 		cfg.Display.Theme = *themeFlag
+	}
+	if *styleFlag != "" {
+		cfg.Display.ChartStyle = *styleFlag
 	}
 	if *noMotion {
 		cfg.Display.Motion = false

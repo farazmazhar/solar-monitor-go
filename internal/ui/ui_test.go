@@ -97,24 +97,29 @@ func TestGoldenFrames(t *testing.T) {
 		help    bool
 		history HistoryMode
 		window  string
+		style   string
 	}{
-		{"live_80x24", 80, 24, TabLive, false, HistoryDay, "day"},
-		{"today_80x24", 80, 24, TabToday, false, HistoryDay, "day"},
-		{"history_day_80x24", 80, 24, TabHistory, false, HistoryDay, "day"},
-		{"history_month_80x24", 80, 24, TabHistory, false, HistoryMonth, "day"},
-		{"history_year_80x24", 80, 24, TabHistory, false, HistoryYear, "day"},
-		{"battery_80x24", 80, 24, TabBattery, false, HistoryDay, "day"},
-		{"pv_80x24", 80, 24, TabPV, false, HistoryDay, "day"},
-		{"alarms_80x24", 80, 24, TabAlarms, false, HistoryDay, "day"},
-		{"diagnostics_80x24", 80, 24, TabDiagnostics, false, HistoryDay, "day"},
-		{"live_60x20", 60, 20, TabLive, false, HistoryDay, "day"},
-		{"live_100x30", 100, 30, TabLive, false, HistoryDay, "day"},
-		{"live_auto_80x24", 80, 24, TabLive, false, HistoryDay, "auto"},
-		{"help_80x24", 80, 24, TabLive, true, HistoryDay, "day"},
+		{"live_80x24", 80, 24, TabLive, false, HistoryDay, "day", "solid"},
+		{"today_80x24", 80, 24, TabToday, false, HistoryDay, "day", "solid"},
+		{"history_day_80x24", 80, 24, TabHistory, false, HistoryDay, "day", "solid"},
+		{"history_month_80x24", 80, 24, TabHistory, false, HistoryMonth, "day", "solid"},
+		{"history_year_80x24", 80, 24, TabHistory, false, HistoryYear, "day", "solid"},
+		{"battery_80x24", 80, 24, TabBattery, false, HistoryDay, "day", "solid"},
+		{"pv_80x24", 80, 24, TabPV, false, HistoryDay, "day", "solid"},
+		{"alarms_80x24", 80, 24, TabAlarms, false, HistoryDay, "day", "solid"},
+		{"diagnostics_80x24", 80, 24, TabDiagnostics, false, HistoryDay, "day", "solid"},
+		{"live_60x20", 60, 20, TabLive, false, HistoryDay, "day", "solid"},
+		{"live_100x30", 100, 30, TabLive, false, HistoryDay, "day", "solid"},
+		{"live_auto_80x24", 80, 24, TabLive, false, HistoryDay, "auto", "solid"},
+		{"live_box_80x24", 80, 24, TabLive, false, HistoryDay, "day", "box"},
+		{"help_80x24", 80, 24, TabLive, true, HistoryDay, "day", "solid"},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			m := testModel(t, tc.w, tc.h, tc.tab, tc.help, tc.history, tc.window)
+			if tc.style != "" {
+				m.cfg.Display.ChartStyle = tc.style
+			}
 			got := renderFrame(t, m)
 			path := filepath.Join("testdata", tc.name+".golden")
 			if *update {

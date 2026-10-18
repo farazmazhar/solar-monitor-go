@@ -67,6 +67,7 @@ func (m *Model) renderBattery(w, h, y int) string {
 			Width: w, Height: chartH,
 			Title: "STATE OF CHARGE · FIXED DAY 00:00-23:59", Border: true,
 			BorderColor: m.th.Faint, TitleColor: m.th.Accent,
+			Style:  m.chartStyle(),
 			Series: []LineSeries{{Name: "soc", Color: m.th.Battery, Values: soc}},
 			Cursor: m.cursorSlot(m.day), CursorColor: m.th.Fg, Dim: m.th.Faint,
 			ShowYAxis: true, ShowXAxis: true, MinY: provider.Float(0), MaxY: provider.Float(100),

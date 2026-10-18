@@ -20,9 +20,9 @@ var brailleBits = [4][2]rune{
 }
 
 type chartCell struct {
-	bits     rune  // braille dots, when the style is braille
-	r        rune  // explicit glyph, e.g. the cursor
-	halves   uint8 // solid style: bit 1 = top half, bit 2 = bottom half
+	bits     uint16 // braille dots or box-drawing direction bits
+	r        rune   // explicit glyph, e.g. the cursor
+	halves   uint8  // solid style: bit 1 = top half, bit 2 = bottom half
 	color    color.Color
 	priority int
 }
@@ -39,8 +39,10 @@ type LineSeries struct {
 type ChartStyle int
 
 const (
-	// ChartSolid connects points with box-drawing lines, which read as solid.
+	// ChartSolid connects points with half-block lines, which read as solid.
 	ChartSolid ChartStyle = iota
+	// ChartBox connects points with box-drawing lines and junctions.
+	ChartBox
 	// ChartBraille draws the denser braille pixel graph.
 	ChartBraille
 )
@@ -148,9 +150,12 @@ func RenderLine(o LineOptions) ([]string, Rect) {
 	}
 
 	cells := make(map[[2]int]chartCell, plotW*plotH)
-	if o.Style == ChartBraille {
+	switch o.Style {
+	case ChartBraille:
 		plotBraille(cells, o, minY, maxY, plotW, plotH, n)
-	} else {
+	case ChartBox:
+		plotBox(cells, o, minY, maxY, plotW, plotH, n)
+	default:
 		plotSolid(cells, o, minY, maxY, plotW, plotH, n)
 	}
 
@@ -216,7 +221,9 @@ func RenderLine(o LineOptions) ([]string, Rect) {
 			r := cell.r
 			switch {
 			case o.Style == ChartBraille:
-				r = rune(0x2800) + cell.bits
+				r = rune(0x2800) + rune(cell.bits)
+			case o.Style == ChartBox:
+				r = boxGlyph(cell.bits)
 			case r == 0:
 				r = halfBlock(cell.halves)
 			}
@@ -299,6 +306,180 @@ func brailleYFor(v, minY, maxY float64, ph int) int {
 	return int(math.Round((maxY - v) / (maxY - minY) * float64(ph-1)))
 }
 
+// Box drawing direction bits. Bits point from a cell toward its neighbours.
+const (
+	boxN uint16 = 1 << iota
+	boxS
+	boxE
+	boxW
+	boxNE
+	boxNW
+	boxSE
+	boxSW
+	boxDot
+)
+
+// plotBox draws connected box-drawing lines. Each column gets the average of
+// the samples that fall in it, then adjacent columns are joined by a line.
+func plotBox(cells map[[2]int]chartCell, o LineOptions, minY, maxY float64, plotW, plotH, n int) {
+	add := func(x, y int, bit uint16, c color.Color, prio int) {
+		if x < 0 || y < 0 || x >= plotW || y >= plotH {
+			return
+		}
+		key := [2]int{x, y}
+		existing, ok := cells[key]
+		if !ok {
+			cells[key] = chartCell{bits: bit, color: c, priority: prio}
+			return
+		}
+		if existing.priority != prio {
+			return // first series owns this cell
+		}
+		existing.bits |= bit
+		cells[key] = existing
+	}
+
+	for si, s := range o.Series {
+		sums := make([]float64, plotW)
+		counts := make([]int, plotW)
+		for i, v := range s.Values {
+			if v == nil {
+				continue
+			}
+			col := solidXFor(i, n, plotW)
+			sums[col] += *v
+			counts[col]++
+		}
+		prevCol, prevY := -10, 0
+		for col := 0; col < plotW; col++ {
+			if counts[col] == 0 {
+				prevCol = -10
+				continue
+			}
+			value := sums[col] / float64(counts[col])
+			y := cellYFor(value, minY, maxY, plotH)
+			if prevCol == col-1 {
+				drawBoxSegment(add, prevCol, prevY, col, y, s.Color, si)
+			} else {
+				add(col, y, boxDot, s.Color, si)
+			}
+			prevCol, prevY = col, y
+		}
+	}
+}
+
+func drawBoxSegment(add func(int, int, uint16, color.Color, int), x0, y0, x1, y1 int, c color.Color, prio int) {
+	dx := x1 - x0
+	dy := y1 - y0
+	adx := absInt(dx)
+	ady := absInt(dy)
+	sx := 1
+	if dx < 0 {
+		sx = -1
+	}
+	sy := 1
+	if dy < 0 {
+		sy = -1
+	}
+	err := adx - ady
+	for x0 != x1 || y0 != y1 {
+		e2 := 2 * err
+		nx, ny := x0, y0
+		if e2 > -ady {
+			err -= ady
+			nx += sx
+		}
+		if e2 < adx {
+			err += adx
+			ny += sy
+		}
+		forward, back := boxDirection(x0, y0, nx, ny)
+		add(x0, y0, forward, c, prio)
+		add(nx, ny, back, c, prio)
+		x0, y0 = nx, ny
+	}
+}
+
+func boxDirection(x0, y0, x1, y1 int) (forward, back uint16) {
+	switch {
+	case x1 > x0 && y1 == y0:
+		return boxE, boxW
+	case x1 < x0 && y1 == y0:
+		return boxW, boxE
+	case x1 == x0 && y1 < y0:
+		return boxN, boxS
+	case x1 == x0 && y1 > y0:
+		return boxS, boxN
+	case x1 > x0 && y1 < y0:
+		return boxNE, boxSW
+	case x1 > x0 && y1 > y0:
+		return boxSE, boxNW
+	case x1 < x0 && y1 < y0:
+		return boxNW, boxSE
+	default:
+		return boxSW, boxNE
+	}
+}
+
+// boxGlyph maps a set of connection bits to the right box-drawing rune.
+func boxGlyph(bits uint16) rune {
+	if bits == 0 {
+		return ' '
+	}
+	n := bits&boxN != 0
+	s := bits&boxS != 0
+	e := bits&boxE != 0
+	w := bits&boxW != 0
+	if !n && !s && !e && !w {
+		switch {
+		case bits&(boxNE|boxSW) != 0:
+			return '╱'
+		case bits&(boxNW|boxSE) != 0:
+			return '╲'
+		case bits&boxDot != 0:
+			return '•'
+		default:
+			return '•'
+		}
+	}
+	switch {
+	case n && s && e && w:
+		return '┼'
+	case n && s && e:
+		return '├'
+	case n && s && w:
+		return '┤'
+	case n && e && w:
+		return '┴'
+	case s && e && w:
+		return '┬'
+	case n && s:
+		return '│'
+	case e && w:
+		return '─'
+	case n && e:
+		return '└'
+	case n && w:
+		return '┘'
+	case s && e:
+		return '┌'
+	case s && w:
+		return '┐'
+	case n, s:
+		return '│'
+	default:
+		return '─'
+	}
+}
+
+// cellYFor maps a value to a cell row.
+func cellYFor(v, minY, maxY float64, plotH int) int {
+	if maxY <= minY {
+		return 0
+	}
+	return int(math.Round((maxY - v) / (maxY - minY) * float64(plotH-1)))
+}
+
 // plotSolid draws solid half-block lines. Each column collects the vertical
 // range its samples cover, which keeps steep changes connected.
 func plotSolid(cells map[[2]int]chartCell, o LineOptions, minY, maxY float64, plotW, plotH, n int) {
@@ -366,7 +547,7 @@ func plotBraille(cells map[[2]int]chartCell, o LineOptions, minY, maxY float64, 
 		}
 		cx, cy := px/2, py/4
 		key := [2]int{cx, cy}
-		bit := brailleBits[py%4][px%2]
+		bit := uint16(brailleBits[py%4][px%2])
 		if existing, ok := cells[key]; ok {
 			if priority < existing.priority {
 				cells[key] = chartCell{bits: existing.bits | bit, color: c, priority: priority}

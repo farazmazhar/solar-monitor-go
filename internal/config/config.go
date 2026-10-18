@@ -67,6 +67,8 @@ type Display struct {
 	// DayWindow is "day" for a fixed 00:00-23:59 chart axis, or "auto" for a
 	// rolling window that fits the samples to the width.
 	DayWindow string `toml:"day_window"`
+	// ChartStyle is "box", "solid" or "braille".
+	ChartStyle string `toml:"chart_style"`
 }
 
 type Tariff struct {
@@ -106,6 +108,7 @@ func Defaults() Config {
 			CurrencySymbol: "₨",
 			CO2KgPerKWh:    0.4,
 			DayWindow:      "day",
+			ChartStyle:     "solid",
 		},
 		Storage: Storage{
 			RawSnapshotDays: 30,
@@ -357,6 +360,9 @@ func applyDefaults(c *Config) {
 	}
 	if c.Display.DayWindow == "" {
 		c.Display.DayWindow = d.Display.DayWindow
+	}
+	if c.Display.ChartStyle == "" {
+		c.Display.ChartStyle = d.Display.ChartStyle
 	}
 	if c.Storage.RawSnapshotDays == 0 {
 		c.Storage.RawSnapshotDays = d.Storage.RawSnapshotDays

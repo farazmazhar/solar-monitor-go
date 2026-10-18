@@ -20,6 +20,13 @@ type Source interface {
 	Close() error
 }
 
+// YearDaysSource is an optional provider capability: daily rows for a whole
+// year. It backs the calendar heatmap without the UI fetching twelve months
+// itself.
+type YearDaysSource interface {
+	YearDays(ctx context.Context, year int) ([]DayEnergy, error)
+}
+
 // State is the inverter's own reported state.
 type State string
 

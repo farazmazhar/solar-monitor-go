@@ -268,6 +268,11 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.width, m.height = msg.Width, msg.Height
+		if m.tab == TabHistory && m.historyMode == HistoryYear {
+			if cmd := m.maybeFetchYearDays(m.yearAt.Year()); cmd != nil {
+				return m, cmd
+			}
+		}
 		return m, nil
 
 	case clockMsg:
@@ -512,7 +517,7 @@ func (m *Model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 			}
 			cmds := []tea.Cmd{m.fetchMonthCmd(m.monthAt), m.fetchYearCmd(m.yearAt.Year())}
 			if m.historyMode == HistoryYear {
-				cmds = append(cmds, m.fetchYearDaysCmd(m.yearAt.Year()))
+				cmds = append(cmds, m.maybeFetchYearDays(m.yearAt.Year()))
 			}
 			return m, tea.Batch(cmds...)
 		}
@@ -528,7 +533,7 @@ func (m *Model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 			case HistoryMonth:
 				return m, m.fetchMonthCmd(m.monthAt)
 			case HistoryYear:
-				return m, tea.Batch(m.fetchYearCmd(m.yearAt.Year()), m.fetchYearDaysCmd(m.yearAt.Year()))
+				return m, tea.Batch(m.fetchYearCmd(m.yearAt.Year()), m.maybeFetchYearDays(m.yearAt.Year()))
 			}
 		case TabAlarms:
 			m.alarmFilter = (m.alarmFilter + 1) % 3
@@ -569,7 +574,7 @@ func (m *Model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 				return m, m.fetchMonthCmd(m.monthAt)
 			default:
 				m.yearAt = m.yearAt.AddDate(-1, 0, 0)
-				return m, tea.Batch(m.fetchYearCmd(m.yearAt.Year()), m.fetchYearDaysCmd(m.yearAt.Year()))
+				return m, tea.Batch(m.fetchYearCmd(m.yearAt.Year()), m.maybeFetchYearDays(m.yearAt.Year()))
 			}
 		case "right", "l":
 			switch m.historyMode {
@@ -581,7 +586,7 @@ func (m *Model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 				return m, m.fetchMonthCmd(m.monthAt)
 			default:
 				m.yearAt = m.yearAt.AddDate(1, 0, 0)
-				return m, tea.Batch(m.fetchYearCmd(m.yearAt.Year()), m.fetchYearDaysCmd(m.yearAt.Year()))
+				return m, tea.Batch(m.fetchYearCmd(m.yearAt.Year()), m.maybeFetchYearDays(m.yearAt.Year()))
 			}
 		case "e":
 			return m, m.exportHistoryCmd()
@@ -705,7 +710,7 @@ func (m *Model) switchTab(t Tab) tea.Cmd {
 				cmds = append(cmds, m.fetchYearCmd(m.yearAt.Year()))
 			}
 			if m.yearDaysAt != m.yearAt.Year() {
-				cmds = append(cmds, m.fetchYearDaysCmd(m.yearAt.Year()))
+				cmds = append(cmds, m.maybeFetchYearDays(m.yearAt.Year()))
 			}
 			return tea.Batch(cmds...)
 		}
@@ -916,8 +921,18 @@ func (m *Model) fetchYearCmd(year int) tea.Cmd {
 	}
 }
 
-// fetchYearDaysCmd fills the calendar heatmap by asking for each month of the
-// year. The real API allows two requests per second, so calls are paced.
+// maybeFetchYearDays fetches daily data only when the heatmap will be shown
+// and the year is not already cached.
+func (m *Model) maybeFetchYearDays(year int) tea.Cmd {
+	if !m.useHeatmap() || m.yearDaysAt == year || m.src == nil {
+		return nil
+	}
+	return m.fetchYearDaysCmd(year)
+}
+
+// fetchYearDaysCmd fills the calendar heatmap. Providers that implement
+// provider.YearDaysSource do the cache-aware work themselves; others fall back
+// to one month request at a time.
 func (m *Model) fetchYearDaysCmd(year int) tea.Cmd {
 	src := m.src
 	if src == nil {
@@ -927,6 +942,10 @@ func (m *Model) fetchYearDaysCmd(year int) tea.Cmd {
 	return func() tea.Msg {
 		ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 		defer cancel()
+		if yd, ok := src.(provider.YearDaysSource); ok {
+			rows, err := yd.YearDays(ctx, year)
+			return yearDaysMsg{year: year, rows: rows, err: err}
+		}
 		var rows []provider.DayEnergy
 		var lastErr error
 		for mo := time.January; mo <= time.December; mo++ {

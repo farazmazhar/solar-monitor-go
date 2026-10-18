@@ -97,12 +97,16 @@ same chart between:
   bottom to top, with the stack totalling household consumption. This is the
   clearest view of where the house power came from.
 
-### History year heatmap
+### History year view
 
-The History year view is a calendar heatmap: one row per month, one column pair
-per day, shaded from `░` to `█` by that day's generation. It fetches daily data
-for the twelve months of the selected year (paced at roughly two requests per
-second on the real API).
+On wide terminals (110 columns and 28 rows or more) the History year view is a
+calendar heatmap: one row per month, one column pair per day, shaded from `░` to
+`█` by that day's generation. Smaller terminals get twelve monthly bars instead,
+which read better and skip the daily requests entirely.
+
+Heatmap data is cache-first: each month's daily rows are read from SQLite and
+only missing or incomplete months are fetched, paced at roughly two requests per
+second on the real API. A complete year loads from disk with no network calls.
 
 ### Battery arc
 

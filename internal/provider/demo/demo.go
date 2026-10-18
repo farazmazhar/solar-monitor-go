@@ -281,6 +281,19 @@ func (p *Provider) Year(_ context.Context, year int) ([]provider.MonthEnergy, er
 	return out, nil
 }
 
+// YearDays implements provider.YearDaysSource for the heatmap.
+func (p *Provider) YearDays(ctx context.Context, year int) ([]provider.DayEnergy, error) {
+	var out []provider.DayEnergy
+	for mo := time.January; mo <= time.December; mo++ {
+		rows, err := p.Month(ctx, year, mo)
+		if err != nil {
+			return out, err
+		}
+		out = append(out, rows...)
+	}
+	return out, nil
+}
+
 // Alarms implements provider.Source.
 func (p *Provider) Alarms(_ context.Context, from, to time.Time) ([]provider.Alarm, error) {
 	now := p.Now()

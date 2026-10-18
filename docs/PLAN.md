@@ -42,7 +42,8 @@ Seven tabs: Live, Today, History, Battery, PV, Alarms, Diagnostics.
   and a bordered fixed-day chart with axes.
 - **History** — day, month and year modes. Day shows the power chart for the
   selected date; month shows a bordered bar chart; year shows a calendar
-  heatmap of daily generation. Summaries include income and CO₂.
+  calendar heatmap on wide terminals and monthly bars on smaller ones, with
+  cache-first daily data. Summaries include income and CO₂.
 - **Battery** — semicircular SOC arc, SOH, charge/discharge power, voltage and
   current, today and lifetime throughput, reserve limits, and a fixed-day SOC
   chart.

@@ -114,6 +114,7 @@ func TestGoldenFrames(t *testing.T) {
 		{"history_day_80x24", 80, 24, TabHistory, false, HistoryDay, "day", "solid", ViewPower},
 		{"history_month_80x24", 80, 24, TabHistory, false, HistoryMonth, "day", "solid", ViewPower},
 		{"history_year_80x24", 80, 24, TabHistory, false, HistoryYear, "day", "solid", ViewPower},
+		{"history_year_heatmap_120x40", 120, 40, TabHistory, false, HistoryYear, "day", "solid", ViewPower},
 		{"battery_80x24", 80, 24, TabBattery, false, HistoryDay, "day", "solid", ViewPower},
 		{"pv_80x24", 80, 24, TabPV, false, HistoryDay, "day", "solid", ViewPower},
 		{"alarms_80x24", 80, 24, TabAlarms, false, HistoryDay, "day", "solid", ViewPower},

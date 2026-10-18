@@ -37,8 +37,8 @@ with local SQLite history. Tests pass. Live field verification is the main gap.
       fixed-day 00:00-23:59 window with `x`/`day_window` toggle, History day
       mode, Today restructured with a summary panel and series legend
 - [x] Seven chart styles (braille default, graph, solid, area, box, quadrant, ascii)
-- [x] Solar area fill; `v` source-mix stacked area; year calendar heatmap;
-      battery SOC arc
+- [x] Solar area fill; `v` source-mix stacked area; responsive year view
+      (bars narrow, heatmap wide) with cache-first daily data; battery SOC arc
 - [x] Mouse navigation, help overlay, motion toggle, JSON/CSV export
 - [x] `NO_COLOR` monochrome theme and a transparent theme
 - [x] Golden render tests at 60×20, 80×24 and 100×30

@@ -63,7 +63,7 @@ This one wants a terminal.
 | | |
 |---|---|
 | <img src="docs/images/today.svg" alt="Today chart"> | <img src="docs/images/history-year.svg" alt="History year heatmap"> |
-| **Today** — summary, series toggles, cursor and a day chart with axes. | **History · year** — a calendar heatmap of daily generation. |
+| **Today** — summary, series toggles, cursor and a day chart with axes. | **History · year** — calendar heatmap on wide terminals, monthly bars on smaller ones. |
 | <img src="docs/images/mix.svg" alt="Source mix chart"> | <img src="docs/images/battery.svg" alt="Battery screen"> |
 | **Source mix** — `v` stacks solar, battery and grid under consumption. | **Battery** — SOC arc, SOH, throughput and a 24-hour SOC chart. |
 
@@ -73,7 +73,7 @@ Seven screens in total:
 |---|---|
 | **Live** | Energy-flow diagram, live tiles, battery gauge, power chart, source mix |
 | **Today** | Summary panel, series legend, cursor line, fixed-day chart |
-| **History** | Day chart, monthly bars, yearly calendar heatmap |
+| **History** | Day chart, monthly bars, yearly calendar heatmap or monthly bars |
 | **Battery** | SOC arc, SOH, voltage/current, today and lifetime throughput |
 | **PV** | Per-string voltage, current, power and share |
 | **Alarms** | Active, recent and all alarms with advice |
@@ -275,8 +275,10 @@ second limit, and the ±15-minute clock-skew rule. Failed polls back off from
 
 - Five-minute samples are kept forever (roughly 10 MB per year).
 - Raw JSON snapshots are pruned after 30 days by default.
-- Daily data for the year heatmap is fetched one month at a time and cached
-  through the same store path.
+- Year daily data is fetched one month at a time, saved to SQLite, and reused;
+  only missing or incomplete months hit the API again.
+- Narrow terminals show monthly bars for the year, so the twelve daily requests
+  are skipped entirely unless the heatmap is actually shown.
 - Nothing leaves the machine except the SolisCloud API requests.
 
 ## Development

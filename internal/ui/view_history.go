@@ -93,8 +93,15 @@ func (m *Model) renderHistoryDay(w, h, y int) []string {
 	return lines
 }
 
+// useHeatmap keeps the year heatmap for wide terminals; smaller ones get
+// twelve monthly bars, which are far easier to read and need only the yearly
+// aggregate request.
+func (m *Model) useHeatmap() bool {
+	return m.width >= 110 && m.height >= 28
+}
+
 func (m *Model) renderHistoryPeriod(w, h int) []string {
-	if m.historyMode == HistoryYear {
+	if m.historyMode == HistoryYear && m.useHeatmap() {
 		return m.renderYearHeatmap(w, h)
 	}
 	gen, cons, imp, exp, income, charged, discharged := m.historyTotals()

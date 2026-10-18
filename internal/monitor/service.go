@@ -18,6 +18,7 @@ type Service struct {
 	src          provider.Source
 	store        *store.Store
 	snapshotDays int
+	pace         time.Duration
 }
 
 // New returns a recording service. A nil store disables persistence and the
@@ -27,7 +28,7 @@ func New(src provider.Source, st *store.Store, snapshotDays int) *Service {
 	if snapshotDays <= 0 {
 		snapshotDays = 30
 	}
-	return &Service{src: src, store: st, snapshotDays: snapshotDays}
+	return &Service{src: src, store: st, snapshotDays: snapshotDays, pace: 550 * time.Millisecond}
 }
 
 // Name implements provider.Source.
@@ -187,6 +188,64 @@ func (s *Service) Seed(ctx context.Context) (provider.Snapshot, []provider.Sampl
 	}
 	samples, _ := s.localSamples(ctx, time.Now())
 	return snap, samples, true
+}
+
+// YearDays returns a year of daily rows. Cached months are used as-is; only
+// missing or incomplete months are fetched, and those are paced to stay under
+// the API limit.
+func (s *Service) YearDays(ctx context.Context, year int) ([]provider.DayEnergy, error) {
+	now := time.Now()
+	var out []provider.DayEnergy
+	var lastErr error
+	for mo := time.January; mo <= time.December; mo++ {
+		expected := expectedDays(year, mo, now)
+		if expected == 0 {
+			continue
+		}
+		var cached []provider.DayEnergy
+		if s.store != nil {
+			cached, _ = s.store.DayEnergy(ctx, year, mo)
+		}
+		if len(cached) >= expected {
+			out = append(out, cached...)
+			continue
+		}
+		if s.src == nil {
+			out = append(out, cached...)
+			continue
+		}
+		if s.pace > 0 {
+			time.Sleep(s.pace)
+		}
+		remote, err := s.src.Month(ctx, year, mo)
+		if err != nil {
+			lastErr = err
+			out = append(out, cached...)
+			continue
+		}
+		if s.store != nil && len(remote) > 0 {
+			_ = s.store.SaveDayEnergy(ctx, remote)
+		}
+		out = append(out, remote...)
+	}
+	if len(out) == 0 && lastErr != nil {
+		return nil, lastErr
+	}
+	return out, nil
+}
+
+// expectedDays is how many daily rows a month should have; future months are
+// zero and the current month stops at today.
+func expectedDays(year int, month time.Month, now time.Time) int {
+	first := time.Date(year, month, 1, 0, 0, 0, 0, now.Location())
+	if first.After(now) {
+		return 0
+	}
+	days := time.Date(year, month+1, 0, 0, 0, 0, 0, now.Location()).Day()
+	if year == now.Year() && month == now.Month() {
+		return now.Day()
+	}
+	return days
 }
 
 func (s *Service) localSamples(ctx context.Context, day time.Time) ([]provider.Sample, error) {

@@ -11,16 +11,17 @@ import (
 )
 
 type fakeSource struct {
-	snap      provider.Snapshot
-	snapErr   error
-	day       []provider.Sample
-	dayErr    error
-	month     []provider.DayEnergy
-	monthErr  error
-	year      []provider.MonthEnergy
-	yearErr   error
-	alarms    []provider.Alarm
-	alarmsErr error
+	snap       provider.Snapshot
+	snapErr    error
+	day        []provider.Sample
+	dayErr     error
+	month      []provider.DayEnergy
+	monthErr   error
+	monthCalls int
+	year       []provider.MonthEnergy
+	yearErr    error
+	alarms     []provider.Alarm
+	alarmsErr  error
 }
 
 func (f *fakeSource) Name() string { return "fake" }
@@ -32,6 +33,7 @@ func (f *fakeSource) Today(context.Context, time.Time) ([]provider.Sample, error
 	return f.day, f.dayErr
 }
 func (f *fakeSource) Month(context.Context, int, time.Month) ([]provider.DayEnergy, error) {
+	f.monthCalls++
 	return f.month, f.monthErr
 }
 func (f *fakeSource) Year(context.Context, int) ([]provider.MonthEnergy, error) {
@@ -181,5 +183,78 @@ func TestSeedReturnsCachedData(t *testing.T) {
 	}
 	if len(samples) != 1 {
 		t.Errorf("seed samples = %d, want 1", len(samples))
+	}
+}
+
+func TestExpectedDays(t *testing.T) {
+	now := time.Date(2026, 10, 18, 12, 0, 0, 0, time.Local)
+	if got := expectedDays(2026, time.September, now); got != 30 {
+		t.Errorf("September = %d, want 30", got)
+	}
+	if got := expectedDays(2026, time.October, now); got != 18 {
+		t.Errorf("current month = %d, want 18", got)
+	}
+	if got := expectedDays(2026, time.December, now); got != 0 {
+		t.Errorf("future month = %d, want 0", got)
+	}
+	if got := expectedDays(2024, time.February, now); got != 29 {
+		t.Errorf("leap February = %d, want 29", got)
+	}
+}
+
+func TestYearDaysUsesCache(t *testing.T) {
+	ctx := context.Background()
+	st, err := store.Open(":memory:")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer st.Close()
+
+	// Seed a complete past year.
+	var days []provider.DayEnergy
+	for mo := time.January; mo <= time.December; mo++ {
+		n := time.Date(2025, mo+1, 0, 0, 0, 0, 0, time.Local).Day()
+		for d := 1; d <= n; d++ {
+			days = append(days, provider.DayEnergy{
+				Date:         time.Date(2025, mo, d, 0, 0, 0, 0, time.Local),
+				GeneratedKWh: provider.Float(10),
+			})
+		}
+	}
+	if err := st.SaveDayEnergy(ctx, days); err != nil {
+		t.Fatal(err)
+	}
+
+	src := &fakeSource{}
+	svc := New(src, st, 30)
+	svc.pace = 0
+	rows, err := svc.YearDays(ctx, 2025)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(rows) != 365 {
+		t.Fatalf("rows = %d, want 365", len(rows))
+	}
+	if src.monthCalls != 0 {
+		t.Errorf("month calls = %d, want 0 when the cache is complete", src.monthCalls)
+	}
+}
+
+func TestYearDaysFetchesMissingMonths(t *testing.T) {
+	ctx := context.Background()
+	st, err := store.Open(":memory:")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer st.Close()
+
+	src := &fakeSource{month: []provider.DayEnergy{{Date: time.Date(2020, 1, 1, 0, 0, 0, 0, time.Local), GeneratedKWh: provider.Float(5)}}}
+	svc := New(src, st, 30)
+	svc.pace = 0
+	if _, err := svc.YearDays(ctx, 2020); err != nil {
+		t.Fatal(err)
+	}
+	if src.monthCalls != 12 {
+		t.Errorf("month calls = %d, want 12 for an empty cache", src.monthCalls)
 	}
 }

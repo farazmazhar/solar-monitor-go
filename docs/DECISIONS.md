@@ -209,3 +209,18 @@ colours at draw time so the overlap reads as an overlap.
 
 **Consequences.** Overlaps become a neutral blend instead of stealing a series
 colour. The underlying values are untouched.
+
+## ADR-0016 — Responsive year view and cache-first daily data
+
+**Context.** At 80 columns the year heatmap is a small block of shades, and
+fetching twelve months on every visit made it slow.
+
+**Decision.** Use monthly bars for the year on terminals under 110×28 and the
+heatmap above that. Daily rows are read from SQLite first; only missing or
+incomplete months are requested. `provider.YearDaysSource` lets the monitor
+service own that policy, with the demo provider and the UI fallback sharing the
+same interface.
+
+**Consequences.** Small terminals get a readable year and make no daily
+requests. Wide terminals pay the twelve calls once, then read from disk. The
+year heatmap only loads when it is actually shown, including after a resize.

@@ -92,6 +92,7 @@ type Model struct {
 	lastLatency time.Duration
 	lastErr     error
 	polling     bool
+	failures    int
 	nextPoll    time.Time
 	notice      string
 
@@ -254,11 +255,14 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.lastLatency = msg.latency
 		if msg.err != nil {
 			m.lastErr = msg.err
+			m.failures++
+			m.nextPoll = m.now().Add(m.pollDelay())
 			return m, nil
 		}
 		m.snap = msg.snap
 		m.haveSnap = true
 		m.lastErr = nil
+		m.failures = 0
 		m.appendSample(msg.snap)
 		return m, nil
 
@@ -683,7 +687,22 @@ func (m *Model) pollDelay() time.Duration {
 	if m.demo {
 		return 2 * time.Second
 	}
-	return m.cfg.PollIntervalDuration()
+	base := m.cfg.PollIntervalDuration()
+	if m.failures <= 0 {
+		return base
+	}
+	// 30s is the floor; double per consecutive failure up to five minutes.
+	d := 30 * time.Second
+	if base > d {
+		d = base
+	}
+	for i := 0; i < m.failures && d < 5*time.Minute; i++ {
+		d *= 2
+	}
+	if d > 5*time.Minute {
+		d = 5 * time.Minute
+	}
+	return d
 }
 
 func (m *Model) fetchSnapshotCmd() tea.Cmd {

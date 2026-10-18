@@ -24,11 +24,15 @@ func (m *Model) renderDiagnostics(w, h, y int) string {
 	}
 	fetch := "—"
 	if m.haveSnap {
-		age := fmtAgeFrom(m.now(), m.snap.FetchedAt)
-		if age != "now" {
-			age += " ago"
+		if m.demo {
+			fetch = m.snap.FetchedAt.Format("2006-01-02 15:04:05") + " (simulated)"
+		} else {
+			age := fmtAgeFrom(m.now(), m.snap.FetchedAt)
+			if age != "now" {
+				age += " ago"
+			}
+			fetch = m.snap.FetchedAt.Format("2006-01-02 15:04:05") + " (" + age + ")"
 		}
-		fetch = m.snap.FetchedAt.Format("2006-01-02 15:04:05") + " (" + age + ")"
 	}
 	latency := "—"
 	if m.lastLatency > 0 {

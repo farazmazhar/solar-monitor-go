@@ -62,7 +62,10 @@ func (m *Model) renderHeader(w int) string {
 			state = m.th.Pill("● UNKNOWN", m.th.Dim)
 		}
 		age := "—"
-		if m.haveSnap {
+		switch {
+		case m.demo:
+			age = "simulated"
+		case m.haveSnap:
 			if a := fmtAgeFrom(m.now(), m.snap.FetchedAt); a == "now" {
 				age = "just now"
 			} else {

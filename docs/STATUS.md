@@ -1,25 +1,19 @@
 # Status
 
 Updated: 2026-10-18
-Current milestone: M1 mostly complete; M2 partial
-Overall state: the TUI runs end to end on demo data and on the real API path.
-Tests pass. Live field verification is the main gap.
-
-## In progress
-
-- [ ] Poller backoff: failures currently retry on the normal interval instead of
-      backing off (30 s → 1 m → 2 m → 5 m)
+Current milestone: M1 complete; M2 mostly complete
+Overall state: the TUI runs end to end on demo data and on the real API path,
+with local SQLite history. Tests pass. Live field verification is the main gap.
 
 ## Next
 
 - [ ] Live verification: run `make discover` with real credentials (or a saved
       `inverterDetail` dump) and confirm field aliases, units and signs against
-      `docs/API.md`
-- [ ] Re-discover inverter from the Diagnostics screen
-- [ ] `NO_COLOR` and 256-colour fallback
-- [ ] Empty/loading/error states on every screen
+      `docs/API.md`, then fix any mismatch
+- [ ] Re-discover the inverter from the Diagnostics screen
+- [ ] Empty/loading/error states on every screen (partial today)
 - [ ] Embed golden screenshots in the README
-- [ ] Exponential backoff in the poller
+- [ ] Tag a first version
 
 ## Blocked
 
@@ -36,8 +30,11 @@ Tests pass. Live field verification is the main gap.
 - [x] SQLite store: snapshots, samples, daily/monthly aggregates, alarms, stats
 - [x] Monitor service: records snapshots, merges local and remote day data,
       falls back to cache when the cloud is down
+- [x] Poller with exponential backoff (30 s → 5 m), single in-flight request
+      and staleness tracking
 - [x] Bubble Tea UI with seven screens, flow diagram, charts and gauge
 - [x] Mouse navigation, help overlay, motion toggle, JSON/CSV export
+- [x] `NO_COLOR` monochrome theme and a transparent theme
 - [x] Golden render tests at 60×20, 80×24 and 100×30
 - [x] Unit tests for signing, normalisation, config, demo, store and monitor
 - [x] README and LICENSE
@@ -45,7 +42,9 @@ Tests pass. Live field verification is the main gap.
 ## Verification
 
 - `make check`: passes (gofmt, go vet, go test ./...)
+- `go test -race ./...`: passes
 - `make demo`: runs; `--dump` renders every screen at 60×20, 80×24 and 100×30
+- `NO_COLOR=1 ./solar-moonitor --dump`: renders without colour
 - Live API check: cannot run without credentials
 
 ## Notes

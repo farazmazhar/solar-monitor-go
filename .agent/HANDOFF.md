@@ -27,11 +27,9 @@ make discover        # needs credentials in ~/.config/solar-moonitor/config.toml
 
 ## Known issues
 
-- The poller retries on the normal interval; exponential backoff is not
-  implemented yet.
-- `NO_COLOR` and 256-colour fallback are not implemented; the theme falls back
-  to solar-dark for unknown names and transparent for `theme = "transparent"`.
 - Some screens have thin empty/error states.
+- Re-discover from Diagnostics is not implemented; `--discover` covers it from
+  the command line.
 - The name `solar-moonitor-go` was never explicitly re-confirmed after the user
   wrote it. If it was a typo, rename module, binary, docs and paths together.
 

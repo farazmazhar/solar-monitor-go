@@ -5,6 +5,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -170,7 +171,7 @@ func main() {
 	} else if storeNotice != "" {
 		model.SetNotice(storeNotice)
 	}
-	if _, err := program.Run(); err != nil {
+	if _, err := program.Run(); err != nil && !errors.Is(err, context.Canceled) {
 		fatal(err)
 	}
 }

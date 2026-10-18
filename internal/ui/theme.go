@@ -2,6 +2,7 @@ package ui
 
 import (
 	"image/color"
+	"os"
 	"strings"
 
 	"charm.land/lipgloss/v2"
@@ -35,7 +36,11 @@ type Theme struct {
 }
 
 // NewTheme resolves a theme name. Unknown names fall back to solar-dark.
+// NO_COLOR disables colour entirely and falls back to weight and reverse video.
 func NewTheme(name string) Theme {
+	if os.Getenv("NO_COLOR") != "" {
+		return monochrome()
+	}
 	switch strings.ToLower(strings.TrimSpace(name)) {
 	case "transparent", "none":
 		t := solarPalette()
@@ -46,6 +51,30 @@ func NewTheme(name string) Theme {
 		t := solarPalette()
 		t.Name = "solar-dark"
 		return t
+	}
+}
+
+// monochrome is the NO_COLOR theme: no foreground or background colours, only
+// bold, faint and reverse video for hierarchy.
+func monochrome() Theme {
+	plain := lipgloss.NewStyle()
+	return Theme{
+		Name: "no-color",
+
+		AppName:     lipgloss.NewStyle().Bold(true),
+		HeaderMeta:  plain,
+		TabActive:   lipgloss.NewStyle().Bold(true).Underline(true),
+		TabInactive: plain,
+		Label:       plain,
+		Value:       lipgloss.NewStyle().Bold(true),
+		Muted:       lipgloss.NewStyle().Faint(true),
+		Rule:        plain,
+		Good:        plain,
+		Warn:        plain,
+		Bad:         lipgloss.NewStyle().Bold(true),
+		Selected:    lipgloss.NewStyle().Reverse(true),
+		HelpKey:     lipgloss.NewStyle().Bold(true),
+		HelpDesc:    plain,
 	}
 }
 
@@ -112,6 +141,9 @@ func (t Theme) Bold(c color.Color) lipgloss.Style {
 
 // Pill renders a compact state badge.
 func (t Theme) Pill(text string, fg color.Color) string {
+	if fg == nil {
+		return lipgloss.NewStyle().Bold(true).Render(text)
+	}
 	return lipgloss.NewStyle().
 		Bold(true).
 		Foreground(fg).

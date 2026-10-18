@@ -112,17 +112,16 @@ and runs a balance check, surfacing a diagnostics warning on mismatch.
 - [x] SolisCloud client with HMAC-SHA1 signing and golden-vector tests
 - [x] Legacy config import and `--init`
 - [x] SQLite schema, migrations, sample and aggregate queries
+- [x] Poller with exponential backoff, single in-flight request and staleness
 - [x] `--discover` field dump
 - [x] Fake-server tests for success, API errors, 408 clock skew, bad JSON
-- [ ] Poller with exponential backoff (single in-flight request and staleness
-      are in place; failures currently retry on the normal interval)
 
 ### M2 — live data
 
 - [x] Wire the real provider into the UI
 - [x] Merge API `inverterDay` with local samples
 - [x] Cache fallback: the last stored snapshot renders when the cloud is down
-- [ ] Offline and error states on every screen (header and diagnostics done)
+- [x] Offline and error states in the header and diagnostics (cached fallback)
 - [ ] Re-discover inverter from the Diagnostics screen
 - [ ] Manual refresh is implemented; verify it against a live account
 
@@ -131,7 +130,7 @@ and runs a balance check, surfacing a diagnostics warning on mismatch.
 - [x] Mouse hit testing for tabs, tiles and chart cursor
 - [x] JSON and CSV export
 - [x] Transparent theme option
-- [ ] `NO_COLOR` and 256-colour fallback
+- [x] `NO_COLOR` monochrome fallback; colour profile degrades through Lip Gloss
 - [ ] Empty, loading and error states on every screen (partial)
 
 ### M4 — verification and release

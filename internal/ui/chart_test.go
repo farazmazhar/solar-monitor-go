@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"strings"
 	"testing"
 	"time"
 
@@ -61,6 +62,45 @@ func TestDistributeLabelsWidth(t *testing.T) {
 	}
 	if got[:5] != "00:00" {
 		t.Errorf("first label = %q", got[:5])
+	}
+}
+
+func TestSolidLineGlyphs(t *testing.T) {
+	lines, _ := RenderLine(LineOptions{
+		Width: 40, Height: 8,
+		Series: []LineSeries{{Values: []*float64{
+			provider.Float(0), provider.Float(50), provider.Float(100), provider.Float(50), provider.Float(0),
+		}}},
+	})
+	joined := strings.Join(lines, "\n")
+	if strings.ContainsRune(joined, rune(0x2800)) {
+		t.Error("default style should not emit braille runes")
+	}
+	if !strings.ContainsAny(joined, "▀▄█") {
+		t.Errorf("expected solid half-block glyphs, got:\n%s", joined)
+	}
+}
+
+func TestBrailleStyleStillAvailable(t *testing.T) {
+	lines, _ := RenderLine(LineOptions{
+		Width: 40, Height: 8, Style: ChartBraille,
+		Series: []LineSeries{{Values: []*float64{provider.Float(1), provider.Float(2), provider.Float(3)}}},
+	})
+	for _, r := range strings.Join(lines, "\n") {
+		if r >= rune(0x2800) && r <= rune(0x28FF) {
+			return
+		}
+	}
+	t.Error("braille style should emit braille runes")
+}
+
+func TestChartRange(t *testing.T) {
+	min, max := chartRange([]LineSeries{{Values: []*float64{provider.Float(5), nil, provider.Float(10)}}})
+	if min != 5 || max != 10 {
+		t.Errorf("range = %v..%v, want 5..10", min, max)
+	}
+	if _, max := chartRange(nil); max != 1 {
+		t.Errorf("empty range max = %v, want 1", max)
 	}
 }
 

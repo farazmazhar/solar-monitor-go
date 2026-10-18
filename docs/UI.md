@@ -53,10 +53,12 @@ is: one idea per panel, one blank line between panels.
 
 All charts are custom renderers in `internal/ui/chart.go`.
 
-- **Line charts** draw braille pixels (2×4 dots per cell) with a y axis, an x
-  axis and a dashed zero line when the range crosses zero. They accept a title,
-  a border, a cursor and any number of x labels, which are distributed evenly
-  across the plot.
+- **Line charts** draw solid lines built from half-block glyphs (`▀ ▄ █`),
+  which give two vertical sub-rows per cell and read as continuous strokes.
+  They have a y axis, an x axis and a dashed zero line when the range crosses
+  zero. They accept a title, a border, a cursor and any number of x labels,
+  which are distributed evenly across the plot. A braille pixel renderer
+  remains available as an alternative style for very dense data.
 - **Day charts** share labels of `00:00`, `06:00`, `12:00`, `18:00` and `23:55`.
 - **Bar charts** use eighth-block columns with a y axis and a labelled x axis,
   and are used for month and year history.

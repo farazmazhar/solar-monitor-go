@@ -20,7 +20,9 @@ var brailleBits = [4][2]rune{
 }
 
 type chartCell struct {
-	bits     rune
+	bits     rune  // braille dots, when the style is braille
+	r        rune  // explicit glyph, e.g. the cursor
+	halves   uint8 // solid style: bit 1 = top half, bit 2 = bottom half
 	color    color.Color
 	priority int
 }
@@ -33,7 +35,17 @@ type LineSeries struct {
 	Values []*float64
 }
 
-// LineOptions configures a braille line chart.
+// ChartStyle selects how line series are drawn.
+type ChartStyle int
+
+const (
+	// ChartSolid connects points with box-drawing lines, which read as solid.
+	ChartSolid ChartStyle = iota
+	// ChartBraille draws the denser braille pixel graph.
+	ChartBraille
+)
+
+// LineOptions configures a line chart.
 type LineOptions struct {
 	Width, Height int
 
@@ -42,6 +54,9 @@ type LineOptions struct {
 	Border      bool
 	BorderColor color.Color
 	TitleColor  color.Color
+
+	// Style is ChartSolid by default.
+	Style ChartStyle
 
 	Series      []LineSeries
 	Cursor      int // index into values, or -1
@@ -56,8 +71,8 @@ type LineOptions struct {
 	YLabel      func(float64) string
 }
 
-// RenderLine renders a braille line chart as exactly Height lines. The second
-// return value is the plot rectangle in local coordinates, for mouse hits.
+// RenderLine renders a line chart as exactly Height lines. The second return
+// value is the plot rectangle in local coordinates, for mouse hits.
 func RenderLine(o LineOptions) ([]string, Rect) {
 	if o.Width < 6 || o.Height < 3 {
 		return nil, Rect{}
@@ -122,29 +137,6 @@ func RenderLine(o LineOptions) ([]string, Rect) {
 		minY = 0
 	}
 
-	pw := plotW * 2
-	ph := plotH * 4
-	cells := make(map[[2]int]chartCell, plotW*plotH)
-
-	plot := func(px, py int, c color.Color, priority int) {
-		if px < 0 || py < 0 || px >= pw || py >= ph {
-			return
-		}
-		cx, cy := px/2, py/4
-		key := [2]int{cx, cy}
-		bit := brailleBits[py%4][px%2]
-		if existing, ok := cells[key]; ok {
-			if priority < existing.priority {
-				cells[key] = chartCell{bits: existing.bits | bit, color: c, priority: priority}
-			} else {
-				existing.bits |= bit
-				cells[key] = existing
-			}
-			return
-		}
-		cells[key] = chartCell{bits: bit, color: c, priority: priority}
-	}
-
 	n := 0
 	for _, s := range o.Series {
 		if len(s.Values) > n {
@@ -154,43 +146,33 @@ func RenderLine(o LineOptions) ([]string, Rect) {
 	if n == 0 {
 		return emptyPanel(o, contentW, contentH, axisW, plotH, xRows), Rect{}
 	}
-	xFor := func(i int) int {
-		if n == 1 {
-			return pw / 2
-		}
-		return int(math.Round(float64(i) / float64(n-1) * float64(pw-1)))
-	}
-	yFor := func(v float64) int {
-		return int(math.Round((maxY - v) / (maxY - minY) * float64(ph-1)))
+
+	cells := make(map[[2]int]chartCell, plotW*plotH)
+	if o.Style == ChartBraille {
+		plotBraille(cells, o, minY, maxY, plotW, plotH, n)
+	} else {
+		plotSolid(cells, o, minY, maxY, plotW, plotH, n)
 	}
 
 	zeroRow := -1
 	if o.ZeroLine && minY < 0 && maxY > 0 {
-		zeroRow = yFor(0) / 4
-	}
-
-	for si, s := range o.Series {
-		prevX, prevY := -1, -1
-		for i, v := range s.Values {
-			if v == nil {
-				prevX, prevY = -1, -1
-				continue
-			}
-			px, py := xFor(i), yFor(*v)
-			if prevX >= 0 {
-				drawLine(plot, prevX, prevY, px, py, s.Color, si)
-			}
-			plot(px, py, s.Color, si)
-			prevX, prevY = px, py
-		}
+		zeroRow = yHalfFor(0, minY, maxY, plotH) / 2
 	}
 
 	if o.Cursor >= 0 && o.Cursor < n {
-		cx := xFor(o.Cursor) / 2
-		for cy := 0; cy < plotH; cy++ {
-			key := [2]int{cx, cy}
-			existing := cells[key]
-			cells[key] = chartCell{bits: existing.bits, color: o.CursorColor, priority: -10}
+		if o.Style == ChartBraille {
+			pw := plotW * 2
+			cx := brailleXFor(o.Cursor, n, pw) / 2
+			for cy := 0; cy < plotH; cy++ {
+				key := [2]int{cx, cy}
+				existing := cells[key]
+				cells[key] = chartCell{bits: existing.bits, color: o.CursorColor, priority: -10}
+			}
+		} else {
+			cx := solidXFor(o.Cursor, n, plotW)
+			for cy := 0; cy < plotH; cy++ {
+				cells[[2]int{cx, cy}] = chartCell{r: '┃', color: o.CursorColor, priority: -10}
+			}
 		}
 	}
 
@@ -219,7 +201,7 @@ func RenderLine(o LineOptions) ([]string, Rect) {
 		}
 		for col := 0; col < plotW; col++ {
 			cell, ok := cells[[2]int{col, row}]
-			if !ok || cell.bits == 0 {
+			if !ok || (cell.bits == 0 && cell.r == 0 && cell.halves == 0) {
 				if row == zeroRow {
 					if o.Dim != nil {
 						b.WriteString(lipgloss.NewStyle().Foreground(o.Dim).Render("╌"))
@@ -231,7 +213,13 @@ func RenderLine(o LineOptions) ([]string, Rect) {
 				}
 				continue
 			}
-			r := rune(0x2800) + cell.bits
+			r := cell.r
+			switch {
+			case o.Style == ChartBraille:
+				r = rune(0x2800) + cell.bits
+			case r == 0:
+				r = halfBlock(cell.halves)
+			}
 			if cell.color != nil {
 				b.WriteString(lipgloss.NewStyle().Foreground(cell.color).Render(string(r)))
 			} else {
@@ -255,6 +243,157 @@ func RenderLine(o LineOptions) ([]string, Rect) {
 		return padLines(content, o.Width), hit
 	}
 	return wrapPanel(o.Title, content, o.Width, o.BorderColor, o.TitleColor, o.Dim), hit
+}
+
+// solidXFor maps a value index to a cell column.
+func solidXFor(i, n, plotW int) int {
+	if n <= 1 {
+		return plotW / 2
+	}
+	return int(math.Round(float64(i) / float64(n-1) * float64(plotW-1)))
+}
+
+// yHalfFor maps a value to a half-cell row (two sub-rows per cell).
+func yHalfFor(v, minY, maxY float64, plotH int) int {
+	if maxY <= minY {
+		return 0
+	}
+	rows := plotH * 2
+	h := int(math.Round((maxY - v) / (maxY - minY) * float64(rows-1)))
+	if h < 0 {
+		return 0
+	}
+	if h > rows-1 {
+		return rows - 1
+	}
+	return h
+}
+
+// halfBlock turns a pair of half-cell bits into a block glyph.
+func halfBlock(halves uint8) rune {
+	switch halves {
+	case 1:
+		return '▀'
+	case 2:
+		return '▄'
+	case 3:
+		return '█'
+	default:
+		return ' '
+	}
+}
+
+// brailleXFor maps a value index to a braille pixel column.
+func brailleXFor(i, n, pw int) int {
+	if n <= 1 {
+		return pw / 2
+	}
+	return int(math.Round(float64(i) / float64(n-1) * float64(pw-1)))
+}
+
+// brailleYFor maps a value to a braille pixel row.
+func brailleYFor(v, minY, maxY float64, ph int) int {
+	if maxY <= minY {
+		return 0
+	}
+	return int(math.Round((maxY - v) / (maxY - minY) * float64(ph-1)))
+}
+
+// plotSolid draws solid half-block lines. Each column collects the vertical
+// range its samples cover, which keeps steep changes connected.
+func plotSolid(cells map[[2]int]chartCell, o LineOptions, minY, maxY float64, plotW, plotH, n int) {
+	mark := func(col, half int, c color.Color, priority int) {
+		if col < 0 || half < 0 || col >= plotW || half >= plotH*2 {
+			return
+		}
+		bit := uint8(1) << uint(half%2)
+		key := [2]int{col, half / 2}
+		existing, ok := cells[key]
+		if !ok {
+			cells[key] = chartCell{halves: bit, color: c, priority: priority}
+			return
+		}
+		if priority < existing.priority {
+			cells[key] = chartCell{halves: existing.halves | bit, color: c, priority: priority}
+			return
+		}
+		existing.halves |= bit
+		cells[key] = existing
+	}
+
+	for si, s := range o.Series {
+		type span struct {
+			min, max int
+			set      bool
+		}
+		spans := make([]span, plotW)
+		for i, v := range s.Values {
+			if v == nil {
+				continue
+			}
+			col := solidXFor(i, n, plotW)
+			half := yHalfFor(*v, minY, maxY, plotH)
+			sp := &spans[col]
+			if !sp.set {
+				sp.min, sp.max, sp.set = half, half, true
+				continue
+			}
+			if half < sp.min {
+				sp.min = half
+			}
+			if half > sp.max {
+				sp.max = half
+			}
+		}
+		for col, sp := range spans {
+			if !sp.set {
+				continue
+			}
+			for half := sp.min; half <= sp.max; half++ {
+				mark(col, half, s.Color, si)
+			}
+		}
+	}
+}
+
+// plotBraille fills the cell map with braille dots.
+func plotBraille(cells map[[2]int]chartCell, o LineOptions, minY, maxY float64, plotW, plotH, n int) {
+	pw := plotW * 2
+	ph := plotH * 4
+	plot := func(px, py int, c color.Color, priority int) {
+		if px < 0 || py < 0 || px >= pw || py >= ph {
+			return
+		}
+		cx, cy := px/2, py/4
+		key := [2]int{cx, cy}
+		bit := brailleBits[py%4][px%2]
+		if existing, ok := cells[key]; ok {
+			if priority < existing.priority {
+				cells[key] = chartCell{bits: existing.bits | bit, color: c, priority: priority}
+			} else {
+				existing.bits |= bit
+				cells[key] = existing
+			}
+			return
+		}
+		cells[key] = chartCell{bits: bit, color: c, priority: priority}
+	}
+	for si, s := range o.Series {
+		prevX, prevY := -1, -1
+		for i, v := range s.Values {
+			if v == nil {
+				prevX, prevY = -1, -1
+				continue
+			}
+			px := brailleXFor(i, n, pw)
+			py := brailleYFor(*v, minY, maxY, ph)
+			if prevX >= 0 {
+				drawLine(plot, prevX, prevY, px, py, s.Color, si)
+			}
+			plot(px, py, s.Color, si)
+			prevX, prevY = px, py
+		}
+	}
 }
 
 func emptyPanel(o LineOptions, contentW, contentH, axisW, plotH, xRows int) []string {

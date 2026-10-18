@@ -146,3 +146,18 @@ arrived, which keeps the x axis stable. The bar charts gained the same frame and
 y axis, so History reads consistently. Spacing and height budgets now matter:
 at 24 rows the tile sparkline row is dropped so the chart keeps at least five
 plot rows.
+
+## ADR-0012 — Solid half-block line charts
+
+**Context.** The braille line charts were accurate but sparse: at 5-8 plot rows
+the dots read as broken dashes and were hard to follow at a glance.
+
+**Decision.** `LineOptions.Style` defaults to `ChartSolid`, which fills each
+column with the half-block range its samples cover (`▀`, `▄`, `█`). This gives
+two vertical sub-rows per cell, keeps steep changes connected, and still lets
+each series keep its colour. `ChartBraille` remains implemented as an option.
+
+**Consequences.** Lines look solid and readable in shallow charts. Cells where
+several series overlap take the first series' colour, so crossings can briefly
+hide a later series; the legend and cursor values carry that information. The
+golden frames encode the style, so a future style change is a deliberate update.

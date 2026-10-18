@@ -7,7 +7,7 @@ import (
 
 	"github.com/charmbracelet/x/ansi"
 
-	"github.com/farazmazhar/solar-moonitor-go/internal/provider"
+	"github.com/farazmazhar/solar-monitor-go/internal/provider"
 )
 
 func fitFrame(s string, w, h int) string {
@@ -31,7 +31,7 @@ func fitFrame(s string, w, h int) string {
 }
 
 func (m *Model) renderHeader(w int) string {
-	left := m.th.AppName.Render("solar-moonitor-go")
+	left := m.th.AppName.Render("solar-monitor-go")
 	station := m.snap.Station
 	if station == "" {
 		station = "SolisCloud"
@@ -190,7 +190,7 @@ func (m *Model) renderSetup(w, h int) string {
 		m.th.Label.Render("Config file: ") + m.paths.ConfigPath,
 		m.th.Label.Render("Required keys: ") + "solis.api_key, solis.api_secret, solis.station_id",
 		"",
-		m.th.HelpKey.Render("solar-moonitor --init") + m.th.HelpDesc.Render("  writes a template config"),
+		m.th.HelpKey.Render("solar-monitor --init") + m.th.HelpDesc.Render("  writes a template config"),
 		m.th.HelpKey.Render("d") + m.th.HelpDesc.Render("  start the built-in demo now"),
 		m.th.HelpKey.Render("?") + m.th.HelpDesc.Render("  help"),
 		m.th.HelpKey.Render("q") + m.th.HelpDesc.Render("  quit"),

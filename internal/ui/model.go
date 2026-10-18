@@ -9,8 +9,8 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/farazmazhar/solar-moonitor-go/internal/config"
-	"github.com/farazmazhar/solar-moonitor-go/internal/provider"
+	"github.com/farazmazhar/solar-monitor-go/internal/config"
+	"github.com/farazmazhar/solar-monitor-go/internal/provider"
 )
 
 // Tab identifies a top-level screen.
@@ -380,7 +380,7 @@ func (m *Model) View() tea.View {
 	v := tea.NewView(content)
 	v.AltScreen = true
 	v.MouseMode = tea.MouseModeCellMotion
-	v.WindowTitle = "solar-moonitor-go"
+	v.WindowTitle = "solar-monitor-go"
 	if m.th.Bg != nil {
 		v.BackgroundColor = m.th.Bg
 	}

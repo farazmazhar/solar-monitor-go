@@ -8,7 +8,7 @@ import (
 	"charm.land/lipgloss/v2"
 	"github.com/charmbracelet/x/ansi"
 
-	"github.com/farazmazhar/solar-moonitor-go/internal/provider"
+	"github.com/farazmazhar/solar-monitor-go/internal/provider"
 )
 
 type flowBox struct {

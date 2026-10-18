@@ -1,11 +1,11 @@
-# solar-moonitor-go
+# solar-monitor-go
 
 A read-only terminal UI for monitoring a Solis solar inverter through the
 SolisCloud REST API. It talks to the cloud directly, keeps its own local
 history, and ships a demo mode so the interface works without credentials.
 
 ```
- solar-moonitor-go  Home Rooftop · S6-EH1P6K-L-PRO         ● ONLINE   just now
+ solar-monitor-go  Home Rooftop · S6-EH1P6K-L-PRO         ● ONLINE   just now
   Live  Today  History  Battery  PV  Alarms  Diagnostics
               ╭─ PV ─────────────────╮
               │ 5.67 kW    2 strings │
@@ -33,7 +33,7 @@ account is still pending.
 ## Build and run
 
 ```sh
-make build      # ./solar-moonitor
+make build      # ./solar-monitor
 make run        # the TUI from source
 make demo       # simulated data, no credentials, no network
 make check      # gofmt, vet and the test suite
@@ -42,8 +42,8 @@ make check      # gofmt, vet and the test suite
 Direct equivalents:
 
 ```sh
-go build -o solar-moonitor ./cmd/solar-moonitor
-./solar-moonitor --demo
+go build -o solar-monitor ./cmd/solar-monitor
+./solar-monitor --demo
 ```
 
 Useful flags: `--config PATH`, `--state-dir PATH`, `--theme solar-dark|transparent`,
@@ -55,7 +55,7 @@ debugging and CI smoke checks.
 
 ## Configuration
 
-The config lives at `~/.config/solar-moonitor/config.toml`. `solar-moonitor
+The config lives at `~/.config/solar-monitor/config.toml`. `solar-monitor
 --init` writes a template; on first run the app also imports credentials from
 the older `~/.config/solis2kde/config.yaml` if it exists.
 
@@ -84,13 +84,13 @@ import = 0.0
 export = 0.0
 
 [storage]
-path = "~/.local/state/solar-moonitor/monitor.db"
+path = "~/.local/state/solar-monitor/monitor.db"
 raw_snapshot_days = 30
 ```
 
-Environment overrides: `MOONITOR_API_KEY`, `MOONITOR_API_SECRET`,
-`MOONITOR_STATION_ID`, `MOONITOR_INVERTER_ID`, `MOONITOR_CONFIG`,
-`MOONITOR_STATE_DIR`, `MOONITOR_THEME`.
+Environment overrides: `monitor_API_KEY`, `monitor_API_SECRET`,
+`monitor_STATION_ID`, `monitor_INVERTER_ID`, `monitor_CONFIG`,
+`monitor_STATE_DIR`, `monitor_THEME`.
 
 The database keeps five-minute samples forever (roughly 10 MB per year) and
 prunes raw JSON snapshots after 30 days by default.

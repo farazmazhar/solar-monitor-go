@@ -1,4 +1,4 @@
-module github.com/farazmazhar/solar-moonitor-go
+module github.com/farazmazhar/solar-monitor-go
 
 go 1.27.1
 

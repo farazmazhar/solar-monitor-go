@@ -15,7 +15,7 @@ import (
 
 	_ "modernc.org/sqlite"
 
-	"github.com/farazmazhar/solar-moonitor-go/internal/provider"
+	"github.com/farazmazhar/solar-monitor-go/internal/provider"
 )
 
 // Store is a local history database.

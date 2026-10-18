@@ -1,5 +1,5 @@
-BINARY := solar-moonitor
-PKG := ./cmd/solar-moonitor
+BINARY := solar-monitor
+PKG := ./cmd/solar-monitor
 
 .PHONY: build run demo test race check fmt vet tidy clean discover install
 

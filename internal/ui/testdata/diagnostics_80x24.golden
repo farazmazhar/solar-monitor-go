@@ -1,4 +1,4 @@
-solar-moonitor-go  Home Rooftop · S6-EH1P6K-L-PRO        DEMO   simulated  13:20
+solar-monitor-go  Home Rooftop · S6-EH1P6K-L-PRO         DEMO   simulated  13:20
  Live  Today  History  Battery  PV  Alarms  Diagnostics               Sun 18 Oct
 DIAGNOSTICS   j k scroll raw · e export snapshot · d re-discover                
 source          demo (in-memory)                                                
@@ -10,7 +10,7 @@ last fetch      2026-10-18 13:20:00 (simulated)
 latency         —                                                               
 next poll       13:20:02                                                        
 last error      none                                                            
-config          /home/user/.config/solar-moonitor/config.toml                   
+config          /home/user/.config/solar-monitor/config.toml                    
 database        in-memory (demo)                                                
 memory samples  161                                                             
 version         test · go1.27.1-X:nodwarf5                                      

@@ -15,15 +15,15 @@ import (
 )
 
 const (
-	AppName       = "solar-moonitor"
-	DisplayName   = "solar-moonitor-go"
-	EnvConfig     = "MOONITOR_CONFIG"
-	EnvStateDir   = "MOONITOR_STATE_DIR"
-	EnvAPIKey     = "MOONITOR_API_KEY"
-	EnvAPISecret  = "MOONITOR_API_SECRET"
-	EnvStationID  = "MOONITOR_STATION_ID"
-	EnvInverterID = "MOONITOR_INVERTER_ID"
-	EnvTheme      = "MOONITOR_THEME"
+	AppName       = "solar-monitor"
+	DisplayName   = "solar-monitor-go"
+	EnvConfig     = "monitor_CONFIG"
+	EnvStateDir   = "monitor_STATE_DIR"
+	EnvAPIKey     = "monitor_API_KEY"
+	EnvAPISecret  = "monitor_API_SECRET"
+	EnvStationID  = "monitor_STATION_ID"
+	EnvInverterID = "monitor_INVERTER_ID"
+	EnvTheme      = "monitor_THEME"
 )
 
 // LegacyConfigPath is the flat YAML file used by solis-kde-plasma-sensors.

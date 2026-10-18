@@ -6,7 +6,7 @@ import (
 	"math"
 	"strings"
 
-	"github.com/farazmazhar/solar-moonitor-go/internal/provider"
+	"github.com/farazmazhar/solar-monitor-go/internal/provider"
 )
 
 type tile struct {

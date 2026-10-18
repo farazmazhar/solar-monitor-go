@@ -78,14 +78,14 @@ against `ntcharts`.
 
 ## ADR-0007 — Naming and paths
 
-**Context.** The user named the app `solar-moonitor-go` and wants room for
+**Context.** The user named the app `solar-monitor-go` and wants room for
 other APIs.
 
-**Decision.** Module/repo and display title are `solar-moonitor-go`; the binary
-is `solar-moonitor`; config and state directories are `solar-moonitor`.
+**Decision.** Module/repo and display title are `solar-monitor-go`; the binary
+is `solar-monitor`; config and state directories are `solar-monitor`.
 
 **Consequences.** User-facing commands stay short while the project name stays
-distinctive. The env prefix is `MOONITOR_`.
+distinctive. The env prefix is `monitor_`.
 
 ## ADR-0008 — API income and PKR
 

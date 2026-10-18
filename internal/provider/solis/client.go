@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/farazmazhar/solar-moonitor-go/internal/provider"
+	"github.com/farazmazhar/solar-monitor-go/internal/provider"
 )
 
 const (

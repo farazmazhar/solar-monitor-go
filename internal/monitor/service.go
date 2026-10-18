@@ -9,8 +9,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/farazmazhar/solar-moonitor-go/internal/provider"
-	"github.com/farazmazhar/solar-moonitor-go/internal/store"
+	"github.com/farazmazhar/solar-monitor-go/internal/provider"
+	"github.com/farazmazhar/solar-monitor-go/internal/store"
 )
 
 // Service is a provider.Source backed by another provider and a store.

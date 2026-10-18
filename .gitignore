@@ -1,6 +1,6 @@
 # Build artefacts
-/solar-moonitor
-/solar-moonitor-*
+/solar-monitor
+/solar-monitor-*
 *.exe
 dist/
 

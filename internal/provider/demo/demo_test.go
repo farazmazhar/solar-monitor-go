@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/farazmazhar/solar-moonitor-go/internal/provider"
+	"github.com/farazmazhar/solar-monitor-go/internal/provider"
 )
 
 func fixed(t time.Time) *Provider {

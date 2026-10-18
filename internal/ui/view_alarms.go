@@ -3,7 +3,7 @@ package ui
 import (
 	"strings"
 
-	"github.com/farazmazhar/solar-moonitor-go/internal/provider"
+	"github.com/farazmazhar/solar-monitor-go/internal/provider"
 )
 
 func (m *Model) renderAlarms(w, h, y int) string {

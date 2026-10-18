@@ -11,9 +11,9 @@ import (
 
 	"github.com/charmbracelet/x/ansi"
 
-	"github.com/farazmazhar/solar-moonitor-go/internal/config"
-	"github.com/farazmazhar/solar-moonitor-go/internal/provider"
-	"github.com/farazmazhar/solar-moonitor-go/internal/provider/demo"
+	"github.com/farazmazhar/solar-monitor-go/internal/config"
+	"github.com/farazmazhar/solar-monitor-go/internal/provider"
+	"github.com/farazmazhar/solar-monitor-go/internal/provider/demo"
 )
 
 var update = flag.Bool("update", false, "update golden files")
@@ -30,9 +30,9 @@ func testModel(t *testing.T, w, h int, tab Tab, help bool) *Model {
 	cfg.Demo.Enabled = true
 	cfg.Display.Motion = false
 	paths := config.Paths{
-		ConfigPath: "/home/user/.config/solar-moonitor/config.toml",
+		ConfigPath: "/home/user/.config/solar-monitor/config.toml",
 		StateDir:   t.TempDir(),
-		DBPath:     "/home/user/.local/state/solar-moonitor/monitor.db",
+		DBPath:     "/home/user/.local/state/solar-monitor/monitor.db",
 	}
 	src := testProvider()
 	m := New(Options{Config: cfg, Paths: paths, Source: src, Demo: true, Version: "test"})
@@ -131,7 +131,7 @@ func TestSetupScreen(t *testing.T) {
 	cfg := config.Defaults()
 	m := New(Options{
 		Config:   cfg,
-		Paths:    config.Paths{ConfigPath: "/home/user/.config/solar-moonitor/config.toml", StateDir: t.TempDir()},
+		Paths:    config.Paths{ConfigPath: "/home/user/.config/solar-monitor/config.toml", StateDir: t.TempDir()},
 		SetupErr: errSetup,
 		Version:  "test",
 	})

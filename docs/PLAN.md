@@ -1,4 +1,4 @@
-# Plan — solar-moonitor-go
+# Plan — solar-monitor-go
 
 Status: agreed on 2026-10-18. Scope changes are recorded in
 `docs/DECISIONS.md` and mirrored into `docs/STATUS.md`.
@@ -16,13 +16,13 @@ added later. No second provider is in scope.
 
 | Area | Decision |
 |---|---|
-| Name | repo/module `solar-moonitor-go`, binary `solar-moonitor`, display title `solar-moonitor-go` |
+| Name | repo/module `solar-monitor-go`, binary `solar-monitor`, display title `solar-monitor-go` |
 | Stack | Go 1.27, Bubble Tea v2, Lip Gloss v2, Bubbles v2, `charmbracelet/x/ansi` |
 | Charts | custom braille line chart, block bar chart, block sparkline (see ADR-0006) |
 | Storage | SQLite via `modernc.org/sqlite`, pure Go, no cgo |
 | Data source | direct SolisCloud API, read-only |
-| Config | `~/.config/solar-moonitor/config.toml`, TOML, auto-import from the old KDE config |
-| State | `~/.local/state/solar-moonitor/monitor.db` |
+| Config | `~/.config/solar-monitor/config.toml`, TOML, auto-import from the old KDE config |
+| State | `~/.local/state/solar-monitor/monitor.db` |
 | Money | PKR (₨); API income when the currency matches, otherwise configured tariff |
 | Visual | painted dark canvas, solar palette, boxed flow diagram |
 | Cadence | 300 s default, configurable, never below 60 s |
@@ -55,7 +55,7 @@ optional mouse for tabs, tiles and chart cursor. Motion is subtle and toggleable
 ## Architecture
 
 ```
-cmd/solar-moonitor        flags, config resolution, program startup
+cmd/solar-monitor        flags, config resolution, program startup
 internal/config           TOML, defaults, legacy import, env, flags
 internal/provider         domain types, Source interface
 internal/provider/solis   signed client, decoding, unit/sign normalisation

@@ -44,13 +44,13 @@ with local SQLite history. Tests pass. Live field verification is the main gap.
 - `make check`: passes (gofmt, go vet, go test ./...)
 - `go test -race ./...`: passes
 - `make demo`: runs; `--dump` renders every screen at 60×20, 80×24 and 100×30
-- `NO_COLOR=1 ./solar-moonitor --dump`: renders without colour
+- `NO_COLOR=1 ./solar-monitor --dump`: renders without colour
 - Live API check: cannot run without credentials
 
 ## Notes
 
-- App name is `solar-moonitor-go`; binary is `solar-moonitor`; config and state
-  directories are `solar-moonitor`.
+- App name is `solar-monitor-go`; binary is `solar-monitor`; config and state
+  directories are `solar-monitor`.
 - Currency is PKR (₨).
 - Raw samples are retained forever; raw JSON snapshots prune after 30 days.
 - Scope is strictly read-only.

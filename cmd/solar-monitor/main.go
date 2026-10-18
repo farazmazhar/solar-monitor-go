@@ -1,4 +1,4 @@
-// Command solar-moonitor is a read-only TUI for monitoring a Solis inverter
+// Command solar-monitor is a read-only TUI for monitoring a Solis inverter
 // through the SolisCloud API, with a local history and a demo mode.
 package main
 
@@ -17,21 +17,21 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/farazmazhar/solar-moonitor-go/internal/config"
-	"github.com/farazmazhar/solar-moonitor-go/internal/monitor"
-	"github.com/farazmazhar/solar-moonitor-go/internal/provider"
-	"github.com/farazmazhar/solar-moonitor-go/internal/provider/demo"
-	"github.com/farazmazhar/solar-moonitor-go/internal/provider/solis"
-	"github.com/farazmazhar/solar-moonitor-go/internal/store"
-	"github.com/farazmazhar/solar-moonitor-go/internal/ui"
+	"github.com/farazmazhar/solar-monitor-go/internal/config"
+	"github.com/farazmazhar/solar-monitor-go/internal/monitor"
+	"github.com/farazmazhar/solar-monitor-go/internal/provider"
+	"github.com/farazmazhar/solar-monitor-go/internal/provider/demo"
+	"github.com/farazmazhar/solar-monitor-go/internal/provider/solis"
+	"github.com/farazmazhar/solar-monitor-go/internal/store"
+	"github.com/farazmazhar/solar-monitor-go/internal/ui"
 )
 
 var version = "0.1.0-dev"
 
 func main() {
 	var (
-		configFlag = flag.String("config", "", "path to config.toml (default $MOONITOR_CONFIG)")
-		stateFlag  = flag.String("state-dir", "", "state directory (default $MOONITOR_STATE_DIR or ~/.local/state/solar-moonitor)")
+		configFlag = flag.String("config", "", "path to config.toml (default $monitor_CONFIG)")
+		stateFlag  = flag.String("state-dir", "", "state directory (default $monitor_STATE_DIR or ~/.local/state/solar-monitor)")
 		demoFlag   = flag.Bool("demo", false, "run with simulated data; no credentials or network")
 		demoSpeed  = flag.Float64("demo-speed", 0, "simulated minutes per real second in demo mode")
 		initFlag   = flag.Bool("init", false, "write a config template and exit")
@@ -46,7 +46,7 @@ func main() {
 	flag.Parse()
 
 	if *showVer {
-		fmt.Printf("solar-moonitor-go %s\n", version)
+		fmt.Printf("solar-monitor-go %s\n", version)
 		return
 	}
 
@@ -262,7 +262,7 @@ func runDiscover(ctx context.Context, cfg config.Config) error {
 }
 
 func fatal(err error) {
-	fmt.Fprintln(os.Stderr, "solar-moonitor:", err)
+	fmt.Fprintln(os.Stderr, "solar-monitor:", err)
 	os.Exit(1)
 }
 

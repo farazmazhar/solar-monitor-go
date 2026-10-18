@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/farazmazhar/solar-moonitor-go/internal/provider"
-	"github.com/farazmazhar/solar-moonitor-go/internal/store"
+	"github.com/farazmazhar/solar-monitor-go/internal/provider"
+	"github.com/farazmazhar/solar-monitor-go/internal/store"
 )
 
 type fakeSource struct {

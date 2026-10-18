@@ -4,7 +4,7 @@ import (
 	"math"
 	"strings"
 
-	"github.com/farazmazhar/solar-moonitor-go/internal/provider"
+	"github.com/farazmazhar/solar-monitor-go/internal/provider"
 )
 
 func (m *Model) renderBattery(w, h, y int) string {

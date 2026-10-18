@@ -1,4 +1,4 @@
-# AGENTS.md — solar-moonitor-go
+# AGENTS.md — solar-monitor-go
 
 This file is the operating manual for any agent or human working in this
 repository. Read it first, every session. It is stable: it does not hold
@@ -61,7 +61,7 @@ Documentation is part of "done", not a follow-up task.
 ## Commands
 
 ```sh
-make build      # build ./solar-moonitor
+make build      # build ./solar-monitor
 make run        # run the TUI from source
 make demo       # run the TUI with simulated data (no credentials)
 make test       # go test ./...
@@ -72,16 +72,16 @@ make discover   # print a live inverterDetail dump (needs credentials)
 Direct equivalents, when the Makefile is unavailable:
 
 ```sh
-go build -o solar-moonitor ./cmd/solar-moonitor
-go run ./cmd/solar-moonitor --demo
-go run ./cmd/solar-moonitor --discover
+go build -o solar-monitor ./cmd/solar-monitor
+go run ./cmd/solar-monitor --demo
+go run ./cmd/solar-monitor --discover
 go test ./...
 ```
 
 ## Layout
 
 ```
-cmd/solar-moonitor/          entry point, flags, wiring
+cmd/solar-monitor/          entry point, flags, wiring
 internal/config/             TOML load, defaults, legacy import, env/flags
 internal/provider/           provider-agnostic domain types and Source interface
 internal/provider/solis/     SolisCloud client, signing, field normalisation

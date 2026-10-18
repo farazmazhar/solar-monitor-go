@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/farazmazhar/solar-moonitor-go/internal/config"
-	"github.com/farazmazhar/solar-moonitor-go/internal/provider"
+	"github.com/farazmazhar/solar-monitor-go/internal/config"
+	"github.com/farazmazhar/solar-monitor-go/internal/provider"
 )
 
 // DumpFrame renders one frame of the UI with live data fetched synchronously.

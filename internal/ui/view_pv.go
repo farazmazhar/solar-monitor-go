@@ -56,17 +56,26 @@ func (m *Model) renderPV(w, h, y int) string {
 		return strings.Join(fitLines(lines, w, h), "\n")
 	}
 
-	header := m.th.Label.Render(padRight("#", 3) + padRight("VOLTS", 9) + padRight("AMPS", 8) + padRight("WATTS", 10) + "SHARE")
-	lines = append(lines, header)
+	lines = append(lines, "")
 
-	visible := h - len(lines)
+	// Build the table content, then frame it. The frame needs two rows; fill
+	// the rest so the panel anchors to the bottom of the screen.
+	content := []string{
+		m.th.Label.Render(padRight("#", 4) + padRight("VOLTS", 10) + padRight("AMPS", 9) + padRight("WATTS", 11) + "SHARE"),
+	}
+	panelH := h - len(lines)
+	innerH := panelH - 2
+	if innerH < 1 {
+		innerH = 1
+	}
+	visible := innerH - 1
 	if visible < 1 {
 		visible = 1
 	}
 	count := len(m.snap.PVStrings)
 	start := clamp(m.pvScroll, 0, max(0, count-visible))
 	end := min(count, start+visible)
-	barW := clamp(w-34, 8, 30)
+	barW := clamp(w-38, 8, 30)
 	for i := start; i < end; i++ {
 		s := m.snap.PVStrings[i]
 		if s.Index == 0 {
@@ -77,16 +86,20 @@ func (m *Model) renderPV(w, h, y int) string {
 			share = provider.Conv(s.Power) / total
 		}
 		bar := shareBar(share, barW, m.th.Solar)
-		row := padRight(itoaInt(s.Index), 3) +
-			padRight(fmtVolts(s.Voltage), 9) +
-			padRight(fmtAmps(s.Current), 8) +
-			m.th.Style(m.th.Solar).Render(padRight(fmtPower(s.Power), 10)) +
+		row := padRight(itoaInt(s.Index), 4) +
+			padRight(fmtVolts(s.Voltage), 10) +
+			padRight(fmtAmps(s.Current), 9) +
+			m.th.Style(m.th.Solar).Render(padRight(fmtPower(s.Power), 11)) +
 			bar + m.th.Muted.Render(fmtPct1(share*100))
-		lines = append(lines, row)
+		content = append(content, row)
 	}
 	if end < count {
-		lines = append(lines, m.th.Muted.Render(fmt.Sprintf("%d more…", count-end)))
+		content = append(content, m.th.Muted.Render(fmt.Sprintf("%d more…", count-end)))
 	}
+	for len(content) < innerH {
+		content = append(content, "")
+	}
+	lines = append(lines, wrapPanel(fmt.Sprintf("STRINGS · %d", count), content, w, m.th.Faint, m.th.Accent, m.th.Faint)...)
 	return strings.Join(fitLines(lines, w, h), "\n")
 }
 
@@ -110,7 +123,7 @@ func shareBar(frac float64, width int, c color.Color) string {
 func mutedBlock() string { return "░" }
 
 func fmtPct1(v float64) string {
-	return fmtFixed(v, 1) + "%"
+	return fmt.Sprintf("%.1f%%", v)
 }
 
 func itoaInt(n int) string {

@@ -64,6 +64,9 @@ type Display struct {
 	Currency       string  `toml:"currency"`
 	CurrencySymbol string  `toml:"currency_symbol"`
 	CO2KgPerKWh    float64 `toml:"co2_kg_per_kwh"`
+	// DayWindow is "day" for a fixed 00:00-23:59 chart axis, or "auto" for a
+	// rolling window that fits the samples to the width.
+	DayWindow string `toml:"day_window"`
 }
 
 type Tariff struct {
@@ -102,6 +105,7 @@ func Defaults() Config {
 			Currency:       "PKR",
 			CurrencySymbol: "₨",
 			CO2KgPerKWh:    0.4,
+			DayWindow:      "day",
 		},
 		Storage: Storage{
 			RawSnapshotDays: 30,
@@ -350,6 +354,9 @@ func applyDefaults(c *Config) {
 	}
 	if c.Display.CO2KgPerKWh == 0 {
 		c.Display.CO2KgPerKWh = d.Display.CO2KgPerKWh
+	}
+	if c.Display.DayWindow == "" {
+		c.Display.DayWindow = d.Display.DayWindow
 	}
 	if c.Storage.RawSnapshotDays == 0 {
 		c.Storage.RawSnapshotDays = d.Storage.RawSnapshotDays

@@ -24,18 +24,21 @@ func testProvider() provider.Source {
 	return demo.New(demo.Options{Clock: func() time.Time { return testClock }})
 }
 
-func testModel(t *testing.T, w, h int, tab Tab, help bool) *Model {
+func testModel(t *testing.T, w, h int, tab Tab, help bool, history HistoryMode, window string) *Model {
 	t.Helper()
 	cfg := config.Defaults()
 	cfg.Demo.Enabled = true
 	cfg.Display.Motion = false
+	if window != "" {
+		cfg.Display.DayWindow = window
+	}
 	paths := config.Paths{
 		ConfigPath: "/home/user/.config/solar-monitor/config.toml",
 		StateDir:   t.TempDir(),
 		DBPath:     "/home/user/.local/state/solar-monitor/monitor.db",
 	}
 	src := testProvider()
-	m := New(Options{Config: cfg, Paths: paths, Source: src, Demo: true, Version: "test"})
+	m := New(Options{Config: cfg, Paths: paths, Source: src, Demo: true, Version: "test", InitialHistory: history})
 	m.clock = func() time.Time { return testClock }
 	m.width, m.height = w, h
 	m.tab = tab
@@ -51,7 +54,9 @@ func testModel(t *testing.T, w, h int, tab Tab, help bool) *Model {
 	m.appendSample(snap)
 	if day, err := src.Today(ctx, testClock); err == nil {
 		m.daySamples = day
+		m.historySamples = day
 		m.day = testClock
+		m.historyDay = testClock
 	}
 	if month, err := src.Month(ctx, 2026, time.October); err == nil {
 		m.month = month
@@ -86,25 +91,30 @@ func renderFrame(t *testing.T, m *Model) string {
 
 func TestGoldenFrames(t *testing.T) {
 	cases := []struct {
-		name string
-		w, h int
-		tab  Tab
-		help bool
+		name    string
+		w, h    int
+		tab     Tab
+		help    bool
+		history HistoryMode
+		window  string
 	}{
-		{"live_80x24", 80, 24, TabLive, false},
-		{"today_80x24", 80, 24, TabToday, false},
-		{"history_80x24", 80, 24, TabHistory, false},
-		{"battery_80x24", 80, 24, TabBattery, false},
-		{"pv_80x24", 80, 24, TabPV, false},
-		{"alarms_80x24", 80, 24, TabAlarms, false},
-		{"diagnostics_80x24", 80, 24, TabDiagnostics, false},
-		{"live_60x20", 60, 20, TabLive, false},
-		{"live_100x30", 100, 30, TabLive, false},
-		{"help_80x24", 80, 24, TabLive, true},
+		{"live_80x24", 80, 24, TabLive, false, HistoryDay, "day"},
+		{"today_80x24", 80, 24, TabToday, false, HistoryDay, "day"},
+		{"history_day_80x24", 80, 24, TabHistory, false, HistoryDay, "day"},
+		{"history_month_80x24", 80, 24, TabHistory, false, HistoryMonth, "day"},
+		{"history_year_80x24", 80, 24, TabHistory, false, HistoryYear, "day"},
+		{"battery_80x24", 80, 24, TabBattery, false, HistoryDay, "day"},
+		{"pv_80x24", 80, 24, TabPV, false, HistoryDay, "day"},
+		{"alarms_80x24", 80, 24, TabAlarms, false, HistoryDay, "day"},
+		{"diagnostics_80x24", 80, 24, TabDiagnostics, false, HistoryDay, "day"},
+		{"live_60x20", 60, 20, TabLive, false, HistoryDay, "day"},
+		{"live_100x30", 100, 30, TabLive, false, HistoryDay, "day"},
+		{"live_auto_80x24", 80, 24, TabLive, false, HistoryDay, "auto"},
+		{"help_80x24", 80, 24, TabLive, true, HistoryDay, "day"},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			m := testModel(t, tc.w, tc.h, tc.tab, tc.help)
+			m := testModel(t, tc.w, tc.h, tc.tab, tc.help, tc.history, tc.window)
 			got := renderFrame(t, m)
 			path := filepath.Join("testdata", tc.name+".golden")
 			if *update {

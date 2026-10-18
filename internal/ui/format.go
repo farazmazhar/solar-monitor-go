@@ -274,6 +274,27 @@ func joinSides(left, right string, w int) string {
 	return left + strings.Repeat(" ", gap) + right
 }
 
+// fitLines pads a block to exactly w by h cells. Lines longer than w are
+// truncated, and missing rows are filled with blanks.
+func fitLines(lines []string, w, h int) []string {
+	if w < 1 {
+		w = 1
+	}
+	if h < 1 {
+		h = 1
+	}
+	for i := range lines {
+		lines[i] = padRight(lines[i], w)
+	}
+	for len(lines) < h {
+		lines = append(lines, strings.Repeat(" ", w))
+	}
+	if len(lines) > h {
+		lines = lines[:h]
+	}
+	return lines
+}
+
 func min(a, b int) int {
 	if a < b {
 		return a

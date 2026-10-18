@@ -3,8 +3,8 @@
 ## Look
 
 A painted dark canvas with a restrained solar palette, rounded panels, and
-clear labels. Colour is never the only signal: direction, labels and glyphs
-carry meaning too.
+generous spacing between sections. Colour is never the only signal: direction,
+labels, glyphs and a legend carry meaning too.
 
 ## Palette
 
@@ -22,102 +22,133 @@ carry meaning too.
 | Battery | `#A78BFA` | SOC, charge |
 | Discharge | `#F472B6` | discharge |
 | Danger | `#EF4444` | faults, low SOC, errors |
-| Accent | `#F5A524` | active tab, focus |
+| Accent | `#F5A524` | active tab, focus, chart titles |
 
 Themes: `solar-dark` (default) and `transparent` (no painted background).
-`NO_COLOR` falls back to a monochrome rendering. 256-colour terminals use the
-nearest palette entries.
+`NO_COLOR` falls back to a monochrome rendering built from bold, faint and
+reverse video. 256-colour terminals degrade through Lip Gloss.
 
 ## Chrome
 
 ```
- SOLIS MONITOR   Home Rooftop · S6-EH1P6K-L-PRO       ● ONLINE  14:32  2m ago
- 1 Live   2 Today   3 History   4 Battery   5 PV   6 Alarms   7 Diagnostics
+ solar-monitor-go  Home Rooftop · S6-EH1P6K-L-PRO        DEMO   simulated  14:32
+  Live  Today  History  Battery  PV  Alarms  Diagnostics               Sun 18 Oct
 ```
 
-- Header: wordmark, station, model, online pill, clock, sample age, active
-  alarm count.
-- Tab bar: active tab filled with the accent, inactive dim; numbers are the
-  direct keys.
+- Header: wordmark, station, model, state pill, sample age, clock, alarm count.
+- Tab bar: active tab filled with the accent, inactive dim. Digits `1`–`7`
+  switch directly.
 - Footer: contextual keys on the left, next-refresh countdown and last error on
   the right.
 - Help overlay on `?`; `esc` closes.
 
+## Panels and spacing
+
+Sections are separated by a blank line, and anything that reads as a chart or a
+table is framed with a rounded border carrying its title in the top edge
+(`╭─ TITLE ────╮`). Content inside a panel is indented by two spaces. The rule
+is: one idea per panel, one blank line between panels.
+
+## Charts
+
+All charts are custom renderers in `internal/ui/chart.go`.
+
+- **Line charts** draw braille pixels (2×4 dots per cell) with a y axis, an x
+  axis and a dashed zero line when the range crosses zero. They accept a title,
+  a border, a cursor and any number of x labels, which are distributed evenly
+  across the plot.
+- **Day charts** share labels of `00:00`, `06:00`, `12:00`, `18:00` and `23:55`.
+- **Bar charts** use eighth-block columns with a y axis and a labelled x axis,
+  and are used for month and year history.
+- **Sparklines** are single-row block charts used inside Live tiles.
+
+### Fixed-day versus fit-samples
+
+`x` toggles the Live chart window, and `display.day_window` sets the default:
+
+- `day` (default) pins the x axis to the full day. The axis never moves; only
+  the plotted lines grow as samples arrive.
+- `auto` fits the measured samples to the width, so the visible window follows
+  the data.
+
+Today, History's day view and the Battery SOC chart are always fixed-day.
+
 ## Live screen
 
 ```
-              ╭ PV  3.42 kW ╮
-              │ 2 strings   │
-              ╰──────┬──────╯
-                     ▼
- ╭ GRID ───────╮  ╭─────────────╮  ╭ BATTERY ─────╮
- │ 0.80 kW EXP │◄─│   HOUSE     │─►│ 78% · 0.72CHG│
- │ 230V · 50Hz │  │   1.90 kW   │  │ 51.2V · 14A  │
- ╰─────────────╯  ╰──────┬──────╯  ╰──────────────╯
-                    ┌────┴────┐
-                    ▼         ▼
-              BACKUP 0.30  SMART 1.60
+             ╭ PV ─────────────────╮
+             │ 5.67 kW    2 strings │
+             ╰──────────┬──────────╯
+                        ▼
+ ╭ GRID ─────────────╮  ╭ HOUSE ────────────╮  ╭ BATTERY ──────────╮
+ │ 3.22 kW     EXPORT │◄─│ 656 W    bkp 256 W│─►│ 62%    1.80 kW CHG│
+ ╰────────────────────╯  ╰──────────────────╯  ╰───────────────────╯
+                    backup 256 W   ·   smart 401 W
 ```
 
-Arrow direction and colour follow the live flow. At night, PV dims to the faint
-token and shows `0 W`. Below the diagram: four tiles (Solar, House, Grid,
-Battery) with a value, a secondary line, and a sparkline; a segmented SOC gauge
-with a reserve tick; and a mini today curve.
+Arrow direction and colour follow the live flow. Below the diagram: tiles
+(solar, house, grid, battery and, when wide enough, income and CO₂), the
+segmented battery gauge with a reserve tick, a colour legend, and the day chart
+with time and power axes. The chart plots solar, total consumption, grid and
+battery.
 
-- Space is the node layout, not a full Sankey.
 - The flow solver is described in `docs/API.md`.
-- Widgets at 80 columns are exactly 19 cells wide with 2-cell gaps.
+- Tiles collapse from four rows to three or two as height shrinks.
 
 ## Screens
 
-- **Today** — multi-series braille chart, series toggles `s/l/g/b`, cursor with
-  time and per-series values, summary strip with generated, consumed, imported,
-  exported, peak power and peak time.
-- **History** — `tab` toggles month/year; `h/l` step periods; `t` returns to the
-  current period. Month bars show generation with import/export/battery context;
-  year bars show monthly totals. Summaries include PKR income and CO₂ avoided.
-- **Battery** — large segmented gauge, SOC/SOH, power and direction, voltage,
-  current, temperature, today and lifetime throughput, reserve and charge
-  limits, fault codes, 24 h SOC chart.
-- **PV** — table of active strings with V/A/W and a share bar; MPPT totals; DC
-  input count; inverter temperature; DC/AC efficiency when both sides exist.
-- **Alarms** — `tab` cycles active / 30 days / all; table with level, start,
-  code, message and state; detail pane with advice; empty state when clear.
-- **Diagnostics** — connection, latency, last code/message, config and DB paths,
-  sample counts, versions, terminal profile, raw snapshot browser, export
-  actions, re-discover.
+- **Today** — title with peak power and time, a three-line summary panel, the
+  series legend with `s l g b` toggles, the cursor line, and the bordered day
+  chart with axes.
+- **History** — `tab` cycles day / month / year, `h` and `l` step periods, `t`
+  returns to now. Day shows the same power chart for the selected date. Month
+  and year show a summary panel and a bordered bar chart with a y axis and
+  labelled columns.
+- **Battery** — SOC gauge, SOH, power and direction, voltage, current,
+  temperature, today and lifetime throughput, reserve and charge limits, fault
+  codes, and a fixed-day SOC chart with a 0–100 % axis.
+- **PV** — a summary line and a bordered strings table with voltage, current,
+  power and a share bar.
+- **Alarms** — `tab` cycles active / 30 days / all; a table with level, start,
+  code, message and state, plus a detail pane with advice.
+- **Diagnostics** — connection, latency, last error, config and database paths,
+  store statistics, versions, terminal profile, raw snapshot browser, export
+  and re-discover.
 
 ## Responsive rules
 
 | Width | Behaviour |
 |---|---|
-| ≥ 100 | six tiles including income and CO₂; taller charts; fuller battery detail |
-| 80–99 | four tiles; flow diagram; chart shown |
+| ≥ 100 | six tiles including income and CO₂; four tile rows; taller charts |
+| 80–99 | four tiles; full flow diagram; day chart |
 | 72–79 | two-by-two tiles; compact flow strip; shorter chart |
 | < 72 | single column; flow strip; values stack; secondary detail hidden |
 
-Width below 72 columns shows a message rather than breaking the layout.
+Height matters too: under 26 rows the tile sparkline row is dropped, and under
+24 rows tiles collapse to label, value and secondary line only, which gives the
+chart more room.
 
 ## Keys
 
 | Key | Action |
 |---|---|
 | `1`–`7` | switch tab |
-| `tab` / `shift+tab` | next / previous tab, or cycle filter inside a screen |
-| `h` / `l`, `←` / `→` | move selection or chart cursor |
+| `tab` / `shift+tab` | next / previous tab, or cycle a mode or filter |
+| `h` / `l`, `←` / `→` | step periods or move the chart cursor |
 | `j` / `k`, `↑` / `↓` | move in tables and scroll |
 | `r` | refresh now |
 | `m` | toggle motion |
+| `x` | toggle the fixed-day / fit-samples chart window |
 | `t` | jump to today / current period |
 | `s l g b` | toggle Today series |
-| `e` | export JSON or CSV on Diagnostics/History |
+| `e` | export JSON or CSV on History and Diagnostics |
+| `d` | re-discover the inverter on Diagnostics |
 | `?` | help overlay |
 | `esc` | close overlay |
 | `q` | quit |
 
-Mouse: click tabs, click a tile to open its related screen (Solar→PV,
-Battery→Battery, Grid→Today, House→Today), click the chart to move the cursor,
-wheel to scroll tables and the raw browser.
+Mouse: click tabs and tiles, click a chart to move the cursor, wheel to scroll
+tables and the raw browser.
 
 ## Motion
 
@@ -127,7 +158,7 @@ not focused. `m` toggles it; `--no-motion` disables it at startup.
 
 ## States
 
-Every screen has explicit loading, empty and error states. Loading shows the
-canvas with a spinner in the header. Empty says what is missing in plain words.
-Errors show the provider message and the age of the last good snapshot. Stale
-data keeps rendering with an amber age badge rather than disappearing.
+Every screen has explicit loading, empty and error states. Empty says what is
+missing in plain words. Errors show the provider message and the age of the
+last good snapshot. Stale data keeps rendering with an amber age badge rather
+than disappearing.

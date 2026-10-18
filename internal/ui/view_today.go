@@ -9,100 +9,83 @@ import (
 )
 
 func (m *Model) renderToday(w, h, y int) string {
-	var lines []string
-	title := m.th.Bold(m.th.Accent).Render("TODAY") + "  " + m.th.Muted.Render(fmtDate(m.day))
 	peak, peakAt := dayPeak(m.daySamples)
+	title := m.th.Bold(m.th.Accent).Render("TODAY") + "  " + m.th.Muted.Render(fmtDate(m.day))
 	if peak > 0 {
-		title += m.th.Muted.Render("   peak ") + m.th.Style(m.th.Solar).Render(fmtPowerAbs(peak)) +
-			m.th.Muted.Render(" at "+peakAt.Format("15:04"))
+		title = joinSides(title, m.th.Muted.Render("peak ")+m.th.Style(m.th.Solar).Render(fmtPowerAbs(peak))+m.th.Muted.Render(" at "+peakAt.Format("15:04")), w)
 	}
-	lines = append(lines, title)
-	lines = append(lines, m.headerStats(w))
-	lines = append(lines, m.seriesLegend(w))
+
+	summary := []string{
+		"  " + m.th.Muted.Render("generated ") + m.th.Style(m.th.Solar).Render(fmtEnergy(m.snap.TodayKWh)) +
+			m.th.Muted.Render("     consumed ") + m.th.Value.Render(fmtEnergy(m.snap.LoadTodayKWh)),
+		"  " + m.th.Muted.Render("imported ") + m.th.Style(m.th.Import).Render(fmtEnergy(m.snap.ImportTodayKWh)) +
+			m.th.Muted.Render("     exported ") + m.th.Style(m.th.Export).Render(fmtEnergy(m.snap.ExportTodayKWh)) +
+			m.th.Muted.Render("     battery +") + m.th.Style(m.th.Battery).Render(fmtEnergy(m.snap.ChargeTodayKWh)) +
+			m.th.Muted.Render(" / -") + m.th.Style(m.th.Discharge).Render(fmtEnergy(m.snap.DischargeTodayKWh)),
+		"  " + m.th.Muted.Render("income ") + m.th.Good.Render(fmtMoney(m.currencySymbol(), m.incomeToday())) +
+			m.th.Muted.Render("     CO₂ ") + m.th.Good.Render(fmtCO2(m.co2Today())) +
+			m.th.Muted.Render("     temperature ") + m.th.Value.Render(fmtTempC(m.snap.TempC)),
+	}
+
+	var lines []string
+	lines = append(lines, title, "")
+	lines = append(lines, wrapPanel("SUMMARY", summary, w, m.th.Faint, m.th.Dim, m.th.Faint)...)
+	lines = append(lines, "")
+	lines = append(lines, m.dayLegend(w))
 	lines = append(lines, m.cursorLine(w))
 
-	if len(m.daySamples) == 0 {
-		lines = append(lines, centerText(m.th.Muted.Render("no samples for this day yet"), w))
-		return strings.Join(fitLines(lines, w, h), "\n")
-	}
-
 	chartH := h - len(lines)
-	if chartH < 3 {
-		chartH = 3
+	if chartH < 6 {
+		chartH = 6
 	}
 	chartY := y + len(lines)
-	chart := RenderLine(LineOptions{
-		Width: w, Height: chartH,
-		Series: m.todaySeries(),
-		Cursor: m.chartCursor, CursorColor: m.th.Fg, Dim: m.th.Faint,
-		ShowYAxis: true, ShowXAxis: true, ZeroLine: true,
-		XLabels: m.xLabels(),
-	})
+	chart, hit := m.renderDayChart(w, chartH, "POWER · FIXED DAY 00:00-23:59", m.daySamples, m.day, m.series, true, true)
 	lines = append(lines, chart...)
-	m.hits.Add(Rect{X: 0, Y: chartY, W: w, H: chartH}, Action{Kind: ActionChartCursor, Rect: Rect{X: 0, Y: chartY, W: w, H: chartH}})
+	m.hits.Add(
+		Rect{X: hit.X, Y: chartY + hit.Y, W: hit.W, H: hit.H},
+		Action{Kind: ActionChartCursor, Rect: Rect{X: hit.X, Y: chartY + hit.Y, W: hit.W, H: hit.H}},
+	)
 	return strings.Join(fitLines(lines, w, h), "\n")
 }
 
-func (m *Model) seriesLegend(w int) string {
-	current := provider.Sample{}
-	if len(m.daySamples) > 0 {
-		current = m.daySamples[len(m.daySamples)-1]
+func (m *Model) cursorLine(w int) string {
+	s := m.selectedSample()
+	if s == nil {
+		return m.th.Muted.Render("waiting for today's curve")
 	}
-	if m.chartCursor >= 0 && m.chartCursor < len(m.daySamples) {
-		current = m.daySamples[m.chartCursor]
-	}
-	entries := []struct {
-		name  string
-		value string
-		c     color.Color
-		on    bool
-	}{
-		{"s", "solar " + fmtPower(current.SolarW), m.th.Solar, m.series[0]},
-		{"l", "load " + fmtPower(current.LoadW), m.th.Fg, m.series[1]},
-		{"g", "grid " + fmtPower(current.GridW), m.th.Grid, m.series[2]},
-		{"b", "battery " + fmtPower(current.BatteryW), m.th.Battery, m.series[3]},
-	}
-	var parts []string
-	for _, e := range entries {
-		label := m.th.HelpKey.Render(e.name) + " "
-		if e.on {
-			parts = append(parts, label+m.th.Style(e.c).Render(e.value))
-		} else {
-			parts = append(parts, label+m.th.Muted.Render(e.value))
-		}
+	parts := []string{
+		m.th.Bold(m.th.Fg).Render(s.TS.Format("15:04")),
+		styleFg(m.th, m.th.Solar, "solar ") + m.th.Muted.Render(fmtPower(s.SolarW)),
+		styleFg(m.th, m.th.Fg, "consumption ") + m.th.Muted.Render(fmtPower(s.LoadW)),
+		styleFg(m.th, m.th.Grid, "grid ") + m.th.Muted.Render(fmtPower(s.GridW)),
+		styleFg(m.th, m.th.Battery, "battery ") + m.th.Muted.Render(fmtPower(s.BatteryW)),
 	}
 	return clampText(strings.Join(parts, "   "), w)
 }
 
-func (m *Model) cursorLine(w int) string {
-	if len(m.daySamples) == 0 {
-		return m.th.Muted.Render("waiting for today's curve")
+// dayLegend is the series key and toggle hint above the Today chart.
+func (m *Model) dayLegend(w int) string {
+	entries := []struct {
+		key   string
+		name  string
+		color color.Color
+		on    bool
+	}{
+		{"s", "solar", m.th.Solar, m.series[0]},
+		{"l", "consumption", m.th.Fg, m.series[1]},
+		{"g", "grid", m.th.Grid, m.series[2]},
+		{"b", "battery", m.th.Battery, m.series[3]},
 	}
-	s := m.daySamples[len(m.daySamples)-1]
-	if m.chartCursor >= 0 && m.chartCursor < len(m.daySamples) {
-		s = m.daySamples[m.chartCursor]
+	var parts []string
+	for _, e := range entries {
+		label := "[" + e.key + "] "
+		if e.on {
+			parts = append(parts, m.th.HelpKey.Render(label)+styleFg(m.th, e.color, e.name))
+		} else {
+			parts = append(parts, m.th.Muted.Render(label+e.name))
+		}
 	}
-	parts := []string{
-		m.th.Bold(m.th.Fg).Render(s.TS.Format("15:04")),
-		m.th.Style(m.th.Solar).Render("solar " + fmtPower(s.SolarW)),
-		m.th.Style(m.th.Fg).Render("load " + fmtPower(s.LoadW)),
-		m.th.Style(m.th.Grid).Render("grid " + fmtPower(s.GridW)),
-		m.th.Style(m.th.Battery).Render("battery " + fmtPower(s.BatteryW)),
-	}
-	if s.SOC != nil {
-		parts = append(parts, m.th.Style(m.th.Battery).Render("soc "+fmtPct(s.SOC)))
-	}
-	return clampText(strings.Join(parts, "  "), w)
-}
-
-func (m *Model) xLabels() []string {
-	if len(m.daySamples) == 0 {
-		return []string{"00:00", "12:00", "23:55"}
-	}
-	first := m.daySamples[0].TS
-	last := m.daySamples[len(m.daySamples)-1].TS
-	mid := time.Date(first.Year(), first.Month(), first.Day(), 12, 0, 0, 0, first.Location())
-	return []string{first.Format("15:04"), mid.Format("15:04"), last.Format("15:04")}
+	return clampText(strings.Join(parts, "   "), w)
 }
 
 func dayPeak(samples []provider.Sample) (float64, time.Time) {

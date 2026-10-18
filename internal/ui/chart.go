@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"charm.land/lipgloss/v2"
+	"github.com/charmbracelet/x/ansi"
 )
 
 // Braille dot bits indexed by [row][column] within one character cell. The
@@ -25,7 +26,7 @@ type chartCell struct {
 }
 
 // LineSeries is one plotted series. Values are indexed positions; nil values
-// are gaps. The x axis is the index.
+// are gaps. The x axis is the index unless the caller fills a fixed day window.
 type LineSeries struct {
 	Name   string
 	Color  color.Color
@@ -35,39 +36,61 @@ type LineSeries struct {
 // LineOptions configures a braille line chart.
 type LineOptions struct {
 	Width, Height int
-	Series        []LineSeries
-	Cursor        int // index into values, or -1
-	CursorColor   color.Color
-	Dim           color.Color
-	ShowYAxis     bool
-	ShowXAxis     bool
-	XLabels       []string // three labels: start, middle, end
-	ZeroLine      bool
-	MinY, MaxY    *float64 // optional fixed range
-	YLabel        func(float64) string
+
+	// Title and Border draw a rounded panel around the chart.
+	Title       string
+	Border      bool
+	BorderColor color.Color
+	TitleColor  color.Color
+
+	Series      []LineSeries
+	Cursor      int // index into values, or -1
+	CursorColor color.Color
+	Dim         color.Color
+	Fg          color.Color
+	ShowYAxis   bool
+	ShowXAxis   bool
+	XLabels     []string // distributed evenly across the plot width
+	ZeroLine    bool
+	MinY, MaxY  *float64 // optional fixed range
+	YLabel      func(float64) string
 }
 
-// RenderLine renders a braille line chart as exactly Height lines.
-func RenderLine(o LineOptions) []string {
-	if o.Width < 4 || o.Height < 1 {
-		return nil
+// RenderLine renders a braille line chart as exactly Height lines. The second
+// return value is the plot rectangle in local coordinates, for mouse hits.
+func RenderLine(o LineOptions) ([]string, Rect) {
+	if o.Width < 6 || o.Height < 3 {
+		return nil, Rect{}
 	}
+	border := o.Border
+	contentW, contentH := o.Width, o.Height
+	offset := 0
+	if border {
+		contentW -= 2
+		contentH -= 2
+		offset = 1
+	}
+	if contentW < 4 || contentH < 1 {
+		return nil, Rect{}
+	}
+
 	axisW := 0
 	if o.ShowYAxis {
 		axisW = 8
 	}
-	plotW := o.Width - axisW
+	plotW := contentW - axisW
 	if plotW < 4 {
 		plotW = 4
-		axisW = o.Width - plotW
+		axisW = contentW - plotW
 		if axisW < 0 {
 			axisW = 0
 		}
 	}
-	plotH := o.Height
+	xRows := 0
 	if o.ShowXAxis {
-		plotH--
+		xRows = 1
 	}
+	plotH := contentH - xRows
 	if plotH < 1 {
 		plotH = 1
 	}
@@ -91,7 +114,7 @@ func RenderLine(o LineOptions) []string {
 		maxY = minY + 1
 	}
 	if o.MinY == nil && o.MaxY == nil {
-		pad := (maxY - minY) * 0.05
+		pad := (maxY - minY) * 0.06
 		minY -= pad
 		maxY += pad
 	}
@@ -129,7 +152,7 @@ func RenderLine(o LineOptions) []string {
 		}
 	}
 	if n == 0 {
-		return emptyChart(o)
+		return emptyPanel(o, contentW, contentH, axisW, plotH, xRows), Rect{}
 	}
 	xFor := func(i int) int {
 		if n == 1 {
@@ -141,11 +164,9 @@ func RenderLine(o LineOptions) []string {
 		return int(math.Round((maxY - v) / (maxY - minY) * float64(ph-1)))
 	}
 
+	zeroRow := -1
 	if o.ZeroLine && minY < 0 && maxY > 0 {
-		zy := yFor(0)
-		for px := 0; px < pw; px++ {
-			plot(px, zy, o.Dim, 100)
-		}
+		zeroRow = yFor(0) / 4
 	}
 
 	for si, s := range o.Series {
@@ -173,11 +194,12 @@ func RenderLine(o LineOptions) []string {
 		}
 	}
 
-	lines := make([]string, 0, o.Height)
 	yLabel := o.YLabel
 	if yLabel == nil {
 		yLabel = axisPower
 	}
+
+	var content []string
 	for row := 0; row < plotH; row++ {
 		var b strings.Builder
 		if axisW > 0 {
@@ -198,7 +220,15 @@ func RenderLine(o LineOptions) []string {
 		for col := 0; col < plotW; col++ {
 			cell, ok := cells[[2]int{col, row}]
 			if !ok || cell.bits == 0 {
-				b.WriteString(" ")
+				if row == zeroRow {
+					if o.Dim != nil {
+						b.WriteString(lipgloss.NewStyle().Foreground(o.Dim).Render("╌"))
+					} else {
+						b.WriteString("╌")
+					}
+				} else {
+					b.WriteString(" ")
+				}
 				continue
 			}
 			r := rune(0x2800) + cell.bits
@@ -208,20 +238,82 @@ func RenderLine(o LineOptions) []string {
 				b.WriteRune(r)
 			}
 		}
-		lines = append(lines, b.String())
+		content = append(content, b.String())
 	}
 
-	if o.ShowXAxis {
-		labels := o.XLabels
-		if len(labels) < 3 {
-			labels = []string{"", "", ""}
-		}
+	if xRows == 1 {
 		var b strings.Builder
 		if axisW > 0 {
 			b.WriteString(strings.Repeat(" ", axisW))
 		}
-		b.WriteString(fitXLabels(labels, plotW))
-		lines = append(lines, b.String())
+		b.WriteString(distributeLabels(o.XLabels, plotW))
+		content = append(content, b.String())
+	}
+
+	hit := Rect{X: offset + axisW, Y: offset, W: plotW, H: plotH}
+	if !border {
+		return padLines(content, o.Width), hit
+	}
+	return wrapPanel(o.Title, content, o.Width, o.BorderColor, o.TitleColor, o.Dim), hit
+}
+
+func emptyPanel(o LineOptions, contentW, contentH, axisW, plotH, xRows int) []string {
+	lines := make([]string, 0, contentH)
+	for i := 0; i < plotH; i++ {
+		if i == plotH/2 {
+			var b strings.Builder
+			if axisW > 0 {
+				b.WriteString(strings.Repeat(" ", axisW))
+			}
+			b.WriteString(centerText("no data yet", contentW-axisW))
+			lines = append(lines, b.String())
+		} else {
+			lines = append(lines, strings.Repeat(" ", contentW))
+		}
+	}
+	if xRows == 1 {
+		lines = append(lines, strings.Repeat(" ", contentW))
+	}
+	if !o.Border {
+		return padLines(lines, o.Width)
+	}
+	return wrapPanel(o.Title, lines, o.Width, o.BorderColor, o.TitleColor, o.Dim)
+}
+
+// wrapPanel draws a rounded border with an optional title in the top edge.
+func wrapPanel(title string, content []string, width int, borderColor, titleColor, dim color.Color) []string {
+	if width < 4 {
+		width = 4
+	}
+	bc := borderColor
+	if bc == nil {
+		bc = dim
+	}
+	rule := lipgloss.NewStyle().Foreground(bc)
+	bold := lipgloss.NewStyle().Bold(true).Foreground(titleColor)
+	inner := width - 2
+
+	out := make([]string, 0, len(content)+2)
+	if title == "" {
+		out = append(out, rule.Render("╭"+strings.Repeat("─", inner)+"╮"))
+	} else {
+		t := clampText(title, inner-3)
+		fill := inner - ansi.StringWidth(t) - 3
+		if fill < 0 {
+			fill = 0
+		}
+		out = append(out, rule.Render("╭─ ")+bold.Render(t)+rule.Render(" "+strings.Repeat("─", fill)+"╮"))
+	}
+	for _, line := range content {
+		out = append(out, rule.Render("│")+padRight(line, inner)+rule.Render("│"))
+	}
+	out = append(out, rule.Render("╰"+strings.Repeat("─", inner)+"╯"))
+	return out
+}
+
+func padLines(lines []string, width int) []string {
+	for i := range lines {
+		lines[i] = padRight(lines[i], width)
 	}
 	return lines
 }
@@ -285,39 +377,41 @@ func chartRange(series []LineSeries) (minY, maxY float64) {
 	return minY, maxY
 }
 
-func emptyChart(o LineOptions) []string {
-	out := make([]string, 0, o.Height)
-	for i := 0; i < o.Height; i++ {
-		if i == o.Height/2 {
-			out = append(out, centerText("no data yet", o.Width))
-		} else {
-			out = append(out, strings.Repeat(" ", o.Width))
-		}
+// distributeLabels places labels evenly across w cells, centred on their slot.
+func distributeLabels(labels []string, w int) string {
+	if w <= 0 || len(labels) == 0 {
+		return strings.Repeat(" ", max(0, w))
 	}
-	return out
-}
-
-func fitXLabels(labels []string, w int) string {
-	if w <= 0 {
-		return ""
-	}
-	start, mid, end := labels[0], labels[1], labels[2]
-	midW := len([]rune(mid))
 	line := make([]rune, w)
 	for i := range line {
 		line[i] = ' '
 	}
-	put := func(s string, at int) {
-		for i, r := range []rune(s) {
-			pos := at + i
-			if pos >= 0 && pos < w {
-				line[pos] = r
+	n := len(labels)
+	for i, label := range labels {
+		x := 0
+		if n > 1 {
+			x = int(math.Round(float64(i) * float64(w-1) / float64(n-1)))
+		}
+		lw := ansi.StringWidth(label)
+		start := x - lw/2
+		if i == 0 {
+			start = x
+		}
+		if i == n-1 {
+			start = x - lw + 1
+		}
+		if start < 0 {
+			start = 0
+		}
+		if start+lw > w {
+			start = w - lw
+		}
+		for j, r := range label {
+			if start+j >= 0 && start+j < w {
+				line[start+j] = r
 			}
 		}
 	}
-	put(start, 0)
-	put(mid, (w-midW)/2)
-	put(end, w-len([]rune(end)))
 	return string(line)
 }
 
@@ -335,13 +429,9 @@ func axisPower(v float64) string {
 
 func trimNum(v float64) string {
 	if math.Abs(v) >= 10 {
-		return strings.TrimSuffix(fmtFixed(v, 0), ".0")
+		return strconv.FormatFloat(v, 'f', 0, 64)
 	}
-	return strings.TrimSuffix(fmtFixed(v, 1), ".0")
-}
-
-func fmtFixed(v float64, prec int) string {
-	return strconv.FormatFloat(v, 'f', prec, 64)
+	return strconv.FormatFloat(v, 'f', 1, 64)
 }
 
 // Sparkline renders values as block characters across width cells.
@@ -409,24 +499,36 @@ type Bar struct {
 // BarOptions configures a vertical bar chart.
 type BarOptions struct {
 	Width, Height int
+	Title         string
+	Border        bool
+	BorderColor   color.Color
+	TitleColor    color.Color
 	Bars          []Bar
 	Dim           color.Color
 	Fg            color.Color
 	ShowYAxis     bool
 	LabelStep     int
+	YLabel        func(float64) string
 }
 
 // RenderBars renders a vertical bar chart as exactly Height lines.
 func RenderBars(o BarOptions) []string {
-	if o.Width < 4 || o.Height < 2 || len(o.Bars) == 0 {
+	if o.Width < 6 || o.Height < 3 || len(o.Bars) == 0 {
 		return emptyBars(o)
+	}
+	border := o.Border
+	contentW, contentH := o.Width, o.Height
+	if border {
+		contentW -= 2
+		contentH -= 2
 	}
 	axisW := 0
 	if o.ShowYAxis {
 		axisW = 8
 	}
-	plotW := o.Width - axisW
-	plotH := o.Height - 1
+	plotW := contentW - axisW
+	xRows := 1
+	plotH := contentH - xRows
 	if plotH < 1 {
 		plotH = 1
 	}
@@ -453,7 +555,6 @@ func RenderBars(o BarOptions) []string {
 		barW = 1
 	}
 
-	// grid[row][col] holds a coloured block, if any.
 	type cell struct {
 		r rune
 		c color.Color
@@ -469,9 +570,9 @@ func RenderBars(o BarOptions) []string {
 		if x0 >= plotW {
 			break
 		}
-		color := bar.Color
+		barColor := bar.Color
 		if bar.Highlight && o.Fg != nil {
-			color = o.Fg
+			barColor = o.Fg
 		}
 		totalEighths := int(math.Round(bar.Value / maxV * float64(plotH*8)))
 		if totalEighths <= 0 && bar.Value > 0 {
@@ -481,25 +582,30 @@ func RenderBars(o BarOptions) []string {
 		rem := totalEighths % 8
 		for x := x0; x < x0+barW && x < plotW; x++ {
 			for row := 0; row < full && row < plotH; row++ {
-				grid[plotH-1-row][x] = cell{r: '█', c: color}
+				grid[plotH-1-row][x] = cell{r: '█', c: barColor}
 			}
 			if rem > 0 && full < plotH {
-				grid[plotH-1-full][x] = cell{r: eighthBlocks[rem-1], c: color}
+				grid[plotH-1-full][x] = cell{r: eighthBlocks[rem-1], c: barColor}
 			}
 		}
 	}
 
-	var lines []string
+	yLabel := o.YLabel
+	if yLabel == nil {
+		yLabel = trimNum
+	}
+
+	var content []string
 	for row := 0; row < plotH; row++ {
 		var b strings.Builder
 		if axisW > 0 {
 			label := ""
 			switch row {
 			case 0:
-				label = trimNum(maxV)
+				label = yLabel(maxV)
 			case plotH / 2:
 				if plotH > 4 {
-					label = trimNum(maxV / 2)
+					label = yLabel(maxV / 2)
 				}
 			case plotH - 1:
 				label = "0"
@@ -519,7 +625,7 @@ func RenderBars(o BarOptions) []string {
 				b.WriteRune(cl.r)
 			}
 		}
-		lines = append(lines, b.String())
+		content = append(content, b.String())
 	}
 
 	// x labels
@@ -527,42 +633,57 @@ func RenderBars(o BarOptions) []string {
 	if step <= 0 {
 		step = max(1, n/8)
 	}
-	labelLine := make([]rune, o.Width)
+	labelLine := make([]rune, contentW)
 	for i := range labelLine {
 		labelLine[i] = ' '
 	}
-	offset := axisW
 	for bi, bar := range o.Bars {
 		if bi%step != 0 && bi != n-1 {
 			continue
 		}
-		x0 := offset + bi*(barW+gap)
+		x0 := axisW + bi*(barW+gap)
 		text := []rune(bar.Label)
 		start := x0 + (barW-len(text))/2
-		if start < offset {
-			start = offset
+		if start < axisW {
+			start = axisW
 		}
 		for i, r := range text {
 			pos := start + i
-			if pos >= 0 && pos < o.Width {
+			if pos >= 0 && pos < contentW {
 				labelLine[pos] = r
 			}
 		}
 	}
-	lines = append(lines, string(labelLine))
-	return lines
+	content = append(content, string(labelLine))
+
+	if !border {
+		return padLines(content, o.Width)
+	}
+	return wrapPanel(o.Title, content, o.Width, o.BorderColor, o.TitleColor, o.Dim)
 }
 
 func emptyBars(o BarOptions) []string {
-	out := make([]string, 0, o.Height)
-	for i := 0; i < o.Height; i++ {
-		if i == o.Height/2 {
-			out = append(out, centerText("no history yet", o.Width))
+	contentH := o.Height
+	contentW := o.Width
+	if o.Border {
+		contentH -= 2
+		contentW -= 2
+	}
+	if contentH < 1 {
+		contentH = 1
+	}
+	lines := make([]string, 0, contentH)
+	for i := 0; i < contentH; i++ {
+		if i == contentH/2 {
+			lines = append(lines, centerText("no history yet", contentW))
 		} else {
-			out = append(out, strings.Repeat(" ", o.Width))
+			lines = append(lines, strings.Repeat(" ", contentW))
 		}
 	}
-	return out
+	if !o.Border {
+		return padLines(lines, o.Width)
+	}
+	return wrapPanel(o.Title, lines, o.Width, o.BorderColor, o.TitleColor, o.Dim)
 }
 
 func absInt(v int) int {

@@ -130,11 +130,11 @@ func (m *Model) footerKeys() string {
 	pairs := [][2]string{{"1-7", "views"}, {"r", "refresh"}, {"?", "help"}, {"q", "quit"}}
 	switch m.tab {
 	case TabLive:
-		pairs = [][2]string{{"t", "today"}, {"m", "motion"}, {"r", "refresh"}, {"?", "help"}, {"q", "quit"}}
+		pairs = [][2]string{{"t", "today"}, {"x", "window"}, {"m", "motion"}, {"r", "refresh"}, {"?", "help"}, {"q", "quit"}}
 	case TabToday:
 		pairs = [][2]string{{"→", "cursor"}, {"s l g b", "series"}, {"t", "today"}, {"r", "refresh"}, {"?", "help"}, {"q", "quit"}}
 	case TabHistory:
-		pairs = [][2]string{{"tab", "month/year"}, {"h l", "period"}, {"t", "now"}, {"e", "export"}, {"?", "help"}, {"q", "quit"}}
+		pairs = [][2]string{{"tab", "day/month/year"}, {"h l", "period"}, {"t", "now"}, {"e", "export"}, {"?", "help"}, {"q", "quit"}}
 	case TabBattery:
 		pairs = [][2]string{{"→", "cursor"}, {"t", "today"}, {"r", "refresh"}, {"?", "help"}, {"q", "quit"}}
 	case TabPV:
@@ -209,6 +209,7 @@ func (m *Model) renderHelp(w, h int) string {
 		{"j k / ↑ ↓", "move in tables and scroll raw data"},
 		{"r", "refresh now"},
 		{"m", "toggle motion"},
+		{"x", "toggle fixed-day / fit-samples chart window"},
 		{"t", "jump to today / current period"},
 		{"s l g b", "toggle Today series (solar, load, grid, battery)"},
 		{"h l", "previous / next period in History"},

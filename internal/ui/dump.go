@@ -10,11 +10,11 @@ import (
 
 // DumpFrame renders one frame of the UI with live data fetched synchronously.
 // It backs the --dump debugging flag and does not start Bubble Tea.
-func DumpFrame(src provider.Source, cfg config.Config, paths config.Paths, version string, demo bool, tab Tab, w, h int) (string, error) {
+func DumpFrame(src provider.Source, cfg config.Config, paths config.Paths, version string, demo bool, tab Tab, history HistoryMode, w, h int) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	m := New(Options{Config: cfg, Paths: paths, Source: src, Demo: demo, Version: version, InitialTab: tab})
+	m := New(Options{Config: cfg, Paths: paths, Source: src, Demo: demo, Version: version, InitialTab: tab, InitialHistory: history})
 	m.width, m.height = w, h
 	m.th = NewTheme(cfg.Display.Theme)
 
@@ -26,7 +26,9 @@ func DumpFrame(src provider.Source, cfg config.Config, paths config.Paths, versi
 	now := time.Now()
 	if samples, err := src.Today(ctx, now); err == nil {
 		m.daySamples = samples
+		m.historySamples = samples
 		m.day = now
+		m.historyDay = now
 	}
 	if rows, err := src.Month(ctx, now.Year(), now.Month()); err == nil {
 		m.month = rows

@@ -22,8 +22,10 @@ make discover        # needs credentials in ~/.config/solar-monitor/config.toml
 - Demo mode works with all seven screens; `--dump` renders any tab at any size.
 - The SolisCloud client, config import, SQLite store and monitor service are
   implemented and unit tested.
-- The project and binary were renamed from `solar-moonitor-go` to
-  `solar-monitor-go` / `solar-monitor`.
+- Charts now carry y and x axes and a titled border everywhere. The Live chart
+  plots solar, total consumption, grid and battery over a fixed 00:00-23:59
+  window by default; `x` (or `display.day_window = "auto"`) switches to
+  fit-to-samples. History gained a day mode.
 - No credentials are available on this machine, so live field names, units and
   signs are still unverified.
 
@@ -36,5 +38,5 @@ make discover        # needs credentials in ~/.config/solar-monitor/config.toml
 
 - `make check`: pass
 - `go test ./...`: pass
-- Manual `--dump` review at 60×20, 80×24, 100×30: looks correct
+- Golden frames at 60×20, 80×24 and 100×30, plus Live in auto window mode
 - Live API: not run

@@ -9,6 +9,7 @@
         │   j k / ↑ ↓         move in tables and scroll raw data       │        
         │   r                 refresh now                              │        
         │   m                 toggle motion                            │        
+        │   x                 toggle fixed-day / fit-samples chart wi… │        
         │   t                 jump to today / current period           │        
         │   s l g b           toggle Today series (solar, load, grid,… │        
         │   h l               previous / next period in History        │        
@@ -19,6 +20,5 @@
         │                                                              │        
         │ Mouse: click tabs, tiles and chart; wheel scrolls lists.     │        
         ╰──────────────────────────────────────────────────────────────╯        
-                                                                                
                                                                                 
                                                                                 

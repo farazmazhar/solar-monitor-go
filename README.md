@@ -49,7 +49,8 @@ go build -o solar-monitor ./cmd/solar-monitor
 Useful flags: `--config PATH`, `--state-dir PATH`, `--theme solar-dark|transparent`,
 `--no-motion`, `--init`, `--discover`, `--version`.
 
-`--dump` renders one frame with demo data and exits; `--dump-tab 0..6` and
+`--dump` renders one frame with demo data and exits; `--dump-tab 0..6`,
+`--dump-history day|month|year`, `--dump-window day|auto` and
 `--dump-size 100x30` choose what to render. It is meant for screenshots,
 debugging and CI smoke checks.
 
@@ -78,6 +79,9 @@ motion = true
 currency = "PKR"
 currency_symbol = "₨"
 co2_kg_per_kwh = 0.4
+# "day" pins the charts to 00:00-23:59 and lets the lines progress.
+# "auto" fits the measured samples to the chart width instead.
+day_window = "day"
 
 [tariff]
 import = 0.0
@@ -105,6 +109,7 @@ prunes raw JSON snapshots after 30 days by default.
 | `j` `k`, `↑` `↓` | move in tables and scroll raw data |
 | `r` | refresh now |
 | `m` | toggle motion |
+| `x` | toggle the chart window between fixed day and fit samples |
 | `t` | jump to today or the current period |
 | `s` `l` `g` `b` | toggle the Today chart series |
 | `h` `l` | previous / next period in History |
@@ -117,9 +122,14 @@ Mouse clicks switch tabs and tiles, move the chart cursor, and scroll lists.
 ## Screens
 
 - **Live** — energy-flow diagram, live tiles with sparklines, a battery gauge
-  and a mini today curve.
-- **Today** — multi-series chart for the day with a cursor and a summary.
-- **History** — month and year bars with income and CO₂ summaries.
+  and a day chart with time and power axes. The chart plots solar, total
+  consumption, grid and battery; `x` switches between a fixed 00:00–23:59
+  window and a fit-to-samples window.
+- **Today** — the same day chart with a summary panel, a cursor and per-series
+  toggles.
+- **History** — day, month and year views. Day shows the same power chart for
+  the selected date; month and year show bordered bar charts with axes and
+  income/CO₂ summaries. `tab` cycles the mode and `h`/`l` step periods.
 - **Battery** — SOC gauge, SOH, power, voltage, current, throughput and a 24 h
   SOC chart.
 - **PV** — per-string voltage, current, power and share.

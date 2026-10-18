@@ -38,6 +38,8 @@ func main() {
 		discover   = flag.Bool("discover", false, "fetch and print the raw inverterDetail payload, then exit")
 		dump       = flag.Bool("dump", false, "render one frame with demo data to stdout and exit")
 		dumpTab    = flag.Int("dump-tab", 0, "tab index to render with --dump (0-6)")
+		dumpHist   = flag.String("dump-history", "day", "history mode for --dump: day, month or year")
+		dumpWindow = flag.String("dump-window", "day", "live chart window for --dump: day or auto")
 		dumpSize   = flag.String("dump-size", "80x24", "terminal size for --dump, e.g. 100x30")
 		themeFlag  = flag.String("theme", "", "override the theme (solar-dark or transparent)")
 		noMotion   = flag.Bool("no-motion", false, "disable animation")
@@ -123,8 +125,11 @@ func main() {
 			src = demo.New(demo.Options{Speed: cfg.Demo.Speed})
 			isDemo = true
 		}
+		if strings.EqualFold(*dumpWindow, "auto") {
+			cfg.Display.DayWindow = "auto"
+		}
 		w, h := parseSize(*dumpSize)
-		frame, err := ui.DumpFrame(src, cfg, paths, version, isDemo, ui.Tab(clampInt(*dumpTab, 0, 6)), w, h)
+		frame, err := ui.DumpFrame(src, cfg, paths, version, isDemo, ui.Tab(clampInt(*dumpTab, 0, 6)), parseHistory(*dumpHist), w, h)
 		if err != nil {
 			fatal(err)
 		}
@@ -287,4 +292,15 @@ func clampInt(v, lo, hi int) int {
 		return hi
 	}
 	return v
+}
+
+func parseHistory(s string) ui.HistoryMode {
+	switch strings.ToLower(strings.TrimSpace(s)) {
+	case "month":
+		return ui.HistoryMonth
+	case "year":
+		return ui.HistoryYear
+	default:
+		return ui.HistoryDay
+	}
 }

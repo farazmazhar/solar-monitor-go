@@ -33,6 +33,9 @@ with local SQLite history. Tests pass. Live field verification is the main gap.
       and staleness tracking
 - [x] Re-discover the inverter from the Diagnostics screen (`d`)
 - [x] Bubble Tea UI with seven screens, flow diagram, charts and gauge
+- [x] Chart pass: y and x axes everywhere, bordered/framed charts and panels,
+      fixed-day 00:00-23:59 window with `x`/`day_window` toggle, History day
+      mode, Today restructured with a summary panel and series legend
 - [x] Mouse navigation, help overlay, motion toggle, JSON/CSV export
 - [x] `NO_COLOR` monochrome theme and a transparent theme
 - [x] Golden render tests at 60×20, 80×24 and 100×30

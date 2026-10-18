@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math"
 	"strings"
 	"time"
 
@@ -28,11 +29,12 @@ const (
 
 var tabTitles = []string{"Live", "Today", "History", "Battery", "PV", "Alarms", "Diagnostics"}
 
-// HistoryMode selects the month or year view.
+// HistoryMode selects the day, month or year view.
 type HistoryMode int
 
 const (
-	HistoryMonth HistoryMode = iota
+	HistoryDay HistoryMode = iota
+	HistoryMonth
 	HistoryYear
 )
 
@@ -56,18 +58,19 @@ type StoreStats struct {
 
 // Options wires the UI to its data source.
 type Options struct {
-	Config       config.Config
-	Paths        config.Paths
-	Source       provider.Source
-	Demo         bool
-	Version      string
-	SetupErr     error
-	DemoFactory  func() provider.Source
-	InitialTab   Tab
-	SeedSnapshot *provider.Snapshot
-	SeedSamples  []provider.Sample
-	Stats        func() (StoreStats, bool)
-	Rediscover   func(context.Context) error
+	Config         config.Config
+	Paths          config.Paths
+	Source         provider.Source
+	Demo           bool
+	Version        string
+	SetupErr       error
+	DemoFactory    func() provider.Source
+	InitialTab     Tab
+	InitialHistory HistoryMode
+	SeedSnapshot   *provider.Snapshot
+	SeedSamples    []provider.Sample
+	Stats          func() (StoreStats, bool)
+	Rediscover     func(context.Context) error
 }
 
 // Model is the root Bubble Tea model.
@@ -102,7 +105,10 @@ type Model struct {
 	day        time.Time
 	dayErr     error
 
+	historySamples []provider.Sample
+
 	historyMode HistoryMode
+	historyDay  time.Time
 	month       []provider.DayEnergy
 	monthAt     time.Time
 	monthErr    error
@@ -116,12 +122,13 @@ type Model struct {
 	alarmFilter AlarmFilter
 	alarmSel    int
 
-	chartCursor int
-	series      [4]bool
-	pvScroll    int
-	rawScroll   int
-	exportMsg   string
-	exportErr   error
+	staticDay bool
+	cursor    time.Time
+	series    [4]bool
+	pvScroll  int
+	rawScroll int
+	exportMsg string
+	exportErr error
 
 	// clock is injectable so golden tests can pin the wall clock.
 	clock func() time.Time
@@ -194,8 +201,8 @@ func New(opts Options) *Model {
 		height:      24,
 		tab:         opts.InitialTab,
 		motion:      opts.Config.Display.Motion,
-		chartCursor: -1,
-		historyMode: HistoryMonth,
+		staticDay:   opts.Config.Display.DayWindow != "auto",
+		historyMode: opts.InitialHistory,
 		alarmFilter: AlarmRecent,
 		clock:       time.Now,
 		stats:       opts.Stats,
@@ -209,6 +216,7 @@ func New(opts Options) *Model {
 		m.daySamples = opts.SeedSamples
 	}
 	m.day = m.now()
+	m.historyDay = m.day
 	m.monthAt = firstOfMonth(m.now())
 	m.yearAt = time.Date(m.now().Year(), 1, 1, 0, 0, 0, 0, time.Local)
 	m.nextPoll = m.now()
@@ -275,6 +283,9 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case todayMsg:
+		if sameDay(msg.day, m.historyDay) && msg.err == nil {
+			m.historySamples = msg.samples
+		}
 		if sameDay(msg.day, m.day) || m.day.IsZero() {
 			m.day = msg.day
 			if msg.err != nil {
@@ -283,7 +294,6 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			m.dayErr = nil
 			m.daySamples = msg.samples
-			m.chartCursor = clamp(m.chartCursor, -1, len(m.daySamples)-1)
 		}
 		return m, nil
 
@@ -444,22 +454,35 @@ func (m *Model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 			m.notice = "motion off"
 		}
 		return m, nil
+	case "x":
+		m.staticDay = !m.staticDay
+		m.cursor = time.Time{}
+		if m.staticDay {
+			m.notice = "graph window: fixed day, 00:00-23:59"
+		} else {
+			m.notice = "graph window: fit samples"
+		}
+		return m, nil
 	case "t":
 		m.day = m.now()
-		m.chartCursor = -1
+		m.cursor = time.Time{}
 		if m.tab == TabHistory {
+			m.historyDay = m.day
 			m.monthAt = firstOfMonth(m.now())
 			m.yearAt = time.Date(m.now().Year(), 1, 1, 0, 0, 0, 0, time.Local)
+			if m.historyMode == HistoryDay {
+				return m, m.fetchDayCmd(m.historyDay)
+			}
 			return m, tea.Batch(m.fetchMonthCmd(m.monthAt), m.fetchYearCmd(m.yearAt.Year()))
 		}
 		return m, m.fetchTodayCmd()
 	case "tab":
 		switch m.tab {
 		case TabHistory:
-			if m.historyMode == HistoryMonth {
-				m.historyMode = HistoryYear
-			} else {
-				m.historyMode = HistoryMonth
+			m.historyMode = (m.historyMode + 1) % 3
+			m.cursor = time.Time{}
+			if m.historyMode == HistoryDay {
+				return m, m.fetchDayCmd(m.historyDay)
 			}
 		case TabAlarms:
 			m.alarmFilter = (m.alarmFilter + 1) % 3
@@ -491,19 +514,29 @@ func (m *Model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	case TabHistory:
 		switch key {
 		case "left", "h":
-			if m.historyMode == HistoryMonth {
+			switch m.historyMode {
+			case HistoryDay:
+				m.historyDay = m.historyDay.AddDate(0, 0, -1)
+				return m, m.fetchDayCmd(m.historyDay)
+			case HistoryMonth:
 				m.monthAt = m.monthAt.AddDate(0, -1, 0)
 				return m, m.fetchMonthCmd(m.monthAt)
+			default:
+				m.yearAt = m.yearAt.AddDate(-1, 0, 0)
+				return m, m.fetchYearCmd(m.yearAt.Year())
 			}
-			m.yearAt = m.yearAt.AddDate(-1, 0, 0)
-			return m, m.fetchYearCmd(m.yearAt.Year())
 		case "right", "l":
-			if m.historyMode == HistoryMonth {
+			switch m.historyMode {
+			case HistoryDay:
+				m.historyDay = m.historyDay.AddDate(0, 0, 1)
+				return m, m.fetchDayCmd(m.historyDay)
+			case HistoryMonth:
 				m.monthAt = m.monthAt.AddDate(0, 1, 0)
 				return m, m.fetchMonthCmd(m.monthAt)
+			default:
+				m.yearAt = m.yearAt.AddDate(1, 0, 0)
+				return m, m.fetchYearCmd(m.yearAt.Year())
 			}
-			m.yearAt = m.yearAt.AddDate(1, 0, 0)
-			return m, m.fetchYearCmd(m.yearAt.Year())
 		case "e":
 			return m, m.exportHistoryCmd()
 		}
@@ -572,11 +605,7 @@ func (m *Model) handleClick(mouse tea.Mouse) (tea.Model, tea.Cmd) {
 			return m, m.switchTab(TabHistory)
 		}
 	case ActionChartCursor:
-		n := len(m.daySamples)
-		if n > 1 && action.Rect.W > 0 {
-			rel := clamp(mouse.X-action.Rect.X, 0, action.Rect.W-1)
-			m.chartCursor = clamp(int(float64(rel)/float64(action.Rect.W-1)*float64(n-1)), 0, n-1)
-		}
+		m.setCursorFromX(mouse.X, action.Rect)
 	case ActionAlarmRow:
 		m.alarmSel = action.Row
 	}
@@ -615,8 +644,19 @@ func (m *Model) switchTab(t Tab) tea.Cmd {
 	m.notice = ""
 	switch t {
 	case TabHistory:
-		if len(m.month) == 0 && m.monthErr == nil {
-			return m.fetchMonthCmd(m.monthAt)
+		switch m.historyMode {
+		case HistoryDay:
+			if len(m.historySamples) == 0 {
+				return m.fetchDayCmd(m.historyDay)
+			}
+		case HistoryMonth:
+			if len(m.month) == 0 && m.monthErr == nil {
+				return m.fetchMonthCmd(m.monthAt)
+			}
+		case HistoryYear:
+			if len(m.year) == 0 && m.yearErr == nil {
+				return m.fetchYearCmd(m.yearAt.Year())
+			}
 		}
 	case TabAlarms:
 		if time.Since(m.alarmsAt) > m.cfg.AlarmsInterval() {
@@ -634,14 +674,52 @@ func (m *Model) switchTab(t Tab) tea.Cmd {
 func (m *Model) SetNotice(s string) { m.notice = s }
 
 func (m *Model) moveCursor(delta int) {
-	if len(m.daySamples) == 0 {
+	samples := m.activeSamples()
+	if len(samples) == 0 {
 		return
 	}
-	if m.chartCursor < 0 {
-		m.chartCursor = len(m.daySamples) - 1
+	step := 5 * time.Minute
+	if m.cursor.IsZero() {
+		m.cursor = samples[len(samples)-1].TS
 		return
 	}
-	m.chartCursor = clamp(m.chartCursor+delta, 0, len(m.daySamples)-1)
+	day := m.activeDay()
+	next := m.cursor.Add(time.Duration(delta) * step)
+	if delta > 0 && next.After(samples[len(samples)-1].TS) {
+		next = samples[len(samples)-1].TS
+	}
+	start := time.Date(day.Year(), day.Month(), day.Day(), 0, 0, 0, 0, day.Location())
+	if next.Before(start) {
+		next = start
+	}
+	m.cursor = next
+}
+
+// setCursorFromX maps a mouse x position inside the plot rectangle to a cursor
+// time, using the same window the chart is drawn with.
+func (m *Model) setCursorFromX(x int, rect Rect) {
+	if rect.W <= 1 {
+		return
+	}
+	rel := clamp(x-rect.X, 0, rect.W-1)
+	frac := float64(rel) / float64(rect.W-1)
+	day := m.activeDay()
+	start := time.Date(day.Year(), day.Month(), day.Day(), 0, 0, 0, 0, day.Location())
+	fixed := m.staticDay
+	if m.tab == TabToday || m.tab == TabBattery || (m.tab == TabHistory && m.historyMode == HistoryDay) {
+		fixed = true
+	}
+	if fixed {
+		slot := int(math.Round(frac * float64(daySlotCount-1)))
+		m.cursor = start.Add(time.Duration(slot) * 5 * time.Minute)
+		return
+	}
+	samples := m.activeSamples()
+	if len(samples) == 0 {
+		return
+	}
+	idx := int(math.Round(frac * float64(len(samples)-1)))
+	m.cursor = samples[clamp(idx, 0, len(samples)-1)].TS
 }
 
 func (m *Model) startDemo() {
@@ -739,11 +817,17 @@ func (m *Model) fetchSnapshotCmd() tea.Cmd {
 }
 
 func (m *Model) fetchTodayCmd() tea.Cmd {
-	src := m.src
 	day := m.day
 	if day.IsZero() {
 		day = m.now()
 	}
+	return m.fetchDayCmd(day)
+}
+
+// fetchDayCmd loads one day's curve, for Today and for History's day view.
+func (m *Model) fetchDayCmd(day time.Time) tea.Cmd {
+	src := m.src
+	day = time.Date(day.Year(), day.Month(), day.Day(), 0, 0, 0, 0, day.Location())
 	if src == nil {
 		return nil
 	}
@@ -822,13 +906,14 @@ func sameDay(a, b time.Time) bool {
 }
 
 func (m *Model) selectedSample() *provider.Sample {
-	if m.chartCursor < 0 || m.chartCursor >= len(m.daySamples) {
-		if len(m.daySamples) == 0 {
-			return nil
-		}
-		return &m.daySamples[len(m.daySamples)-1]
+	samples := m.activeSamples()
+	if len(samples) == 0 {
+		return nil
 	}
-	return &m.daySamples[m.chartCursor]
+	if m.cursor.IsZero() {
+		return &samples[len(samples)-1]
+	}
+	return nearestSample(samples, m.cursor)
 }
 
 func (m *Model) lastRefreshLabel() string {
@@ -853,8 +938,114 @@ func (m *Model) errorText() string {
 }
 
 func (m *Model) fetchActiveHistory() tea.Cmd {
-	if m.historyMode == HistoryYear {
+	switch m.historyMode {
+	case HistoryDay:
+		return m.fetchDayCmd(m.historyDay)
+	case HistoryYear:
 		return m.fetchYearCmd(m.yearAt.Year())
+	default:
+		return m.fetchMonthCmd(m.monthAt)
 	}
-	return m.fetchMonthCmd(m.monthAt)
+}
+
+// activeDay is the day whose curve the active screen shows.
+func (m *Model) activeDay() time.Time {
+	if m.tab == TabHistory && m.historyMode == HistoryDay && !m.historyDay.IsZero() {
+		return m.historyDay
+	}
+	return m.day
+}
+
+// activeSamples is the sample set behind the active chart.
+func (m *Model) activeSamples() []provider.Sample {
+	if m.tab == TabHistory && m.historyMode == HistoryDay {
+		return m.historySamples
+	}
+	return m.daySamples
+}
+
+const daySlotCount = 288 // five-minute slots from 00:00 to 23:55
+
+// daySlotValues fills a fixed 00:00-23:55 grid from a day's samples.
+func daySlotValues(samples []provider.Sample, pick func(provider.Sample) *float64) []*float64 {
+	out := make([]*float64, daySlotCount)
+	for _, s := range samples {
+		if s.TS.IsZero() {
+			continue
+		}
+		slot := s.TS.Hour()*12 + s.TS.Minute()/5
+		if slot < 0 || slot >= daySlotCount {
+			continue
+		}
+		out[slot] = pick(s)
+	}
+	return out
+}
+
+// rollingValues keeps only the measured points, for the auto window.
+func rollingValues(samples []provider.Sample, pick func(provider.Sample) *float64) []*float64 {
+	out := make([]*float64, 0, len(samples))
+	for _, s := range samples {
+		out = append(out, pick(s))
+	}
+	return out
+}
+
+func dayTimeLabels(day time.Time) []string {
+	return []string{"00:00", "06:00", "12:00", "18:00", "23:55"}
+}
+
+func rollingTimeLabels(samples []provider.Sample) []string {
+	if len(samples) == 0 {
+		return []string{"00:00", "12:00", "23:55"}
+	}
+	first := samples[0].TS
+	last := samples[len(samples)-1].TS
+	mid := first.Add(last.Sub(first) / 2)
+	return []string{first.Format("15:04"), mid.Format("15:04"), last.Format("15:04")}
+}
+
+// cursorSlot returns the index into a fixed-day values array for the cursor.
+func (m *Model) cursorSlot(day time.Time) int {
+	if m.cursor.IsZero() {
+		return -1
+	}
+	slot := m.cursor.In(day.Location()).Hour()*12 + m.cursor.In(day.Location()).Minute()/5
+	return clamp(slot, 0, daySlotCount-1)
+}
+
+// cursorSampleIndex returns the nearest measured index for a rolling chart.
+func (m *Model) cursorSampleIndex(samples []provider.Sample) int {
+	if m.cursor.IsZero() || len(samples) == 0 {
+		return -1
+	}
+	target := nearestSample(samples, m.cursor)
+	for i := range samples {
+		if samples[i].TS.Equal(target.TS) {
+			return i
+		}
+	}
+	return -1
+}
+
+func nearestSample(samples []provider.Sample, t time.Time) *provider.Sample {
+	if len(samples) == 0 {
+		return nil
+	}
+	best := &samples[0]
+	bestDiff := absDuration(best.TS.Sub(t))
+	for i := 1; i < len(samples); i++ {
+		d := absDuration(samples[i].TS.Sub(t))
+		if d < bestDiff {
+			best, bestDiff = &samples[i], d
+		}
+	}
+	return best
+}
+
+func absDuration(d time.Duration) time.Duration {
+	if d < 0 {
+		return -d
+	}
+	return d
 }

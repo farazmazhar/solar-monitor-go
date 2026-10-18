@@ -60,18 +60,23 @@ func (m *Model) renderBattery(w, h, y int) string {
 	}
 
 	chartH := h - len(lines) - 1
-	if chartH >= 3 && len(m.daySamples) > 0 {
-		lines = append(lines, m.th.Label.Render("24H SOC"))
+	if chartH >= 5 && len(m.daySamples) > 0 {
 		chartY := y + len(lines)
-		chart := RenderLine(LineOptions{
-			Width: w, Height: chartH, Series: m.socSeries(),
-			Cursor: m.chartCursor, CursorColor: m.th.Fg, Dim: m.th.Faint,
+		soc := daySlotValues(m.daySamples, func(s provider.Sample) *float64 { return s.SOC })
+		chart, hit := RenderLine(LineOptions{
+			Width: w, Height: chartH,
+			Title: "STATE OF CHARGE · FIXED DAY 00:00-23:59", Border: true,
+			BorderColor: m.th.Faint, TitleColor: m.th.Accent,
+			Series: []LineSeries{{Name: "soc", Color: m.th.Battery, Values: soc}},
+			Cursor: m.cursorSlot(m.day), CursorColor: m.th.Fg, Dim: m.th.Faint,
 			ShowYAxis: true, ShowXAxis: true, MinY: provider.Float(0), MaxY: provider.Float(100),
-			XLabels: m.xLabels(),
-			YLabel:  fmtPct1,
+			XLabels: dayTimeLabels(m.day), YLabel: fmtPct1,
 		})
 		lines = append(lines, chart...)
-		m.hits.Add(Rect{X: 0, Y: chartY, W: w, H: chartH}, Action{Kind: ActionChartCursor, Rect: Rect{X: 0, Y: chartY, W: w, H: chartH}})
+		m.hits.Add(
+			Rect{X: hit.X, Y: chartY + hit.Y, W: hit.W, H: hit.H},
+			Action{Kind: ActionChartCursor, Rect: Rect{X: hit.X, Y: chartY + hit.Y, W: hit.W, H: hit.H}},
+		)
 	} else if len(m.daySamples) == 0 {
 		lines = append(lines, m.th.Muted.Render("no SOC history yet"))
 	}

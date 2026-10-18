@@ -33,17 +33,19 @@ added later. No second provider is in scope.
 
 Seven tabs: Live, Today, History, Battery, PV, Alarms, Diagnostics.
 
-- **Live** — boxed energy-flow diagram (PV top, house centre, grid left,
-  battery right, backup/smart below), four live tiles with sparklines, a
-  segmented SOC gauge, and a mini today curve.
-- **Today** — multi-series braille chart (solar/load/grid/battery), summary
-  strip with generated, consumed, imported, exported, peak power and time.
-- **History** — month view (daily bars) and year view (monthly bars), income
-  and CO₂ summaries, previous/next period navigation.
-- **Battery** — large SOC gauge, SOH, charge/discharge power, voltage and
-  current, today and lifetime throughput, reserve limits, 24 h SOC chart.
-- **PV** — per-string voltage/current/power table, MPPT totals, DC input count,
-  inverter temperature, DC/AC efficiency where available.
+- **Live** — boxed energy-flow diagram, live tiles with sparklines, a segmented
+  SOC gauge, a colour legend, and a bordered day chart with time and power axes
+  plotting solar, total consumption, grid and battery. `x` switches the chart
+  between a fixed 00:00–23:59 window and a fit-to-samples window.
+- **Today** — summary panel, series legend with `s l g b` toggles, cursor line,
+  and a bordered fixed-day chart with axes.
+- **History** — day, month and year modes. Day shows the power chart for the
+  selected date; month and year show bordered bar charts with axes, plus income
+  and CO₂ summaries.
+- **Battery** — SOC gauge, SOH, charge/discharge power, voltage and current,
+  today and lifetime throughput, reserve limits, and a fixed-day SOC chart.
+- **PV** — bordered strings table with V/A/W and share bars; MPPT totals; DC
+  input count; inverter temperature; DC/AC efficiency where available.
 - **Alarms** — active / recent 30 days / all filters, table with level, time,
   code, message and state, detail pane with advice.
 - **Diagnostics** — connection and latency, last API code/message, config and

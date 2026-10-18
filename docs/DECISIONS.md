@@ -127,3 +127,22 @@ function returning `time.Time`. `fmtAgeFrom(now, t)` and
 Any new time-dependent UI must take its now from `m.now()` rather than
 `time.Now()`.
 
+
+## ADR-0011 — Fixed-day charts, axes and framed panels
+
+**Context.** The first Live chart had no axes, so "now" drifted across the
+width, and the Today screen mixed summary, legend and chart without structure.
+
+**Decision.** Charts always draw a y axis and an x axis, and every chart is
+framed with a titled border. Day charts use a fixed 00:00-23:59 domain by
+default, filled from five-minute slots, so only the plotted lines grow.
+`display.day_window = "auto"` and the `x` key switch to fit-to-samples. Today,
+History's day view and the Battery SOC chart are always fixed-day. Summaries
+live in their own bordered panel with one idea per line.
+
+**Consequences.** Users can read the time of day and power level directly from
+the chart. Fixed-day charts contain 288 slots regardless of how many samples
+arrived, which keeps the x axis stable. The bar charts gained the same frame and
+y axis, so History reads consistently. Spacing and height budgets now matter:
+at 24 rows the tile sparkline row is dropped so the chart keeps at least five
+plot rows.

@@ -43,6 +43,8 @@ func (m *Model) exportHistoryCmd() tea.Cmd {
 	year := m.year
 	monthAt := m.monthAt
 	yearAt := m.yearAt
+	day := m.historyDay
+	samples := m.historySamples
 	return func() tea.Msg {
 		if err := os.MkdirAll(dir, 0o700); err != nil {
 			return exportMsg{err: err}
@@ -52,7 +54,17 @@ func (m *Model) exportHistoryCmd() tea.Cmd {
 			header []string
 			rows   [][]string
 		)
-		if mode == HistoryMonth {
+		switch mode {
+		case HistoryDay:
+			name = "history-day-" + day.Format("2006-01-02") + ".csv"
+			header = []string{"time", "solar_w", "load_w", "grid_w", "battery_w", "soc", "import_w", "export_w"}
+			for _, s := range samples {
+				rows = append(rows, []string{
+					s.TS.Format("2006-01-02 15:04"),
+					opt(s.SolarW), opt(s.LoadW), opt(s.GridW), opt(s.BatteryW), opt(s.SOC), opt(s.ImportW), opt(s.ExportW),
+				})
+			}
+		case HistoryMonth:
 			name = "history-month-" + monthAt.Format("2006-01") + ".csv"
 			header = []string{"date", "generated_kwh", "consumed_kwh", "imported_kwh", "exported_kwh", "charged_kwh", "discharged_kwh", "income", "currency"}
 			for _, r := range month {
@@ -62,7 +74,7 @@ func (m *Model) exportHistoryCmd() tea.Cmd {
 					opt(r.ChargedKWh), opt(r.DischargedKWh), opt(r.Income), r.Currency,
 				})
 			}
-		} else {
+		case HistoryYear:
 			name = "history-year-" + strconv.Itoa(yearAt.Year()) + ".csv"
 			header = []string{"month", "generated_kwh", "consumed_kwh", "imported_kwh", "exported_kwh", "charged_kwh", "discharged_kwh", "income", "currency"}
 			for _, r := range year {

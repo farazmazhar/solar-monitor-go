@@ -285,11 +285,12 @@ func NormalizeAlarms(raw json.RawMessage, loc *time.Location) ([]provider.Alarm,
 	out := make([]provider.Alarm, 0, len(rows))
 	for _, m := range rows {
 		a := provider.Alarm{
-			ID:      firstText(m, "id", "alarmId"),
-			Code:    textField(m, "alarmCode"),
-			Message: textField(m, "alarmMsg"),
-			Advice:  textField(m, "advice"),
-			State:   textField(m, "state"),
+			ID:       firstText(m, "id", "alarmId"),
+			Code:     textField(m, "alarmCode"),
+			Message:  textField(m, "alarmMsg"),
+			Advice:   textField(m, "advice"),
+			State:    textField(m, "state"),
+			DeviceSN: textField(m, "alarmDeviceSn"),
 		}
 		if lvl := numberField(m, "alarmLevel"); lvl != nil {
 			a.Level = int(*lvl)

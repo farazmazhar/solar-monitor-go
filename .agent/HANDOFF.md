@@ -35,8 +35,10 @@ on `main`; the README screenshots are generated from demo mode.
   plots solar, total consumption, grid and battery over a fixed 00:00-23:59
   window by default; `x` (or `display.day_window = "auto"`) switches to
   fit-to-samples. History gained a day mode.
-- No credentials are available on this machine, so live field names, units and
-  signs are still unverified.
+- Alarms work on accounts whose station id is unusable: the client scopes by
+  inverter SN and retries account-wide on API code 1.
+- Live `inverterDetail` works with the configured inverter id; live field names,
+  units and signs are otherwise still unverified.
 
 ## Known issues
 

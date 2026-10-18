@@ -131,6 +131,7 @@ type Model struct {
 
 	alarms      []provider.Alarm
 	alarmsAt    time.Time
+	alarmsNext  time.Time
 	alarmsErr   error
 	alarmFilter AlarmFilter
 	alarmSel    int
@@ -240,6 +241,7 @@ func New(opts Options) *Model {
 	m.monthAt = firstOfMonth(m.now())
 	m.yearAt = time.Date(m.now().Year(), 1, 1, 0, 0, 0, 0, time.Local)
 	m.nextPoll = m.now()
+	m.alarmsNext = m.now()
 	for i := range m.series {
 		m.series[i] = true
 	}
@@ -284,7 +286,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.polling = true
 			m.nextPoll = m.now().Add(m.pollDelay())
 			cmds = append(cmds, m.fetchSnapshotCmd(), m.fetchTodayCmd())
-			if time.Since(m.alarmsAt) >= m.cfg.AlarmsInterval() {
+			if !m.now().Before(m.alarmsNext) {
 				cmds = append(cmds, m.fetchAlarmsCmd())
 			}
 		}
@@ -343,9 +345,16 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case alarmsMsg:
+		if msg.err != nil {
+			m.alarmsErr = msg.err
+			// Retry in a minute rather than waiting a full alarm interval.
+			m.alarmsNext = m.now().Add(time.Minute)
+			return m, nil
+		}
 		m.alarms = msg.alarms
 		m.alarmsAt = msg.at
-		m.alarmsErr = msg.err
+		m.alarmsErr = nil
+		m.alarmsNext = m.now().Add(m.cfg.AlarmsInterval())
 		m.alarmSel = clamp(m.alarmSel, 0, max(0, len(m.filteredAlarms())-1))
 		return m, nil
 
@@ -715,7 +724,7 @@ func (m *Model) switchTab(t Tab) tea.Cmd {
 			return tea.Batch(cmds...)
 		}
 	case TabAlarms:
-		if time.Since(m.alarmsAt) > m.cfg.AlarmsInterval() {
+		if !m.now().Before(m.alarmsNext) {
 			return m.fetchAlarmsCmd()
 		}
 	case TabToday:

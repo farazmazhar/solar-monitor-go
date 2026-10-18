@@ -58,10 +58,14 @@ List endpoints return `data.page.records` (with a fallback to `data.records`).
 | `/v1/api/inverterDay` | 5-minute series for a day | `{"id": id, "money": currency, "time": "YYYY-MM-DD", "timeZone": offsetHours}` |
 | `/v1/api/inverterMonth` | daily series for a month | `{"id": id, "money": currency, "month": "YYYY-MM", "timeZone": offsetHours}` |
 | `/v1/api/inverterYear` | monthly series for a year | `{"id": id, "money": currency, "year": "YYYY", "timeZone": offsetHours}` |
-| `/v1/api/alarmList` | device alarms | `{"pageNo": "1", "pageSize": "100", "stationId": id, "alarmDeviceSn": sn, "alarmBeginTime": "YYYY-MM-DD", "alarmEndTime": "YYYY-MM-DD"}` |
+| `/v1/api/alarmList` | device alarms | `{"pageNo": "1", "pageSize": "100", "alarmDeviceSn": sn, "alarmBeginTime": "YYYY-MM-DD", "alarmEndTime": "YYYY-MM-DD"}` |
 
 `id` may be either the numeric inverter id or the serial number, but not both
-empty. `timeZone` is an integer hour offset; the examples in the vendor
+empty.
+
+For `alarmList`, prefer `alarmDeviceSn` over `stationId`. A station id the
+account cannot see returns API code 1 ("Communication error"); the client
+retries account-wide and filters by serial number. `timeZone` is an integer hour offset; the examples in the vendor
 document use both `8` and `"8"`.
 
 ## Units

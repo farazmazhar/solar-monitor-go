@@ -15,11 +15,14 @@ func (m *Model) renderAlarms(w, h, y int) string {
 
 	rows := m.filteredAlarms()
 	if len(rows) == 0 {
-		msg := "no alarms in this filter"
 		if m.alarmsErr != nil {
-			msg = m.alarmsErr.Error()
+			lines = append(lines,
+				centerText(m.th.Bad.Render("! ")+m.th.Muted.Render(clampText("alarms unavailable: "+m.alarmsErr.Error(), w-4)), w),
+				centerText(m.th.Muted.Render("retrying in a minute · press r to retry now"), w),
+			)
+			return strings.Join(fitLines(lines, w, h), "\n")
 		}
-		lines = append(lines, centerText(m.th.Good.Render("✓ ")+m.th.Muted.Render(msg), w))
+		lines = append(lines, centerText(m.th.Good.Render("✓ ")+m.th.Muted.Render("no alarms in this filter"), w))
 		return strings.Join(fitLines(lines, w, h), "\n")
 	}
 

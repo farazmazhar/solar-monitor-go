@@ -162,15 +162,16 @@ type MonthEnergy struct {
 
 // Alarm is one SolisCloud device alarm.
 type Alarm struct {
-	ID      string    `json:"id"`
-	Level   int       `json:"level"`
-	Code    string    `json:"code"`
-	Message string    `json:"message"`
-	Advice  string    `json:"advice,omitempty"`
-	State   string    `json:"state,omitempty"`
-	Begin   time.Time `json:"begin"`
-	End     time.Time `json:"end,omitempty"`
-	Active  bool      `json:"active"`
+	ID       string    `json:"id"`
+	Level    int       `json:"level"`
+	Code     string    `json:"code"`
+	Message  string    `json:"message"`
+	Advice   string    `json:"advice,omitempty"`
+	State    string    `json:"state,omitempty"`
+	DeviceSN string    `json:"device_sn,omitempty"`
+	Begin    time.Time `json:"begin"`
+	End      time.Time `json:"end,omitempty"`
+	Active   bool      `json:"active"`
 }
 
 // Float returns a pointer to v. It is a convenience for building fixtures and

@@ -207,3 +207,62 @@ func TestResetInverter(t *testing.T) {
 }
 
 var _ provider.Source = (*Client)(nil)
+
+func TestClientAlarmsRetriesWideAndFilters(t *testing.T) {
+	calls := 0
+	srv, fs := newFakeServer(t, func(w http.ResponseWriter, r *http.Request) {
+		calls++
+		if calls == 1 {
+			_, _ = w.Write([]byte(`{"success":false,"code":"1","msg":"Communication error. Please refresh and try again later"}`))
+			return
+		}
+		writeEnvelope(w, `{"page":{"records":[
+		  {"id":"a1","alarmCode":"1","alarmLevel":"1","alarmMsg":"mine","alarmDeviceSn":"AAA"},
+		  {"id":"a2","alarmCode":"2","alarmLevel":"1","alarmMsg":"other","alarmDeviceSn":"BBB"}
+		]}}`)
+	})
+	client, err := New(Options{
+		BaseURL: srv.URL, APIKey: "k", APISecret: "s",
+		InverterID: "1", InverterSN: "AAA", HTTPClient: srv.Client(),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	rows, err := client.Alarms(context.Background(), time.Now().AddDate(0, 0, -30), time.Now())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(rows) != 1 || rows[0].DeviceSN != "AAA" {
+		t.Fatalf("rows = %+v, want one alarm for AAA", rows)
+	}
+
+	fs.mu.Lock()
+	defer fs.mu.Unlock()
+	if len(fs.bodies) != 2 {
+		t.Fatalf("requests = %d, want 2", len(fs.bodies))
+	}
+	for i, body := range fs.bodies {
+		var m map[string]any
+		if err := json.Unmarshal([]byte(body), &m); err != nil {
+			t.Fatal(err)
+		}
+		if _, ok := m["stationId"]; ok {
+			t.Errorf("request %d should not include stationId: %s", i, body)
+		}
+	}
+	if _, ok := mustJSON(t, fs.bodies[0])["alarmDeviceSn"]; !ok {
+		t.Error("first request should scope to the device SN")
+	}
+	if _, ok := mustJSON(t, fs.bodies[1])["alarmDeviceSn"]; ok {
+		t.Error("retry should be account-wide")
+	}
+}
+
+func mustJSON(t *testing.T, s string) map[string]any {
+	t.Helper()
+	var m map[string]any
+	if err := json.Unmarshal([]byte(s), &m); err != nil {
+		t.Fatal(err)
+	}
+	return m
+}

@@ -264,17 +264,11 @@ func (c *Client) Year(ctx context.Context, year int) ([]provider.MonthEnergy, er
 
 // Alarms implements provider.Source.
 func (c *Client) Alarms(ctx context.Context, from, to time.Time) ([]provider.Alarm, error) {
-	if _, err := c.ensureID(ctx); err != nil {
-		return nil, err
-	}
 	body := map[string]any{
 		"pageNo":         "1",
 		"pageSize":       "100",
 		"alarmBeginTime": from.In(c.location).Format("2006-01-02"),
 		"alarmEndTime":   to.In(c.location).Format("2006-01-02"),
-	}
-	if c.stationID != "" {
-		body["stationId"] = c.stationID
 	}
 	c.mu.Lock()
 	sn := c.inverterSN
@@ -282,11 +276,42 @@ func (c *Client) Alarms(ctx context.Context, from, to time.Time) ([]provider.Ala
 	if sn != "" {
 		body["alarmDeviceSn"] = sn
 	}
+
 	raw, err := c.post(ctx, "/v1/api/alarmList", body)
-	if err != nil {
+	if err == nil {
+		return NormalizeAlarms(raw, c.location)
+	}
+
+	// A station id that the account cannot see, or an unusual device scope,
+	// shows up as the generic API code 1. Retry once account-wide and filter
+	// to the inverter locally.
+	var apiErr *APIError
+	if !errors.As(err, &apiErr) || apiErr.Code != "1" {
 		return nil, err
 	}
-	return NormalizeAlarms(raw, c.location)
+	delete(body, "alarmDeviceSn")
+	raw, retryErr := c.post(ctx, "/v1/api/alarmList", body)
+	if retryErr != nil {
+		return nil, err
+	}
+	alarms, nerr := NormalizeAlarms(raw, c.location)
+	if nerr != nil {
+		return nil, nerr
+	}
+	if sn != "" {
+		alarms = filterAlarmsBySN(alarms, sn)
+	}
+	return alarms, nil
+}
+
+func filterAlarmsBySN(alarms []provider.Alarm, sn string) []provider.Alarm {
+	out := alarms[:0]
+	for _, a := range alarms {
+		if a.DeviceSN == "" || strings.EqualFold(a.DeviceSN, sn) {
+			out = append(out, a)
+		}
+	}
+	return out
 }
 
 func (c *Client) offsetHours(t time.Time) int {
@@ -302,16 +327,33 @@ func (c *Client) ensureID(ctx context.Context) (string, error) {
 		c.mu.Unlock()
 		return id, nil
 	}
+	if c.inverterSN != "" {
+		// The API accepts a serial number in the id field, so a configured SN
+		// is enough without a separate discovery round trip.
+		sn := c.inverterSN
+		c.inverterID = sn
+		c.mu.Unlock()
+		return sn, nil
+	}
 	c.mu.Unlock()
 
 	if c.stationID == "" {
 		return "", errors.New("solis: no inverter id and no station id to discover one")
 	}
+	// The current API expects stationId, but older deployments accepted id;
+	// try the documented field first and fall back for compatibility.
 	raw, err := c.post(ctx, "/v1/api/inverterList", map[string]any{
-		"id":       c.stationID,
-		"pageNo":   1,
-		"pageSize": 10,
+		"stationId": c.stationID,
+		"pageNo":    1,
+		"pageSize":  10,
 	})
+	if err != nil {
+		raw, err = c.post(ctx, "/v1/api/inverterList", map[string]any{
+			"id":       c.stationID,
+			"pageNo":   1,
+			"pageSize": 10,
+		})
+	}
 	if err != nil {
 		return "", fmt.Errorf("solis: discover inverter: %w", err)
 	}

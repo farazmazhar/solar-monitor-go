@@ -224,3 +224,21 @@ same interface.
 **Consequences.** Small terminals get a readable year and make no daily
 requests. Wide terminals pay the twelve calls once, then read from disk. The
 year heatmap only loads when it is actually shown, including after a resize.
+
+## ADR-0017 — Alarm resilience when the station id is not usable
+
+**Context.** The account's configured `station_id` is not a station the API
+accepts for `alarmList`: sending it returns the generic API code 1
+("Communication error"). The call succeeds once `stationId` is dropped and the
+request is scoped by `alarmDeviceSn`, or account-wide.
+
+**Decision.** Never send `stationId` with `alarmList`. Scope by
+`alarmDeviceSn` when the inverter SN is known; on API code 1, retry once
+account-wide and filter the results to that SN locally. Alarm failures retry
+after one minute instead of waiting a full alarm interval, and the empty state
+distinguishes an error (red `!`) from "no alarms" (green check).
+
+**Consequences.** Alarms work on accounts whose station id is missing or
+unusable, and a transient code 1 self-heals. Account-wide results are filtered
+so another inverter's alarms are not shown. `ensureID` also prefers a
+configured serial number over discovery.

@@ -11,7 +11,7 @@ with local SQLite history. Tests pass. Live field verification is the main gap.
       `inverterDetail` dump) and confirm field aliases, units and signs against
       `docs/API.md`, then fix any mismatch
 - [ ] Empty/loading/error states on every screen (partial today)
-- [ ] Embed golden screenshots in the README
+- [x] Embed golden screenshots in the README
 - [ ] Tag a first version
 
 ## Blocked
@@ -44,6 +44,7 @@ with local SQLite history. Tests pass. Live field verification is the main gap.
 - [x] Golden render tests at 60×20, 80×24 and 100×30
 - [x] Unit tests for signing, normalisation, config, demo, store and monitor
 - [x] README and LICENSE
+- [x] Published to https://github.com/farazmazhar/solar-monitor-go
 
 ## Verification
 

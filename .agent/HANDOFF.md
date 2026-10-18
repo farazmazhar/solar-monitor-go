@@ -7,7 +7,7 @@ Stopped at: working TUI with demo and live paths; tests pass
 ## Next command
 
 ```sh
-cd /mnt/hdd/Compiler/git/solis-monitor-tui && make check
+cd /mnt/hdd/Compiler/git/solis-monitor-tui && make check && git push
 ```
 
 Then verify live fields when credentials exist:
@@ -15,6 +15,9 @@ Then verify live fields when credentials exist:
 ```sh
 make discover        # needs credentials in ~/.config/solar-monitor/config.toml
 ```
+
+The repository is published at https://github.com/farazmazhar/solar-monitor-go
+on `main`; the README screenshots are generated from demo mode.
 
 ## State
 

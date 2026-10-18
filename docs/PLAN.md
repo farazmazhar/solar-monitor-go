@@ -144,7 +144,7 @@ and runs a balance check, surfacing a diagnostics warning on mismatch.
 - [x] README with build, configuration and key documentation
 - [ ] Live field and sign verification with credentials or a JSON dump
 - [ ] Fix any alias/sign mismatches found
-- [ ] Golden screenshots in the README
+- [x] Golden screenshots in the README
 - [ ] Tag a first version
 
 ## Non-goals

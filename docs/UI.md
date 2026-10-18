@@ -100,9 +100,11 @@ same chart between:
 ### History year view
 
 On wide terminals (110 columns and 28 rows or more) the History year view is a
-calendar heatmap: one row per month, one column pair per day, shaded from `░` to
-`█` by that day's generation. Smaller terminals get twelve monthly bars instead,
-which read better and skip the daily requests entirely.
+calendar heatmap: one row per month, one column pair per day, shaded on a
+dark-to-bright amber ramp by that day's generation. Each row shows its monthly
+total, the legend prints the quartile values in kWh, and a monthly bar chart
+sits below when there is height left. Smaller terminals get twelve monthly bars
+instead, which read better and skip the daily requests entirely.
 
 Heatmap data is cache-first: each month's daily rows are read from SQLite and
 only missing or incomplete months are fetched, paced at roughly two requests per

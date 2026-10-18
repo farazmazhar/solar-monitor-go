@@ -139,6 +139,26 @@ func (t Theme) Bold(c color.Color) lipgloss.Style {
 	return lipgloss.NewStyle().Bold(true).Foreground(c)
 }
 
+// Heat returns the shade colour for a calendar heatmap level (1 to 4). In the
+// monochrome theme it returns nil so only the glyph shade carries the value.
+func (t Theme) Heat(level int) color.Color {
+	if t.Fg == nil {
+		return nil
+	}
+	switch level {
+	case 1:
+		return lipgloss.Color("#6b4a10")
+	case 2:
+		return lipgloss.Color("#b07d18")
+	case 3:
+		return lipgloss.Color("#f5a524")
+	case 4:
+		return lipgloss.Color("#ffd166")
+	default:
+		return nil
+	}
+}
+
 // Pill renders a compact state badge.
 func (t Theme) Pill(text string, fg color.Color) string {
 	if fg == nil {

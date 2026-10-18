@@ -63,7 +63,7 @@ This one wants a terminal.
 | | |
 |---|---|
 | <img src="docs/images/today.svg" alt="Today chart"> | <img src="docs/images/history-year.svg" alt="History year heatmap"> |
-| **Today** — summary, series toggles, cursor and a day chart with axes. | **History · year** — calendar heatmap on wide terminals, monthly bars on smaller ones. |
+| **Today** — summary, series toggles, cursor and a day chart with axes. | **History · year** — heatmap with monthly totals and a bar chart on wide terminals; monthly bars on smaller ones. |
 | <img src="docs/images/mix.svg" alt="Source mix chart"> | <img src="docs/images/battery.svg" alt="Battery screen"> |
 | **Source mix** — `v` stacks solar, battery and grid under consumption. | **Battery** — SOC arc, SOH, throughput and a 24-hour SOC chart. |
 

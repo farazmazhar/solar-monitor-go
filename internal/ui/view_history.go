@@ -201,11 +201,30 @@ func (m *Model) renderYearHeatmap(w, h int) []string {
 		maxValue = 1
 	}
 
-	cellW := 2
+	labelW := 5
+	totalW := 0
+	if w >= 96 {
+		totalW = 13
+	}
+	availW := w - 2 - labelW - totalW
+	if availW < 31 {
+		totalW = 0
+		availW = w - 2 - labelW
+	}
+	cellW := clamp(availW/31, 2, 4)
 	if w < 72 {
 		cellW = 1
 	}
-	labelW := 5
+
+	// Per-month totals and the quartile thresholds used by the shading.
+	monthTotal := make([]float64, 13)
+	for _, r := range m.yearDays {
+		if r.GeneratedKWh != nil {
+			monthTotal[int(r.Date.Month())] += *r.GeneratedKWh
+		}
+	}
+	q1, q2, q3 := maxValue*0.25, maxValue*0.5, maxValue*0.75
+
 	avail := h - len(lines)
 	includeHeader := avail >= 16
 	includeLegend := avail >= 17
@@ -225,13 +244,17 @@ func (m *Model) renderYearHeatmap(w, h int) []string {
 				}
 			}
 		}
-		content = append(content, m.th.Muted.Render(string(row)))
+		header := m.th.Muted.Render(string(row))
+		if totalW > 0 {
+			header += m.th.Muted.Render(padLeft("TOTAL", totalW))
+		}
+		content = append(content, header)
 	}
 
 	now := m.now()
 	for mo := time.January; mo <= time.December; mo++ {
 		var b strings.Builder
-		b.WriteString(m.th.Muted.Render((mo.String() + "   ")[:3] + "  "))
+		b.WriteString(m.th.Muted.Render(padRight((mo.String() + "   ")[:3], labelW-1) + " "))
 		days := time.Date(year, mo+1, 0, 0, 0, 0, 0, now.Location()).Day()
 		for d := 1; d <= 31; d++ {
 			t := time.Date(year, mo, d, 0, 0, 0, 0, now.Location())
@@ -239,20 +262,42 @@ func (m *Model) renderYearHeatmap(w, h int) []string {
 				b.WriteString(strings.Repeat(" ", cellW))
 				continue
 			}
-			shade := byteShade(values[t.Format("2006-01-02")], maxValue)
-			if shade == ' ' {
+			level := heatLevel(values[t.Format("2006-01-02")], maxValue)
+			if level == 0 {
 				b.WriteString(strings.Repeat(" ", cellW))
 				continue
 			}
-			b.WriteString(m.th.Style(m.th.Solar).Render(strings.Repeat(string(shade), cellW)))
+			glyph := heatGlyph(level)
+			if c := m.th.Heat(level); c != nil {
+				b.WriteString(m.th.Style(c).Render(strings.Repeat("█", cellW)))
+			} else {
+				b.WriteString(strings.Repeat(string(glyph), cellW))
+			}
+		}
+		if totalW > 0 {
+			b.WriteString(" ")
+			total := monthTotal[int(mo)]
+			if total > 0 {
+				b.WriteString(m.th.Value.Render(padLeft(fmtEnergyAbs(total), totalW-1)))
+			} else {
+				b.WriteString(m.th.Muted.Render(padLeft("—", totalW-1)))
+			}
 		}
 		content = append(content, b.String())
 	}
 
 	if includeLegend {
-		legend := m.th.Muted.Render("     less ") +
-			m.th.Style(m.th.Solar).Render("░▒▓█") +
-			m.th.Muted.Render(" more")
+		legend := m.th.Muted.Render("less ")
+		for level := 1; level <= 4; level++ {
+			if c := m.th.Heat(level); c != nil {
+				legend += m.th.Style(c).Render("██")
+			} else {
+				legend += string(heatGlyph(level)) + string(heatGlyph(level))
+			}
+			legend += " "
+		}
+		legend += m.th.Muted.Render("  more")
+		legend += m.th.Muted.Render("     ≤ " + fmtEnergyAbs(q1) + "  ≤ " + fmtEnergyAbs(q2) + "  ≤ " + fmtEnergyAbs(q3) + "  " + fmtEnergyAbs(maxValue))
 		content = append(content, legend)
 	}
 
@@ -262,23 +307,71 @@ func (m *Model) renderYearHeatmap(w, h int) []string {
 	} else {
 		lines = append(lines, panel...)
 	}
+
+	// Use the space below the heatmap for a monthly bar chart with exact
+	// values; the heatmap alone leaves a lot of room on tall terminals.
+	bars := make([]Bar, 0, 12)
+	anyTotal := false
+	for mo := time.January; mo <= time.December; mo++ {
+		v := monthTotal[int(mo)]
+		if v > 0 {
+			anyTotal = true
+		}
+		bars = append(bars, Bar{
+			Label:     (mo.String() + "   ")[:3],
+			Value:     v,
+			Color:     m.th.Solar,
+			Highlight: year == now.Year() && mo == now.Month(),
+		})
+	}
+	barsH := h - len(lines) - 1
+	if anyTotal && barsH >= 8 {
+		lines = append(lines, "")
+		lines = append(lines, RenderBars(BarOptions{
+			Width: w, Height: barsH,
+			Title: "MONTHLY GENERATED · " + strconv.Itoa(year), Border: true,
+			BorderColor: m.th.Faint, TitleColor: m.th.Accent,
+			Bars: bars, Dim: m.th.Faint, Fg: m.th.Fg, ShowYAxis: true,
+			YLabel: func(v float64) string { return trimNum(v) + " kWh" },
+		})...)
+	}
 	return lines
 }
 
-func byteShade(v, max float64) rune {
+// heatLevel maps a daily value to a shade level from 1 to 4.
+func heatLevel(v, max float64) int {
 	if v <= 0 {
-		return ' '
+		return 0
 	}
 	switch {
 	case v >= max*0.75:
-		return '█'
+		return 4
 	case v >= max*0.5:
-		return '▓'
+		return 3
 	case v >= max*0.25:
-		return '▒'
+		return 2
 	default:
-		return '░'
+		return 1
 	}
+}
+
+func heatGlyph(level int) rune {
+	switch level {
+	case 1:
+		return '░'
+	case 2:
+		return '▒'
+	case 3:
+		return '▓'
+	case 4:
+		return '█'
+	default:
+		return ' '
+	}
+}
+
+func byteShade(v, max float64) rune {
+	return heatGlyph(heatLevel(v, max))
 }
 
 func (m *Model) historyTotals() (gen, cons, imp, exp, income, charged, discharged *float64) {

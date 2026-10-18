@@ -1,0 +1,387 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="892" height="596" viewBox="0 0 892 596">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1218"/><stop offset="1" stop-color="#080b0f"/></linearGradient></defs>
+<rect width="892" height="596" rx="12" fill="url(#bg)"/>
+<rect x="0.5" y="0.5" width="891" height="595" rx="12" fill="none" stroke="#22303c"/>
+<rect x="1" y="1" width="890" height="37" rx="11" fill="#111820"/>
+<circle cx="18" cy="19.0" r="4" fill="#ff5f57"/><circle cx="32" cy="19.0" r="4" fill="#febc2e"/><circle cx="46" cy="19.0" r="4" fill="#28c840"/>
+<text x="64" y="23.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" fill="#8b98a5">solar-monitor-go  ·  demo</text>
+<rect x="666.2" y="61" width="8.4" height="17" fill="#141b24"/>
+<rect x="674.6" y="61" width="33.8" height="17" fill="#141b24"/>
+<rect x="708.4" y="61" width="8.4" height="17" fill="#141b24"/>
+<text x="24.0" y="76" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#f5a524" font-weight="bold">solar-monitor-go</text>
+<text x="159.2" y="76" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="176.1" y="76" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">Home Rooftop · S6-EH1P6K-L-PRO</text>
+<text x="429.6" y="76" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                            </text>
+<text x="666.2" y="76" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3"> </text>
+<text x="674.6" y="76" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#f5a524" font-weight="bold">DEMO</text>
+<text x="708.4" y="76" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3"> </text>
+<text x="716.9" y="76" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="733.8" y="76" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#fbbf24">simulated</text>
+<text x="809.8" y="76" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="826.7" y="76" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">22:37</text>
+<rect x="209.9" y="78" width="76.0" height="17" fill="#f5a524"/>
+<text x="24.0" y="93" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5"> Live </text>
+<text x="74.7" y="93" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5"> Today </text>
+<text x="133.8" y="93" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5"> History </text>
+<text x="209.9" y="93" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#0b0f14" font-weight="bold"> Battery </text>
+<text x="285.9" y="93" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5"> PV </text>
+<text x="319.8" y="93" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5"> Alarms </text>
+<text x="387.3" y="93" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5"> Diagnostics </text>
+<text x="497.2" y="93" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                                  </text>
+<text x="784.5" y="93" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">Sun 18 Oct</text>
+<text x="24.0" y="110" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#f5a524" font-weight="bold">BATTERY</text>
+<text x="83.1" y="110" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="100.0" y="110" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">S6-EH1P6K-L-PRO</text>
+<text x="226.8" y="110" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                                                                            </text>
+<text x="24.0" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                                    </text>
+<text x="328.2" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="336.6" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="345.1" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="353.5" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="362.0" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="370.4" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="378.9" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="387.3" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="395.8" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="404.2" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="412.7" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="421.1" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="429.6" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="438.0" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="446.5" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="454.9" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="463.4" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="471.8" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="480.3" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="488.7" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="497.2" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="505.6" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="514.1" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="522.5" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="531.0" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="539.4" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="547.9" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="556.3" y="127" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                                     </text>
+<text x="24.0" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                               </text>
+<text x="285.9" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="294.4" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="302.8" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="311.3" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="319.8" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="328.2" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="336.6" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="345.1" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="353.5" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="362.0" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="370.4" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="378.9" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="387.3" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="395.8" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">           </text>
+<text x="488.7" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="497.2" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="505.6" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="514.1" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="522.5" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="531.0" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="539.4" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="547.9" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="556.3" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="564.8" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="573.2" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="581.7" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="590.1" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="598.6" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                                </text>
+<text x="24.0" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                             </text>
+<text x="269.0" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="277.5" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="285.9" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="294.4" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="302.8" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="311.3" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="319.8" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="328.2" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="336.6" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">           </text>
+<text x="429.6" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">6</text>
+<text x="438.0" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">2</text>
+<text x="446.5" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">%</text>
+<text x="454.9" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">           </text>
+<text x="547.9" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="556.3" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="564.8" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="573.2" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="581.7" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="590.1" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="598.6" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="607.0" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="615.5" y="161" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                              </text>
+<text x="24.0" y="178" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                             </text>
+<text x="269.0" y="178" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="277.5" y="178" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="285.9" y="178" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="294.4" y="178" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="302.8" y="178" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="311.3" y="178" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                               </text>
+<text x="573.2" y="178" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="581.7" y="178" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="590.1" y="178" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="598.6" y="178" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="607.0" y="178" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="615.5" y="178" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                              </text>
+<text x="24.0" y="195" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                             </text>
+<text x="269.0" y="195" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="277.5" y="195" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="285.9" y="195" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="294.4" y="195" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="302.8" y="195" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22c55e">█</text>
+<text x="311.3" y="195" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                               </text>
+<text x="573.2" y="195" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="581.7" y="195" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="590.1" y="195" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="598.6" y="195" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="607.0" y="195" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">░</text>
+<text x="615.5" y="195" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                              </text>
+<text x="24.0" y="212" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="40.9" y="212" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">1.80 kW charging</text>
+<text x="176.1" y="212" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">   </text>
+<text x="201.4" y="212" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">SOH 97%</text>
+<text x="260.6" y="212" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                                                                        </text>
+<text x="24.0" y="229" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">power         </text>
+<text x="142.3" y="229" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">1.80 kW                             </text>
+<text x="446.5" y="229" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">voltage       </text>
+<text x="564.8" y="229" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">49.8 V                              </text>
+<text x="24.0" y="246" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">current       </text>
+<text x="142.3" y="246" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">36.1 A                              </text>
+<text x="446.5" y="246" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">temperature   </text>
+<text x="564.8" y="246" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">41.1 °C                             </text>
+<text x="24.0" y="263" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">reserve SOC   </text>
+<text x="142.3" y="263" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">20%                                 </text>
+<text x="446.5" y="263" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">charge limit  </text>
+<text x="564.8" y="263" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">98%                                 </text>
+<text x="24.0" y="280" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">today charged </text>
+<text x="142.3" y="280" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">9.9 kWh</text>
+<text x="201.4" y="280" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">   </text>
+<text x="226.8" y="280" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">discharged  </text>
+<text x="328.2" y="280" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#f472b6">0.0 kWh</text>
+<text x="387.3" y="280" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                                                         </text>
+<text x="24.0" y="297" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">lifetime charged </text>
+<text x="167.6" y="297" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">2.48 MWh</text>
+<text x="235.2" y="297" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">   </text>
+<text x="260.6" y="297" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">discharged  </text>
+<text x="362.0" y="297" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#f472b6">2.22 MWh</text>
+<text x="429.6" y="297" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                                                    </text>
+<text x="24.0" y="314" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">╭─ </text>
+<text x="49.3" y="314" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#f5a524" font-weight="bold">STATE OF CHARGE · FIXED DAY 00:00-23:59</text>
+<text x="378.9" y="314" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c"> ────────────────────────────────────────────────────────╮</text>
+<text x="24.0" y="331" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="32.5" y="331" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3"> 100.0%                       </text>
+<text x="285.9" y="331" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="294.4" y="331" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                      </text>
+<text x="480.3" y="331" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="488.7" y="331" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                     </text>
+<text x="666.2" y="331" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="674.6" y="331" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                      </text>
+<text x="860.5" y="331" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="24.0" y="348" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="32.5" y="348" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                                                                                                  </text>
+<text x="860.5" y="348" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="24.0" y="365" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="32.5" y="365" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                              </text>
+<text x="285.9" y="365" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="294.4" y="365" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                      </text>
+<text x="480.3" y="365" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="488.7" y="365" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                     </text>
+<text x="666.2" y="365" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="674.6" y="365" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                      </text>
+<text x="860.5" y="365" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="24.0" y="382" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="32.5" y="382" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                                                                                                  </text>
+<text x="860.5" y="382" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="24.0" y="399" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="32.5" y="399" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                              </text>
+<text x="285.9" y="399" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="294.4" y="399" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                      </text>
+<text x="480.3" y="399" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="488.7" y="399" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3"> </text>
+<text x="497.2" y="399" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⣀</text>
+<text x="505.6" y="399" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="514.1" y="399" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠔</text>
+<text x="522.5" y="399" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠂</text>
+<text x="531.0" y="399" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                </text>
+<text x="666.2" y="399" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="674.6" y="399" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                      </text>
+<text x="860.5" y="399" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="24.0" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="32.5" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  50.0% </text>
+<text x="100.0" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="108.5" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="125.4" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="133.8" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="150.8" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="159.2" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="176.1" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="184.5" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="201.4" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="209.9" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="226.8" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="235.2" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="252.1" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="260.6" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="277.5" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="285.9" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="302.8" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="311.3" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="328.2" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="336.6" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="353.5" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="362.0" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="378.9" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="387.3" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="404.2" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="412.7" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="429.6" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="438.0" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="454.9" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="463.4" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⢀</text>
+<text x="471.8" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⡠</text>
+<text x="480.3" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠖</text>
+<text x="488.7" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠋</text>
+<text x="497.2" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠁</text>
+<text x="505.6" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="514.1" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="531.0" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="539.4" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="556.3" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="564.8" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="581.7" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="590.1" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="607.0" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="615.5" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="632.4" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="640.8" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="657.8" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="666.2" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="683.1" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="691.5" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="708.4" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="716.9" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="733.8" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="742.2" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="759.1" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="767.6" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="784.5" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="792.9" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="809.8" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="818.3" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="835.2" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="843.6" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">  </text>
+<text x="860.5" y="416" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="24.0" y="433" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="32.5" y="433" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                              </text>
+<text x="285.9" y="433" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="294.4" y="433" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                </text>
+<text x="429.6" y="433" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⢀</text>
+<text x="438.0" y="433" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⡠</text>
+<text x="446.5" y="433" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠔</text>
+<text x="454.9" y="433" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠊</text>
+<text x="463.4" y="433" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠁</text>
+<text x="471.8" y="433" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3"> </text>
+<text x="480.3" y="433" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="488.7" y="433" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                     </text>
+<text x="666.2" y="433" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="674.6" y="433" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                      </text>
+<text x="860.5" y="433" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="24.0" y="450" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="32.5" y="450" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                                           </text>
+<text x="395.8" y="450" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⢀</text>
+<text x="404.2" y="450" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⡠</text>
+<text x="412.7" y="450" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠔</text>
+<text x="421.1" y="450" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠊</text>
+<text x="429.6" y="450" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠉</text>
+<text x="438.0" y="450" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                                                  </text>
+<text x="860.5" y="450" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="24.0" y="467" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="32.5" y="467" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                              </text>
+<text x="285.9" y="467" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="294.4" y="467" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">         </text>
+<text x="370.4" y="467" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⣠</text>
+<text x="378.9" y="467" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠴</text>
+<text x="387.3" y="467" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠚</text>
+<text x="395.8" y="467" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠁</text>
+<text x="404.2" y="467" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">         </text>
+<text x="480.3" y="467" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="488.7" y="467" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                     </text>
+<text x="666.2" y="467" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="674.6" y="467" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                      </text>
+<text x="860.5" y="467" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="24.0" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="32.5" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">        </text>
+<text x="100.0" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="108.5" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="116.9" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="125.4" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="133.8" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="142.3" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="150.8" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="159.2" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="167.6" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="176.1" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="184.5" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="193.0" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="201.4" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="209.9" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="218.3" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="226.8" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="235.2" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="243.7" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="252.1" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="260.6" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="269.0" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="277.5" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="285.9" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="294.4" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="302.8" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="311.3" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="319.8" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="328.2" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="336.6" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠤</text>
+<text x="345.1" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠒</text>
+<text x="353.5" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠊</text>
+<text x="362.0" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#a78bfa">⠉</text>
+<text x="370.4" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                                                          </text>
+<text x="860.5" y="484" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="24.0" y="501" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="32.5" y="501" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">   0.0%                       </text>
+<text x="285.9" y="501" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="294.4" y="501" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                      </text>
+<text x="480.3" y="501" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="488.7" y="501" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                     </text>
+<text x="666.2" y="501" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">·</text>
+<text x="674.6" y="501" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                      </text>
+<text x="860.5" y="501" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="24.0" y="518" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="32.5" y="518" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">        00:00               06:00                  12:00                 18:00               23:55</text>
+<text x="860.5" y="518" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">│</text>
+<text x="24.0" y="535" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#22303c">╰──────────────────────────────────────────────────────────────────────────────────────────────────╯</text>
+<text x="24.0" y="552" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                                                                                                    </text>
+<text x="24.0" y="569" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#f5a524" font-weight="bold">→</text>
+<text x="32.5" y="569" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3"> </text>
+<text x="40.9" y="569" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">cursor</text>
+<text x="91.6" y="569" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">  ·  </text>
+<text x="133.8" y="569" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#f5a524" font-weight="bold">t</text>
+<text x="142.3" y="569" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3"> </text>
+<text x="150.8" y="569" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">today</text>
+<text x="193.0" y="569" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">  ·  </text>
+<text x="235.2" y="569" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#f5a524" font-weight="bold">r</text>
+<text x="243.7" y="569" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3"> </text>
+<text x="252.1" y="569" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">refresh</text>
+<text x="311.3" y="569" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">  ·  </text>
+<text x="353.5" y="569" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#f5a524" font-weight="bold">?</text>
+<text x="362.0" y="569" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3"> </text>
+<text x="370.4" y="569" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">help</text>
+<text x="404.2" y="569" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">  ·  </text>
+<text x="446.5" y="569" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#f5a524" font-weight="bold">q</text>
+<text x="454.9" y="569" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3"> </text>
+<text x="463.4" y="569" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">quit</text>
+<text x="497.2" y="569" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#e6edf3">                                  </text>
+<text x="784.5" y="569" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" xml:space="preserve" fill="#8b98a5">next in 2s</text>
+</svg>

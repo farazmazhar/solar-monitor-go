@@ -1,6 +1,6 @@
 solar-moonitor-go  Home Rooftop · S6-EH1P6K-L-PRO        DEMO   simulated  13:20
  Live  Today  History  Battery  PV  Alarms  Diagnostics               Sun 18 Oct
-DIAGNOSTICS   j k scroll raw · e export snapshot                                
+DIAGNOSTICS   j k scroll raw · e export snapshot · d re-discover                
 source          demo (in-memory)                                                
 api             https://www.soliscloud.com:13333                                
 station         Home Rooftop                                                    
@@ -21,4 +21,4 @@ RAW SNAPSHOT  lines 1-5 of 37
   "allEnergyOriginal": 15229.4,                                                 
   "backupPowerA": 256,                                                          
   "batteryCapacitySoc": 61.5,                                                   
-j k scroll  ·  e export  ·  r refresh  ·  ? help  ·  q quit           next in 2s
+j k scroll  ·  e export  ·  d re-discover  ·  r refresh  ·  ? help  ·  q quit n…

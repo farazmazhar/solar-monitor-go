@@ -11,7 +11,7 @@ import (
 func (m *Model) renderDiagnostics(w, h, y int) string {
 	var lines []string
 	title := m.th.Bold(m.th.Accent).Render("DIAGNOSTICS") +
-		m.th.Muted.Render("   j k scroll raw · e export snapshot")
+		m.th.Muted.Render("   j k scroll raw · e export snapshot · d re-discover")
 	lines = append(lines, title)
 
 	source := "solis"

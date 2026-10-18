@@ -93,6 +93,15 @@ func main() {
 
 	src, isDemo, setupErr := buildSource(cfg)
 
+	var rediscover func(context.Context) error
+	if client, ok := src.(*solis.Client); ok {
+		rediscover = func(ctx context.Context) error {
+			client.ResetInverter()
+			_, err := client.Snapshot(ctx)
+			return err
+		}
+	}
+
 	var localStore *store.Store
 	storeNotice := ""
 	if src != nil && !isDemo {
@@ -160,6 +169,7 @@ func main() {
 		SeedSnapshot: seedSnap,
 		SeedSamples:  seedSamples,
 		Stats:        statsFn,
+		Rediscover:   rediscover,
 		DemoFactory: func() provider.Source {
 			return demo.New(demo.Options{Speed: cfg.Demo.Speed})
 		},

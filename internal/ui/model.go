@@ -3,6 +3,7 @@ package ui
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 
@@ -66,6 +67,7 @@ type Options struct {
 	SeedSnapshot *provider.Snapshot
 	SeedSamples  []provider.Sample
 	Stats        func() (StoreStats, bool)
+	Rediscover   func(context.Context) error
 }
 
 // Model is the root Bubble Tea model.
@@ -125,6 +127,8 @@ type Model struct {
 	clock func() time.Time
 
 	stats func() (StoreStats, bool)
+
+	rediscover func(context.Context) error
 }
 
 // now returns the wall clock, or a pinned clock in tests.
@@ -161,9 +165,12 @@ type (
 		alarms []provider.Alarm
 		err    error
 	}
-	clockMsg   struct{}
-	refreshMsg struct{}
-	exportMsg  struct {
+	clockMsg        struct{}
+	refreshMsg      struct{}
+	rediscoveredMsg struct {
+		err error
+	}
+	exportMsg struct {
 		path string
 		err  error
 	}
@@ -192,6 +199,7 @@ func New(opts Options) *Model {
 		alarmFilter: AlarmRecent,
 		clock:       time.Now,
 		stats:       opts.Stats,
+		rediscover:  opts.Rediscover,
 	}
 	if opts.SeedSnapshot != nil {
 		m.snap = *opts.SeedSnapshot
@@ -312,6 +320,15 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.fetchMonthCmd(m.monthAt),
 			m.fetchYearCmd(m.yearAt.Year()),
 		)
+
+	case rediscoveredMsg:
+		if msg.err != nil {
+			m.exportErr = fmt.Errorf("re-discover: %w", msg.err)
+			return m, nil
+		}
+		m.notice = "inverter re-discovered"
+		m.polling = true
+		return m, m.fetchSnapshotCmd()
 
 	case exportMsg:
 		if msg.err != nil {
@@ -528,6 +545,8 @@ func (m *Model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 			m.rawScroll = 0
 		case "e":
 			return m, m.exportSnapshotCmd()
+		case "d":
+			return m, m.rediscoverCmd()
 		}
 	}
 	return m, nil
@@ -778,6 +797,20 @@ func (m *Model) fetchAlarmsCmd() tea.Cmd {
 
 func clockCmd() tea.Cmd {
 	return tea.Tick(time.Second, func(time.Time) tea.Msg { return clockMsg{} })
+}
+
+// rediscoverCmd forgets the cached inverter identity and fetches again. It is
+// only wired for the real provider; demo and passthrough sources return nil.
+func (m *Model) rediscoverCmd() tea.Cmd {
+	if m.rediscover == nil || m.src == nil {
+		return nil
+	}
+	fn := m.rediscover
+	return func() tea.Msg {
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		return rediscoveredMsg{err: fn(ctx)}
+	}
 }
 
 func firstOfMonth(t time.Time) time.Time {

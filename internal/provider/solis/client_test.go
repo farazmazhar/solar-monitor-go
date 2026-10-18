@@ -192,4 +192,18 @@ func TestClientAlarmsPath(t *testing.T) {
 	}
 }
 
+func TestResetInverter(t *testing.T) {
+	client, err := New(Options{BaseURL: "https://example.invalid", APIKey: "k", APISecret: "s", InverterID: "1"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if client.InverterID() != "1" {
+		t.Fatalf("id = %q", client.InverterID())
+	}
+	client.ResetInverter()
+	if client.InverterID() != "" {
+		t.Fatalf("id after reset = %q, want empty", client.InverterID())
+	}
+}
+
 var _ provider.Source = (*Client)(nil)

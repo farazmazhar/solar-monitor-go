@@ -122,7 +122,7 @@ and runs a balance check, surfacing a diagnostics warning on mismatch.
 - [x] Merge API `inverterDay` with local samples
 - [x] Cache fallback: the last stored snapshot renders when the cloud is down
 - [x] Offline and error states in the header and diagnostics (cached fallback)
-- [ ] Re-discover inverter from the Diagnostics screen
+- [x] Re-discover inverter from the Diagnostics screen
 - [ ] Manual refresh is implemented; verify it against a live account
 
 ### M3 — polish

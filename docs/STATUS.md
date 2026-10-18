@@ -10,7 +10,6 @@ with local SQLite history. Tests pass. Live field verification is the main gap.
 - [ ] Live verification: run `make discover` with real credentials (or a saved
       `inverterDetail` dump) and confirm field aliases, units and signs against
       `docs/API.md`, then fix any mismatch
-- [ ] Re-discover the inverter from the Diagnostics screen
 - [ ] Empty/loading/error states on every screen (partial today)
 - [ ] Embed golden screenshots in the README
 - [ ] Tag a first version
@@ -32,6 +31,7 @@ with local SQLite history. Tests pass. Live field verification is the main gap.
       falls back to cache when the cloud is down
 - [x] Poller with exponential backoff (30 s → 5 m), single in-flight request
       and staleness tracking
+- [x] Re-discover the inverter from the Diagnostics screen (`d`)
 - [x] Bubble Tea UI with seven screens, flow diagram, charts and gauge
 - [x] Mouse navigation, help overlay, motion toggle, JSON/CSV export
 - [x] `NO_COLOR` monochrome theme and a transparent theme

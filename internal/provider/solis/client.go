@@ -155,6 +155,15 @@ func (c *Client) InverterID() string {
 	return c.inverterID
 }
 
+// ResetInverter forgets the cached inverter id and serial so the next call
+// discovers them again.
+func (c *Client) ResetInverter() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.inverterID = ""
+	c.inverterSN = ""
+}
+
 // Snapshot implements provider.Source.
 func (c *Client) Snapshot(ctx context.Context) (provider.Snapshot, error) {
 	id, err := c.ensureID(ctx)

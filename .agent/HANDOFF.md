@@ -28,8 +28,6 @@ make discover        # needs credentials in ~/.config/solar-moonitor/config.toml
 ## Known issues
 
 - Some screens have thin empty/error states.
-- Re-discover from Diagnostics is not implemented; `--discover` covers it from
-  the command line.
 - The name `solar-moonitor-go` was never explicitly re-confirmed after the user
   wrote it. If it was a typo, rename module, binary, docs and paths together.
 

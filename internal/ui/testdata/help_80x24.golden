@@ -1,6 +1,5 @@
                                                                                 
                                                                                 
-                                                                                
         ╭─ help ───────────────────────────────────────────────────────╮        
         │ Keys                                                         │        
         │                                                              │        
@@ -14,6 +13,7 @@
         │   s l g b           toggle Today series (solar, load, grid,… │        
         │   h l               previous / next period in History        │        
         │   e                 export JSON or CSV                       │        
+        │   d                 re-discover the inverter (Diagnostics o… │        
         │   ?                 close this help                          │        
         │   q                 quit                                     │        
         │                                                              │        

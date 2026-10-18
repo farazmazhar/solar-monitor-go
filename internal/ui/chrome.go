@@ -142,7 +142,7 @@ func (m *Model) footerKeys() string {
 	case TabAlarms:
 		pairs = [][2]string{{"tab", "filter"}, {"j k", "select"}, {"r", "refresh"}, {"?", "help"}, {"q", "quit"}}
 	case TabDiagnostics:
-		pairs = [][2]string{{"j k", "scroll"}, {"e", "export"}, {"r", "refresh"}, {"?", "help"}, {"q", "quit"}}
+		pairs = [][2]string{{"j k", "scroll"}, {"e", "export"}, {"d", "re-discover"}, {"r", "refresh"}, {"?", "help"}, {"q", "quit"}}
 	}
 	var parts []string
 	for _, p := range pairs {
@@ -213,6 +213,7 @@ func (m *Model) renderHelp(w, h int) string {
 		{"s l g b", "toggle Today series (solar, load, grid, battery)"},
 		{"h l", "previous / next period in History"},
 		{"e", "export JSON or CSV"},
+		{"d", "re-discover the inverter (Diagnostics only)"},
 		{"?", "close this help"},
 		{"q", "quit"},
 	}

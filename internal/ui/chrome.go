@@ -63,7 +63,7 @@ func (m *Model) renderHeader(w int) string {
 		}
 		age := "—"
 		if m.haveSnap {
-			if a := fmtAge(m.snap.FetchedAt); a == "now" {
+			if a := fmtAgeFrom(m.now(), m.snap.FetchedAt); a == "now" {
 				age = "just now"
 			} else {
 				age = a + " ago"
@@ -116,7 +116,7 @@ func (m *Model) renderFooter(w int) string {
 		}
 		next := ""
 		if !m.nextPoll.IsZero() {
-			next = "next " + fmtCountdown(m.nextPoll)
+			next = "next " + fmtCountdown(m.now(), m.nextPoll)
 		}
 		right = m.th.Muted.Render(next)
 	}

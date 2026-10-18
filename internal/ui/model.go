@@ -44,16 +44,28 @@ const (
 	AlarmAll
 )
 
+// StoreStats is a provider-neutral summary of the local history store.
+type StoreStats struct {
+	Path      string
+	SizeBytes int64
+	Samples   int
+	Oldest    time.Time
+	Newest    time.Time
+}
+
 // Options wires the UI to its data source.
 type Options struct {
-	Config      config.Config
-	Paths       config.Paths
-	Source      provider.Source
-	Demo        bool
-	Version     string
-	SetupErr    error
-	DemoFactory func() provider.Source
-	InitialTab  Tab
+	Config       config.Config
+	Paths        config.Paths
+	Source       provider.Source
+	Demo         bool
+	Version      string
+	SetupErr     error
+	DemoFactory  func() provider.Source
+	InitialTab   Tab
+	SeedSnapshot *provider.Snapshot
+	SeedSamples  []provider.Sample
+	Stats        func() (StoreStats, bool)
 }
 
 // Model is the root Bubble Tea model.
@@ -110,6 +122,8 @@ type Model struct {
 
 	// clock is injectable so golden tests can pin the wall clock.
 	clock func() time.Time
+
+	stats func() (StoreStats, bool)
 }
 
 // now returns the wall clock, or a pinned clock in tests.
@@ -176,6 +190,14 @@ func New(opts Options) *Model {
 		historyMode: HistoryMonth,
 		alarmFilter: AlarmRecent,
 		clock:       time.Now,
+		stats:       opts.Stats,
+	}
+	if opts.SeedSnapshot != nil {
+		m.snap = *opts.SeedSnapshot
+		m.haveSnap = true
+	}
+	if len(opts.SeedSamples) > 0 {
+		m.daySamples = opts.SeedSamples
 	}
 	m.day = m.now()
 	m.monthAt = firstOfMonth(m.now())

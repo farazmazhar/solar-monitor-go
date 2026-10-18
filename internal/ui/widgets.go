@@ -343,3 +343,18 @@ func fmtCO2(kg *float64) string {
 	}
 	return fmt.Sprintf("%.1f kg", *kg)
 }
+
+func humanBytes(n int64) string {
+	switch {
+	case n <= 0:
+		return "—"
+	case n < 1024:
+		return fmt.Sprintf("%d B", n)
+	case n < 1024*1024:
+		return fmt.Sprintf("%.1f KiB", float64(n)/1024)
+	case n < 1024*1024*1024:
+		return fmt.Sprintf("%.1f MiB", float64(n)/(1024*1024))
+	default:
+		return fmt.Sprintf("%.2f GiB", float64(n)/(1024*1024*1024))
+	}
+}

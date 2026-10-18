@@ -1,29 +1,43 @@
 # Handoff
 
-Updated: 2026-10-18 20:05
-Milestone: M0 — foundation and visual proof
-Stopped at: documentation scaffold written; no Go code yet
+Updated: 2026-10-18 20:35
+Milestone: M1 mostly complete; M2 partial
+Stopped at: working TUI with demo and live paths; tests pass
 
 ## Next command
 
 ```sh
-cd /mnt/hdd/Compiler/git/solis-monitor-tui && go mod init github.com/farazmazhar/solar-moonitor-go
+cd /mnt/hdd/Compiler/git/solis-monitor-tui && make check
 ```
 
-Then add the dependencies and start M0.1: config loader, provider interface,
-demo provider, and the Bubble Tea shell.
+Then either start the poller-backoff task, or verify live fields:
+
+```sh
+make discover        # needs credentials in ~/.config/solar-moonitor/config.toml
+```
 
 ## State
 
-- The repo is initialized with git.
-- `AGENTS.md`, the docs scaffold, `.gitignore` and the Makefile exist.
-- `RESEARCH.md` has been moved to `docs/RESEARCH.md`.
-- No Go source files exist yet.
-- No credentials are available; build against demo data first.
+- `go build ./...` and `make check` pass.
+- Demo mode works with all seven screens; `--dump` renders any tab at any size.
+- The SolisCloud client, config import, SQLite store and monitor service are
+  implemented and unit tested.
+- No credentials are available on this machine, so live field names, units and
+  signs are still unverified.
 
 ## Known issues
 
-- The name `solar-moonitor-go` was not explicitly re-confirmed after the user
-  wrote it; it is being used literally. If it was a typo for
-  `solar-monitor-go`, rename module, binary, docs and paths in one commit.
-- The Makefile currently assumes the binary name `solar-moonitor`.
+- The poller retries on the normal interval; exponential backoff is not
+  implemented yet.
+- `NO_COLOR` and 256-colour fallback are not implemented; the theme falls back
+  to solar-dark for unknown names and transparent for `theme = "transparent"`.
+- Some screens have thin empty/error states.
+- The name `solar-moonitor-go` was never explicitly re-confirmed after the user
+  wrote it. If it was a typo, rename module, binary, docs and paths together.
+
+## Verification
+
+- `make check`: pass
+- `go test ./...`: pass
+- Manual `--dump` review at 60×20, 80×24, 100×30: looks correct
+- Live API: not run

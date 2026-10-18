@@ -1,4 +1,4 @@
-solar-moonitor-go  Home Rooftop · S6-EH1P6K-L-PRO        DEMO   7h 2m ago  13:20
+solar-moonitor-go  Home Rooftop · S6-EH1P6K-L-PRO         DEMO   just now  13:20
  Live  Today  History  Battery  PV  Alarms  Diagnostics               Sun 18 Oct
 DIAGNOSTICS   j k scroll raw · e export snapshot                                
 source          demo (in-memory)                                                
@@ -6,7 +6,7 @@ api             https://www.soliscloud.com:13333
 station         Home Rooftop                                                    
 inverter        DEMO-S6-0001                                                    
 state           online                                                          
-last fetch      2026-10-18 13:20:00 (7h 2m ago)                                 
+last fetch      2026-10-18 13:20:00 (now)                                       
 latency         —                                                               
 next poll       13:20:02                                                        
 last error      none                                                            
@@ -21,4 +21,4 @@ RAW SNAPSHOT  lines 1-5 of 37
   "allEnergyOriginal": 15229.4,                                                 
   "backupPowerA": 256,                                                          
   "batteryCapacitySoc": 61.5,                                                   
-j k scroll  ·  e export  ·  r refresh  ·  ? help  ·  q quit           next 7h 2m
+j k scroll  ·  e export  ·  r refresh  ·  ? help  ·  q quit           next in 2s

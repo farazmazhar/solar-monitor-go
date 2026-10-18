@@ -98,3 +98,32 @@ label the source in the UI.
 
 **Consequences.** Never present a foreign-currency number as PKR. When no
 tariff is configured, earnings show `—` rather than a misleading zero.
+
+## ADR-0009 — Local history behind a monitor service
+
+**Context.** The app should keep history forever and still show something useful
+when SolisCloud is unreachable. The UI must not know about SQLite or about
+Solis-specific caching.
+
+**Decision.** Keep persistence in `internal/store` and wrap the provider in
+`internal/monitor.Service`, which implements `provider.Source`. The service
+records every snapshot, merges local samples into today's curve, falls back to
+stored data on provider errors, and exposes a `Seed` for an instant first frame.
+
+**Consequences.** The UI stays provider-agnostic. Store statistics reach the
+Diagnostics screen through a small `Options.Stats` callback that returns a
+UI-owned summary, so `ui` never imports `store`.
+
+## ADR-0010 — Injectable clocks
+
+**Context.** The demo provider advances a simulated clock and the UI renders
+ages, countdowns and dates. Golden tests cannot depend on the wall clock.
+
+**Decision.** `demo.Options.Clock` and an internal `Model.clock` accept a
+function returning `time.Time`. `fmtAgeFrom(now, t)` and
+`fmtCountdown(now, t)` take an explicit now. Production code passes `time.Now`.
+
+**Consequences.** Golden frames are stable to the second and reproducible in CI.
+Any new time-dependent UI must take its now from `m.now()` rather than
+`time.Now()`.
+

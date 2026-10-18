@@ -17,9 +17,11 @@ import (
 	tea "charm.land/bubbletea/v2"
 
 	"github.com/farazmazhar/solar-moonitor-go/internal/config"
+	"github.com/farazmazhar/solar-moonitor-go/internal/monitor"
 	"github.com/farazmazhar/solar-moonitor-go/internal/provider"
 	"github.com/farazmazhar/solar-moonitor-go/internal/provider/demo"
 	"github.com/farazmazhar/solar-moonitor-go/internal/provider/solis"
+	"github.com/farazmazhar/solar-moonitor-go/internal/store"
 	"github.com/farazmazhar/solar-moonitor-go/internal/ui"
 )
 
@@ -89,7 +91,28 @@ func main() {
 	}
 
 	src, isDemo, setupErr := buildSource(cfg)
+
+	var localStore *store.Store
+	storeNotice := ""
+	if src != nil && !isDemo {
+		opened, err := store.Open(paths.DBPath)
+		if err != nil {
+			storeNotice = "local history unavailable: " + err.Error()
+		} else {
+			localStore = opened
+		}
+	}
+	var service *monitor.Service
+	if localStore != nil {
+		service = monitor.New(src, localStore, cfg.Storage.RawSnapshotDays)
+		src = service
+	}
+
 	if *dump {
+		if src == nil {
+			src = demo.New(demo.Options{Speed: cfg.Demo.Speed})
+			isDemo = true
+		}
 		w, h := parseSize(*dumpSize)
 		frame, err := ui.DumpFrame(src, cfg, paths, version, isDemo, ui.Tab(clampInt(*dumpTab, 0, 6)), w, h)
 		if err != nil {
@@ -99,13 +122,43 @@ func main() {
 		return
 	}
 
+	var (
+		seedSnap    *provider.Snapshot
+		seedSamples []provider.Sample
+	)
+	if service != nil {
+		if snap, samples, ok := service.Seed(ctx); ok {
+			seedSnap = &snap
+			seedSamples = samples
+		}
+	}
+
+	var statsFn func() (ui.StoreStats, bool)
+	if localStore != nil {
+		statsFn = func() (ui.StoreStats, bool) {
+			sctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+			defer cancel()
+			st, err := localStore.Stats(sctx)
+			if err != nil {
+				return ui.StoreStats{}, false
+			}
+			return ui.StoreStats{
+				Path: st.Path, SizeBytes: st.SizeBytes, Samples: st.Samples,
+				Oldest: st.Oldest, Newest: st.Newest,
+			}, true
+		}
+	}
+
 	model := ui.New(ui.Options{
-		Config:   cfg,
-		Paths:    paths,
-		Source:   src,
-		Demo:     isDemo,
-		Version:  version,
-		SetupErr: setupErr,
+		Config:       cfg,
+		Paths:        paths,
+		Source:       src,
+		Demo:         isDemo,
+		Version:      version,
+		SetupErr:     setupErr,
+		SeedSnapshot: seedSnap,
+		SeedSamples:  seedSamples,
+		Stats:        statsFn,
 		DemoFactory: func() provider.Source {
 			return demo.New(demo.Options{Speed: cfg.Demo.Speed})
 		},
@@ -113,8 +166,9 @@ func main() {
 
 	program := tea.NewProgram(model, tea.WithContext(ctx))
 	if res.Notice != "" {
-		// The first frame shows the notice in the footer.
 		model.SetNotice(res.Notice)
+	} else if storeNotice != "" {
+		model.SetNotice(storeNotice)
 	}
 	if _, err := program.Run(); err != nil {
 		fatal(err)

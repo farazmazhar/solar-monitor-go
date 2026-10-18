@@ -24,7 +24,7 @@ func (m *Model) renderDiagnostics(w, h, y int) string {
 	}
 	fetch := "—"
 	if m.haveSnap {
-		age := fmtAge(m.snap.FetchedAt)
+		age := fmtAgeFrom(m.now(), m.snap.FetchedAt)
 		if age != "now" {
 			age += " ago"
 		}
@@ -37,6 +37,24 @@ func (m *Model) renderDiagnostics(w, h, y int) string {
 	db := m.paths.DBPath
 	if m.demo {
 		db = "in-memory (demo)"
+	}
+	dbRows := [][2]string{
+		{"database", db},
+		{"memory samples", itoaInt(len(m.daySamples))},
+	}
+	if m.stats != nil {
+		if st, ok := m.stats(); ok {
+			if st.Path != "" {
+				dbRows[0][1] = st.Path
+			}
+			dbRows = append(dbRows,
+				[2]string{"stored samples", itoaInt(st.Samples)},
+				[2]string{"database size", humanBytes(st.SizeBytes)},
+			)
+			if !st.Oldest.IsZero() {
+				dbRows = append(dbRows, [2]string{"history from", st.Oldest.Format("2006-01-02 15:04")})
+			}
+		}
 	}
 	errText := "none"
 	if m.lastErr != nil {
@@ -53,11 +71,12 @@ func (m *Model) renderDiagnostics(w, h, y int) string {
 		{"next poll", m.nextPoll.Format("15:04:05")},
 		{"last error", errText},
 		{"config", m.paths.ConfigPath},
-		{"database", db},
-		{"memory samples", itoaInt(len(m.daySamples))},
-		{"version", m.version + " · " + runtime.Version()},
-		{"terminal", itoaInt(m.width) + "x" + itoaInt(m.height) + " · theme " + m.th.Name},
 	}
+	rows = append(rows, dbRows...)
+	rows = append(rows,
+		[2]string{"version", m.version + " · " + runtime.Version()},
+		[2]string{"terminal", itoaInt(m.width) + "x" + itoaInt(m.height) + " · theme " + m.th.Name},
+	)
 	for _, r := range rows {
 		lines = append(lines, kv(r[0], m.th.Value.Render(clampText(r[1], w-18)), 16, m.th))
 	}

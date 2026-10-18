@@ -156,10 +156,16 @@ func addCommas(s string) string {
 }
 
 func fmtAge(t time.Time) string {
+	return fmtAgeFrom(time.Now(), t)
+}
+
+// fmtAgeFrom renders the age of t relative to an explicit now, so tests and
+// the UI can share one pinned clock.
+func fmtAgeFrom(now, t time.Time) string {
 	if t.IsZero() {
 		return "—"
 	}
-	d := time.Since(t)
+	d := now.Sub(t)
 	switch {
 	case d < 2*time.Second:
 		return "now"
@@ -186,12 +192,12 @@ func fmtClock(t time.Time) string {
 	return t.Format("15:04")
 }
 
-// fmtCountdown renders time until t, or its age when t is in the past.
-func fmtCountdown(t time.Time) string {
+// fmtCountdown renders the time from now until t, or the age when t is past.
+func fmtCountdown(now, t time.Time) string {
 	if t.IsZero() {
 		return ""
 	}
-	d := time.Until(t)
+	d := t.Sub(now)
 	if d <= 0 {
 		return fmtAge(t)
 	}

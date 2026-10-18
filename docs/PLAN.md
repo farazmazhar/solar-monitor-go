@@ -101,40 +101,45 @@ and runs a balance check, surfacing a diagnostics warning on mismatch.
 
 ### M0 — foundation and visual proof
 
-- [ ] M0.0 repo, AGENTS.md, docs scaffold, Makefile, git history
-- [ ] M0.1 Go scaffold, config, provider interface, demo provider
-- [ ] M0.2 theme, tab shell, Live screen at 80×24, golden render tests
-- [ ] M0.3 Today, History, Battery, PV, Alarms, Diagnostics screens
-- [ ] M0.4 responsive 60×20 / 100×30, help overlay, motion, mouse, tests
+- [x] M0.0 repo, AGENTS.md, docs scaffold, Makefile, git history
+- [x] M0.1 Go scaffold, config, provider interface, demo provider
+- [x] M0.2 theme, tab shell, Live screen at 80×24, golden render tests
+- [x] M0.3 Today, History, Battery, PV, Alarms, Diagnostics screens
+- [x] M0.4 responsive 60×20 / 100×30, help overlay, motion, mouse, tests
 
 ### M1 — API and storage
 
-- [ ] SolisCloud client with HMAC-SHA1 signing and golden-vector tests
-- [ ] Legacy config import and `--init`
-- [ ] SQLite schema, migrations, sample and aggregate queries
-- [ ] Poller with backoff, staleness and single in-flight request
-- [ ] `--discover` field dump
-- [ ] Fake-server tests for success, API errors, 408 clock skew, bad JSON
+- [x] SolisCloud client with HMAC-SHA1 signing and golden-vector tests
+- [x] Legacy config import and `--init`
+- [x] SQLite schema, migrations, sample and aggregate queries
+- [x] `--discover` field dump
+- [x] Fake-server tests for success, API errors, 408 clock skew, bad JSON
+- [ ] Poller with exponential backoff (single in-flight request and staleness
+      are in place; failures currently retry on the normal interval)
 
 ### M2 — live data
 
-- [ ] Wire the real provider into the UI
-- [ ] Merge API `inverterDay` with local samples
-- [ ] Staleness, offline and error states in the header and diagnostics
-- [ ] Manual refresh and re-discover
+- [x] Wire the real provider into the UI
+- [x] Merge API `inverterDay` with local samples
+- [x] Cache fallback: the last stored snapshot renders when the cloud is down
+- [ ] Offline and error states on every screen (header and diagnostics done)
+- [ ] Re-discover inverter from the Diagnostics screen
+- [ ] Manual refresh is implemented; verify it against a live account
 
 ### M3 — polish
 
-- [ ] Mouse hit testing for tabs, tiles and chart cursor
-- [ ] JSON and CSV export
-- [ ] `NO_COLOR` and 256-colour fallback, transparent theme option
-- [ ] Empty, loading and error states on every screen
+- [x] Mouse hit testing for tabs, tiles and chart cursor
+- [x] JSON and CSV export
+- [x] Transparent theme option
+- [ ] `NO_COLOR` and 256-colour fallback
+- [ ] Empty, loading and error states on every screen (partial)
 
 ### M4 — verification and release
 
+- [x] README with build, configuration and key documentation
 - [ ] Live field and sign verification with credentials or a JSON dump
 - [ ] Fix any alias/sign mismatches found
-- [ ] README with screenshots, build and configuration instructions
+- [ ] Golden screenshots in the README
 - [ ] Tag a first version
 
 ## Non-goals

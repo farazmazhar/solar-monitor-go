@@ -1,0 +1,28 @@
+# Build artefacts
+/solar-moonitor
+/solar-moonitor-*
+*.exe
+dist/
+
+# Local configuration and state: never commit these
+config.toml
+dev-config.toml
+*.db
+*.db-wal
+*.db-shm
+*.log
+.env
+
+# Local state directories, if someone builds in-tree
+state/
+demo-state/
+
+# Editor and OS noise
+.DS_Store
+*.swp
+*.idea/
+.vscode/
+
+# Test output
+coverage.out
+*.test
